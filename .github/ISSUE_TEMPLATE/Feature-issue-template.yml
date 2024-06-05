@@ -23,7 +23,7 @@ body:
   - type: textarea
     id: related-view
     attributes:
-      label: Note(Optional)
+      label: 참고(Optional)
       description: 참고 사항
       placeholder: ex. Access Token과 Refresh Token 탈취에 대한 대책을 마련해야 함.
     validations:
