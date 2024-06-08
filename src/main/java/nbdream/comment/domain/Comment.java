@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.bulletin.domain.Bulletin;
-import nbdream.common.domain.BaseEntity;
+import nbdream.common.entity.BaseEntity;
 import nbdream.member.domain.Member;
 
 @Entity

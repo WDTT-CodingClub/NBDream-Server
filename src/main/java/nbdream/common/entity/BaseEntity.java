@@ -1,4 +1,4 @@
-package nbdream.common.domain;
+package nbdream.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
