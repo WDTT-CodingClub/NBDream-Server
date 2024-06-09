@@ -1,4 +1,4 @@
-package nbdream.ledger.domain;
+package nbdream.accountBook.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class LedgerHistory extends BaseEntity {
+public class AccountBookHistory extends BaseEntity {
 
 
     @Id
@@ -20,10 +20,10 @@ public class LedgerHistory extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ledger_id")
-    private Ledger ledger;
+    private AccountBook accountBook;
 
     @Enumerated(EnumType.STRING)
-    private LedgerCategory ledgerCategory;
+    private AccountBookCategory accountBookCategory;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
@@ -34,9 +34,9 @@ public class LedgerHistory extends BaseEntity {
 
     private LocalDate date;
 
-    public LedgerHistory(final Ledger ledger, final LedgerCategory ledgerCategory, final TransactionType transactionType, final int amount, final String content, final LocalDate date) {
-        this.ledger = ledger;
-        this.ledgerCategory = ledgerCategory;
+    public AccountBookHistory(final AccountBook accountBook, final AccountBookCategory accountBookCategory, final TransactionType transactionType, final int amount, final String content, final LocalDate date) {
+        this.accountBook = accountBook;
+        this.accountBookCategory = accountBookCategory;
         this.transactionType = transactionType;
         this.amount = amount;
         this.content = content;
