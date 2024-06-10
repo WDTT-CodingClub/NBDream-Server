@@ -1,7 +1,7 @@
 name: Java CICD with Gradle
 
 on:
-  pull_request_review_comment:
+  pull_request_review:
     branches: [ "dev" ]
 
 jobs:
