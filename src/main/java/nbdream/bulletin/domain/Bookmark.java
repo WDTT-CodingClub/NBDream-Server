@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nbdream.common.domain.BaseEntity;
+import nbdream.common.entity.BaseEntity;
 import nbdream.member.domain.Member;
 
 @Entity
