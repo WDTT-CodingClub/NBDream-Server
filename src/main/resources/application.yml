@@ -12,3 +12,16 @@ spring:
     url: jdbc:h2:mem://localhost/~/testdb;MODE=MYSQL
   profiles:
     include: security
+  cloud:
+    gcp:
+      storage:
+        enabled: true
+        credentials:
+          location: src\main\resources\rock-partition-425300-s4-4bd76d361694.json
+          scopes: https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/sqlservice.admin
+        project-id: rock-partition-425300-s4
+        bucket: nbdream_bucket_1
+    servlet:
+      multipart:
+        enabled: true
+
