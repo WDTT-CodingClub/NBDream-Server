@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nbdream.common.domain.BaseEntity;
+import nbdream.common.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,10 +20,10 @@ public class Image extends BaseEntity {
 
     private Long targetId;
 
-    private String imageUrl;
+    private String storedPath;
 
-    public Image(final String imageUrl) {
-        this.imageUrl = imageUrl;
+    public Image(final String storedPath) {
+        this.storedPath = storedPath;
     }
 
     public void initTargetId(final Long targetId) {
