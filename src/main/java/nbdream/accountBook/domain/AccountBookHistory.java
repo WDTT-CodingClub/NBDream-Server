@@ -4,13 +4,20 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import nbdream.common.entity.BaseEntity;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@EntityListeners(AuditingEntityListener.class)
+@ToString
 public class AccountBookHistory extends BaseEntity {
 
 
@@ -19,7 +26,7 @@ public class AccountBookHistory extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ledger_id")
+    @JoinColumn(name = "accountBook_id")
     private AccountBook accountBook;
 
     @Enumerated(EnumType.STRING)
@@ -41,5 +48,10 @@ public class AccountBookHistory extends BaseEntity {
         this.amount = amount;
         this.content = content;
         this.date = date;
+    }
+
+    public String getKoreanDayOfWeek() {
+        DayOfWeek dayOfWeek = this.date.getDayOfWeek();
+        return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN);
     }
 }
