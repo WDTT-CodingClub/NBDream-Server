@@ -15,7 +15,7 @@ public enum OAuthAttributes {
             Map<String, Object> profile = (Map<String, Object>) account.get("profile");
             return OAuthUserProfile.builder()
                     .socialId((String) attributes.get("id"))
-                    .name((String) profile.get("nickname"))
+                    .nickname((String) profile.get("nickname"))
                     .profileImageUrl((String) profile.get("profile_image_url"))
                     .loginType(LoginType.KAKAO)
                     .build();
@@ -27,7 +27,7 @@ public enum OAuthAttributes {
             Map<String, Object> response = (Map<String, Object>) attributes.get("response");
             return OAuthUserProfile.builder()
                     .socialId((String) response.get("id"))
-                    .name((String) response.get("nickname"))
+                    .nickname((String) response.get("nickname"))
                     .profileImageUrl((String) response.get("profile_image"))
                     .loginType(LoginType.NAVER)
                     .build();
@@ -38,7 +38,7 @@ public enum OAuthAttributes {
         public OAuthUserProfile of(Map<String, Object> attributes) {
             return OAuthUserProfile.builder()
                     .socialId((String) attributes.get("sub"))
-                    .name((String) attributes.get("name"))
+                    .nickname((String) attributes.get("name"))
                     .profileImageUrl((String) attributes.get("picture"))
                     .loginType(LoginType.GOOGLE)
                     .build();

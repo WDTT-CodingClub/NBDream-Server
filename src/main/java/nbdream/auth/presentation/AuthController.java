@@ -20,5 +20,4 @@ public class AuthController {
     public ApiResponse<TokenResponse> oAuthLogin(@PathVariable(name = "provider") String provider, @RequestParam("token") String token) {
         return ApiResponse.ok(authService.oAuthLogin(provider, token));
     }
-
 }

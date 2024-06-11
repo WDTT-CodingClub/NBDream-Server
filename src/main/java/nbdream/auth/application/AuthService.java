@@ -32,7 +32,7 @@ public class AuthService {
 
         Member member = saveOrLogin(oAuthUserProfile);
 
-        return new TokenResponse(tokenProvider.createAccessToken(member.getId()), tokenProvider.createAccessToken(member.getId()));
+        return new TokenResponse(tokenProvider.createAccessToken(member.getId()), tokenProvider.createRefreshToken(member.getId()));
     }
 
     private Member saveOrLogin(OAuthUserProfile oAuthUserProfile) {
