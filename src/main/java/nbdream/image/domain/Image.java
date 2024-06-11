@@ -20,10 +20,10 @@ public class Image extends BaseEntity {
 
     private Long targetId;
 
-    private String imageUrl;
+    private String storedPath;
 
-    public Image(final String imageUrl) {
-        this.imageUrl = imageUrl;
+    public Image(final String storedPath) {
+        this.storedPath = storedPath;
     }
 
     public void initTargetId(final Long targetId) {
