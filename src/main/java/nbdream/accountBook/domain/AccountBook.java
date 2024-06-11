@@ -4,19 +4,15 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import nbdream.accountBook.service.dto.GetAccountBookResDto;
 import nbdream.common.entity.BaseEntity;
 import nbdream.member.domain.Member;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EntityListeners(AuditingEntityListener.class)
-@ToString
 public class AccountBook extends BaseEntity {
 
     @Id
