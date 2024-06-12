@@ -9,6 +9,7 @@ import nbdream.common.entity.BaseEntity;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(name = "work")
 public class Work extends BaseEntity {
 
     @Id
