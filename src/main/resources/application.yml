@@ -15,7 +15,7 @@ spring:
       storage:
         enabled: true
         credentials:
-          location: \home\nbdream\app\rock-partition-425300-s4-4bd76d361694.json
+          location: src\main\resources\rock-partition-425300-s4-4bd76d361694.json
           scopes: https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/sqlservice.admin
         project-id: rock-partition-425300-s4
         bucket: nbdream_bucket_1
