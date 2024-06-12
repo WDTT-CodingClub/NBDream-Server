@@ -28,11 +28,14 @@ public class ImageController {
     @PostMapping(value = "/{domain}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<String> uploadImage(@PathVariable("domain") String domain, @RequestPart MultipartFile image) {
         if (domain == null) {
+            System.out.println(domain);
             return ApiResponse.ok();
         }
         try {
+            System.out.println("들어옴?");
             return ApiResponse.ok(imageService.saveImage(image, domain));
         } catch (IOException e) {
+            System.out.println("여기?");
             return ApiResponse.ok();
         }
     }

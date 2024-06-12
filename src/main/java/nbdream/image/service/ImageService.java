@@ -31,6 +31,7 @@ public class ImageService {
     public String saveImage(MultipartFile image, String domain) throws IOException {
 
         InputStream credentialKey = ResourceUtils.getURL(credentials).openStream();
+        System.out.println(credentialKey);
         String uuid = UUID.randomUUID().toString();
         String ext = image.getContentType();
 
