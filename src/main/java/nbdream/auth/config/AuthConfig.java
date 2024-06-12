@@ -38,11 +38,11 @@ public class AuthConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE")
                 .allowCredentials(true);
     }
-
-    @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(authenticationInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/social/**", "/swagger-ui/**");
-    }
+//
+//    @Override
+//    public void addInterceptors(final InterceptorRegistry registry) {
+//        registry.addInterceptor(authenticationInterceptor)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns("/social/**", "/swagger-ui/**");
+//    }
 }
