@@ -26,7 +26,7 @@ public class ImageController {
 
     @Operation(summary = "이미지 업로드")
     @PostMapping(value = "/{domain}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<String> uploadImage(@PathVariable("domain") String domain, MultipartFile image, @RequestPart HttpServletRequest request) {
+    public ApiResponse<String> uploadImage(@PathVariable("domain") String domain, @RequestPart MultipartFile image) {
         if (domain == null) {
             return ApiResponse.ok();
         }
