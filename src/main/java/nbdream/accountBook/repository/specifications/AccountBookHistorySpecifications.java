@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +31,13 @@ public class AccountBookHistorySpecifications {
             // 날짜
             if (reqDto.getStart() != null) {
                 LocalDate startDate = LocalDate.parse(reqDto.getStart());
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("date"), startDate));
+                LocalDateTime startDateTime = startDate.atStartOfDay();
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("dateTime"), startDateTime));
             }
             if (reqDto.getEnd() != null) {
                 LocalDate endDate = LocalDate.parse(reqDto.getEnd());
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("date"), endDate));
+                LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("dateTime"), endDateTime));
             }
 
             // 수입/지출
@@ -46,9 +50,9 @@ public class AccountBookHistorySpecifications {
             if (reqDto.getSort() != null) {
                 Sort sortEnum = Sort.fromValue(reqDto.getSort());
                 if (sortEnum == Sort.EARLIEST) {
-                    query.orderBy(criteriaBuilder.desc(root.get("date")));
+                    query.orderBy(criteriaBuilder.desc(root.get("dateTime")));
                 } else if (sortEnum == Sort.OLDEST) {
-                    query.orderBy(criteriaBuilder.asc(root.get("date")));
+                    query.orderBy(criteriaBuilder.asc(root.get("dateTime")));
                 }
             }
 

@@ -1,13 +1,10 @@
 package nbdream.accountBook.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import nbdream.common.entity.BaseEntity;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
@@ -32,23 +29,24 @@ public class AccountBookHistory extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
-    private int amount;
+    private Long amount;
 
     private String content;
 
-    private LocalDate date;
+    private LocalDateTime dateTime;
 
-    public AccountBookHistory(final AccountBook accountBook, final AccountBookCategory accountBookCategory, final TransactionType transactionType, final int amount, final String content, final LocalDate date) {
+    @Builder
+    public AccountBookHistory(final AccountBook accountBook, final AccountBookCategory accountBookCategory, final TransactionType transactionType, final Long amount, final String content, final LocalDateTime dateTime) {
         this.accountBook = accountBook;
         this.accountBookCategory = accountBookCategory;
         this.transactionType = transactionType;
         this.amount = amount;
         this.content = content;
-        this.date = date;
+        this.dateTime = dateTime;
     }
 
     public String getKoreanDayOfWeek() {
-        DayOfWeek dayOfWeek = this.date.getDayOfWeek();
+        DayOfWeek dayOfWeek = this.dateTime.getDayOfWeek();
         return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN);
     }
 }
