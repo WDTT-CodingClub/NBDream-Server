@@ -1,14 +1,18 @@
 package nbdream.accountBook.service.dto;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.accountBook.domain.AccountBookCategory;
 import nbdream.accountBook.domain.Sort;
 import nbdream.accountBook.domain.TransactionType;
 import org.springframework.format.annotation.DateTimeFormat;
 
-@Data
+@Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class GetAccountBookListReqDto {
 
     private Integer page = 0;

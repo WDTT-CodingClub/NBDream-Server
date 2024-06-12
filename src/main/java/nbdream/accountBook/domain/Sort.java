@@ -1,5 +1,7 @@
 package nbdream.accountBook.domain;
 
+import nbdream.accountBook.exception.SortTypeNotFoundException;
+
 public enum Sort {
     EARLIEST("earliest"),
     OLDEST("oldest");
@@ -21,6 +23,6 @@ public enum Sort {
                 return sort;
             }
         }
-        throw new IllegalArgumentException("Unknown Sort value: " + value);
+        throw new SortTypeNotFoundException();
     }
 }

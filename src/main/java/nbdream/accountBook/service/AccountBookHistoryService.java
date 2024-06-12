@@ -25,9 +25,9 @@ public class AccountBookHistoryService {
 
     private final AccountBookHistoryRepository accountBookHistoryRepository;
     private final ImageRepository imageRepository;
-    private static final int PAGE_SIZE = 3;     //페이지
+    private static final int PAGE_SIZE = 3;     // 페이지 크기
 
-    //장부내역의 카테고리 항목을 리스트로 반환
+    // 장부 내역의 카테고리 항목을 리스트로 반환
     public List<String> getCategoryList() {
         return List.of(AccountBookCategory.values())
                 .stream()
@@ -36,15 +36,15 @@ public class AccountBookHistoryService {
     }
 
     // 내 장부 내역을 리스트로 반환
-    public List<GetAccountBookResDto> getMyAccountBookHistoryList(GetAccountBookListReqDto reqDto, Long memberId) {
+    public List<AccountBookHistory> getMyAccountBookHistoryList(GetAccountBookListReqDto reqDto, Long memberId) {
         Pageable pageable = PageRequest.of(reqDto.getPage(), PAGE_SIZE);
         Specification<AccountBookHistory> spec = AccountBookHistorySpecifications.withFilters(reqDto, memberId);
         Page<AccountBookHistory> historyPage = accountBookHistoryRepository.findAll(spec, pageable);
-        return convertToDtoList(historyPage.getContent());
+        return historyPage.getContent();
     }
 
     // 장부 내역을 dtoList로 변환
-    private List<GetAccountBookResDto> convertToDtoList(List<AccountBookHistory> historyList) {
+    public List<GetAccountBookResDto> convertToDtoList(List<AccountBookHistory> historyList) {
         return historyList.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -60,8 +60,7 @@ public class AccountBookHistoryService {
                 .orElse(null);
 
         return GetAccountBookResDto.builder()
-                //.id(history.getAccountBook().getId().toString())      //장부의 id
-                .id(history.getId().toString())                         //장부 내역의 id
+                .id(history.getId().toString())                         // 장부 내역의 id
                 .title(history.getContent())
                 .category(history.getAccountBookCategory().getValue())
                 .year(history.getDate().getYear())
@@ -74,5 +73,4 @@ public class AccountBookHistoryService {
                 .imageSize(imgList.size())
                 .build();
     }
-
 }

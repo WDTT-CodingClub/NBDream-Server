@@ -1,5 +1,7 @@
 package nbdream.accountBook.domain;
 
+import nbdream.accountBook.exception.CategoryNotFoundException;
+
 public enum AccountBookCategory {
     FARM_PRODUCT_SALES("farm_product_sales"),
     FERTILIZER("fertilizer"),
@@ -30,6 +32,6 @@ public enum AccountBookCategory {
                 return category;
             }
         }
-        throw new IllegalArgumentException("Unknown category value: " + value);
+        throw new CategoryNotFoundException();
     }
 }

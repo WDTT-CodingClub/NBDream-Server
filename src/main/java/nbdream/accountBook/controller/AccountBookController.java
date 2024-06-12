@@ -7,7 +7,7 @@ import nbdream.accountBook.service.dto.GetAccountBookListResDto;
 import nbdream.auth.config.AuthenticatedMemberId;
 import nbdream.common.advice.response.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -19,7 +19,7 @@ public class AccountBookController {
 
     //내 장부 조회
     @GetMapping("/auth/account")
-    public ApiResponse<GetAccountBookListResDto> getMyAccountBookList( @ModelAttribute GetAccountBookListReqDto reqDto,
+    public ApiResponse<GetAccountBookListResDto> getMyAccountBookList( @RequestBody GetAccountBookListReqDto reqDto,
                                                                        @AuthenticatedMemberId Long memberId){
         GetAccountBookListResDto resDto = accountBookService.getMyAccountBookList(reqDto, memberId);
         return ApiResponse.ok(resDto);

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import nbdream.common.entity.BaseEntity;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.Locale;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class AccountBookHistory extends BaseEntity {
 
 

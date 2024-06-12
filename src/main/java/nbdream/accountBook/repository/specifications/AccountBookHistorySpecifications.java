@@ -18,16 +18,12 @@ public class AccountBookHistorySpecifications {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            predicates.add(criteriaBuilder.equal(root.get("accountBook").get("id"), memberId));
+            predicates.add(criteriaBuilder.equal(root.get("accountBook").get("member").get("id"), memberId));
 
             // 카테고리
             if (reqDto.getCategory() != null) {
-                try {
-                    AccountBookCategory categoryEnum = AccountBookCategory.fromValue(reqDto.getCategory());
-                    predicates.add(criteriaBuilder.equal(root.get("accountBookCategory"), categoryEnum));
-                } catch (IllegalArgumentException e) {
-
-                }
+                AccountBookCategory categoryEnum = AccountBookCategory.fromValue(reqDto.getCategory());
+                predicates.add(criteriaBuilder.equal(root.get("accountBookCategory"), categoryEnum));
             }
 
             // 날짜
@@ -42,25 +38,17 @@ public class AccountBookHistorySpecifications {
 
             // 수입/지출
             if (reqDto.getCost() != null) {
-                try {
-                    TransactionType transactionTypeEnum = TransactionType.fromValue(reqDto.getCost());
-                    predicates.add(criteriaBuilder.equal(root.get("transactionType"), transactionTypeEnum));
-                } catch (IllegalArgumentException e) {
-
-                }
+                TransactionType transactionTypeEnum = TransactionType.fromValue(reqDto.getCost());
+                predicates.add(criteriaBuilder.equal(root.get("transactionType"), transactionTypeEnum));
             }
 
             // 날짜순
             if (reqDto.getSort() != null) {
-                try {
-                    Sort sortEnum = Sort.fromValue(reqDto.getSort());
-                    if (sortEnum == Sort.EARLIEST) {
-                        query.orderBy(criteriaBuilder.desc(root.get("date")));
-                    } else if (sortEnum == Sort.OLDEST) {
-                        query.orderBy(criteriaBuilder.asc(root.get("date")));
-                    }
-                } catch (IllegalArgumentException e) {
-
+                Sort sortEnum = Sort.fromValue(reqDto.getSort());
+                if (sortEnum == Sort.EARLIEST) {
+                    query.orderBy(criteriaBuilder.desc(root.get("date")));
+                } else if (sortEnum == Sort.OLDEST) {
+                    query.orderBy(criteriaBuilder.asc(root.get("date")));
                 }
             }
 

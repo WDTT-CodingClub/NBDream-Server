@@ -1,11 +1,12 @@
 package nbdream.accountBook.service.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class GetAccountBookListResDto {
 

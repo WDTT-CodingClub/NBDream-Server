@@ -1,5 +1,7 @@
 package nbdream.accountBook.domain;
 
+import nbdream.accountBook.exception.TransactionTypeNotFoundException;
+
 public enum TransactionType {
     EXPENSE("expense"),
     REVENUE("revenue");
@@ -21,6 +23,6 @@ public enum TransactionType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown TransactionType value: " + value);
+        throw new TransactionTypeNotFoundException();
     }
 }
