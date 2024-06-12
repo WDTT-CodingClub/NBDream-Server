@@ -18,14 +18,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Create json
+        run: |
+          touch ./src/main/resources/rock-partition-425300-s4-4bd76d361694.json
+          echo "${{ secrets.NB_STORAGE_KEY}}" > ./src/main/resources/rock-partition-425300-s4-4bd76d361694.json
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        env:
-          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
-          GCP_CREDENTIALS_LOCATION: $HOME/gcp-key.json # JSON 파일 경로
         run: ./gradlew clean build --exclude-task test
 
       - name: Copy jar file to remote VM
@@ -37,12 +38,4 @@ jobs:
           port: ${{ secrets.NB_SERVER_PORT }}
           source: "build/libs/*.jar"
           target: "/home/nbdream/app"
-          strip_components: 1
-
-      - name: Deploy new version in VM
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.NB_SERVER_HOST }}
-          key: ${{ secrets.NB_SERVER_SSH_KEY }}
-          username: ${{ secrets.NB_SERVER_USER }}
-          script: sudo bash /home/nbdream/app/deploy-nbdream.sh
+          strip_components: 2
