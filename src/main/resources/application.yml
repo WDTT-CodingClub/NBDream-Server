@@ -7,9 +7,9 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ljw
-    password: 1234
-    url: jdbc:mysql://34.47.100.5:3306/test?serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
   cloud:
     gcp:
       storage:
@@ -17,8 +17,8 @@ spring:
         credentials:
           location: src\main\resources\rock-partition-425300-s4-4bd76d361694.json
           scopes: https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/sqlservice.admin
-        project-id: rock-partition-425300-s4
-        bucket: nbdream_bucket_1
+        project-id: ${GCP_PROJECT_ID}
+        bucket: ${GCP_BUCKET_NAME}
     servlet:
       multipart:
         enabled: true
@@ -38,6 +38,6 @@ jwt:
   refresh-token:
     expire-length: 129600000 # 15일
   token:
-    secret-key: asidlajsdlajsdoijqoiwjdoiqjasdasdaasdasdasdqqqzzzasdasd
+    secret-key: ${TOKEN_SECRET_KEY}
 
 
