@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import nbdream.accountBook.domain.AccountBook;
 import nbdream.accountBook.domain.AccountBookCategory;
 import nbdream.accountBook.domain.AccountBookHistory;
-import nbdream.accountBook.domain.TransactionType;
 import nbdream.accountBook.exception.CategoryNotFoundException;
 import nbdream.accountBook.repository.AccountBookHistoryRepository;
 import nbdream.accountBook.repository.AccountBookRepository;
@@ -38,15 +37,14 @@ public class AccountBookService {
     private static final int PAGE_SIZE = 3;
 
     // 장부 조회에 필요한 리스트 가져오는 메서드
-    public GetAccountBookListResDto getMyAccountBookList(GetAccountBookListReqDto reqDto, Long memberId) {
+    public GetAccountBookListResDto getMyAccountBookList(GetAccountBookListReqDto request, Long memberId) {
         AccountBook accountBook = accountBookRepository.findByMemberId(memberId)
                 .orElseGet(() -> createNewAccountBook(memberId));
         List<String> categories = getCategoryList();
 
-        Pageable pageable = PageRequest.of(reqDto.getPage(), PAGE_SIZE);
-        Specification<AccountBookHistory> spec = AccountBookHistorySpecifications.withFilters(reqDto, memberId);
+        Pageable pageable = PageRequest.of(request.getPage(), PAGE_SIZE);
+        Specification<AccountBookHistory> spec = AccountBookHistorySpecifications.withFilters(request, memberId);
         Page<AccountBookHistory> accountBookHistoryPage = accountBookHistoryRepository.findAll(spec, pageable);
-
         List<AccountBookHistory> accountBookHistoryList = accountBookHistoryPage.getContent();
 
         Long totalRevenue = accountBook.getTotalRevenue(accountBookHistoryList);
@@ -103,8 +101,8 @@ public class AccountBookService {
                 .month(history.getDateTime().getMonthValue())
                 .day(history.getDateTime().getDayOfMonth())
                 .dayName(history.getKoreanDayOfWeek())
-                .expense(history.getTransactionType() == TransactionType.EXPENSE ? (long) history.getAmount() : null)
-                .revenue(history.getTransactionType() == TransactionType.REVENUE ? (long) history.getAmount() : null)
+                .transactionType(history.getTransactionType().getValue())
+                .amount(history.getAmount())
                 .thumbnail(imgUrl)
                 .imageSize(imgList.size())
                 .build();

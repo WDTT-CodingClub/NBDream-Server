@@ -17,8 +17,8 @@ public class GetAccountBookResDto {
     private int month;
     private int day;
     private String dayName;
-    private Long revenue;
-    private Long expense;
+    private String transactionType;
+    private Long amount;
     private String thumbnail;
     private int imageSize;
 

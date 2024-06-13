@@ -45,6 +45,15 @@ public class AccountBookHistory extends BaseEntity {
         this.dateTime = dateTime;
     }
 
+    public void update(final AccountBook accountBook, final AccountBookCategory accountBookCategory, final TransactionType transactionType, final Long amount, final String content, final LocalDateTime dateTime) {
+        this.accountBook = accountBook;
+        this.accountBookCategory = accountBookCategory;
+        this.transactionType = transactionType;
+        this.amount = amount;
+        this.content = content;
+        this.dateTime = dateTime;
+    }
+
     public String getKoreanDayOfWeek() {
         DayOfWeek dayOfWeek = this.dateTime.getDayOfWeek();
         return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN);

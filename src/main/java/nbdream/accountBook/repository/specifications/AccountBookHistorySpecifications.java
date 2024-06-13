@@ -41,8 +41,8 @@ public class AccountBookHistorySpecifications {
             }
 
             // 수입/지출
-            if (reqDto.getCost() != null) {
-                TransactionType transactionTypeEnum = TransactionType.fromValue(reqDto.getCost());
+            if (reqDto.getTransactionType() != null) {
+                TransactionType transactionTypeEnum = TransactionType.fromValue(reqDto.getTransactionType());
                 predicates.add(criteriaBuilder.equal(root.get("transactionType"), transactionTypeEnum));
             }
 

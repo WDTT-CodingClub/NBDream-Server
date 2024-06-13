@@ -4,9 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nbdream.common.entity.BaseEntity;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -27,5 +25,9 @@ public class Image extends BaseEntity {
     public Image(final Long targetId, final String imageUrl) {
         this.targetId = targetId;
         this.imageUrl = imageUrl;
+    }
+
+    public void update(final Long targetId){
+        this.targetId = targetId;
     }
 }

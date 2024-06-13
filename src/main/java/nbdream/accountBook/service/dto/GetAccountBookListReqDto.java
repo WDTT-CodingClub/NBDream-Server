@@ -22,7 +22,7 @@ public class GetAccountBookListReqDto {
     private String start;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private String end;
-    private String cost;
+    private String transactionType;
 
     private AccountBookCategory categoryEnum;
     private TransactionType transactionTypeEnum;
