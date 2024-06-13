@@ -39,10 +39,10 @@ public class AuthConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 
-    @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(authenticationInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/social/**", "/swagger-ui/**");
-    }
+//    @Override
+//    public void addInterceptors(final InterceptorRegistry registry) {
+//        registry.addInterceptor(authenticationInterceptor)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns("/social/**", "/swagger-ui/**");
+//    }
 }
