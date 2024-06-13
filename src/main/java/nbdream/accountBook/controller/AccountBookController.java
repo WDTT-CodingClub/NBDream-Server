@@ -38,8 +38,17 @@ public class AccountBookController {
     //장부 내역 수정
     @PutMapping("/update/{accountbook-history-id}")
     public ApiResponse<Void> updatePost(@RequestBody PutAccountBookReqDto request,
+                                        @AuthenticatedMemberId Long memberId,
                                         @PathVariable("accountbook-history-id") final Long accountBookHistoryId) {
+        return accountBookHistoryService.updateAccountBookHistory(request, memberId, accountBookHistoryId);
+    }
 
-        return accountBookHistoryService.updateAccountBookHistory(request, accountBookHistoryId);
+    //장부 상세 조회
+
+    //장부 삭제
+    @DeleteMapping("/delete/{accountbook-history-id}")
+    public ApiResponse<Void> deleteAccountBookHistory(@AuthenticatedMemberId Long memberId,
+                                                      @PathVariable("accountbook-history-id") final Long accountBookHistoryId) {
+        return accountBookHistoryService.deleteAccountBookHistory(memberId, accountBookHistoryId);
     }
 }

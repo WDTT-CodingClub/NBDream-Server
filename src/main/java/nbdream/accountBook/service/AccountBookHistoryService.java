@@ -8,6 +8,7 @@ import nbdream.accountBook.domain.TransactionType;
 import nbdream.accountBook.exception.AccountBookHistoryNotFoundException;
 import nbdream.accountBook.exception.AccountBookNotFoundException;
 import nbdream.accountBook.exception.ImageNotFoundException;
+import nbdream.accountBook.exception.UnEditableAccountBookException;
 import nbdream.accountBook.repository.AccountBookHistoryRepository;
 import nbdream.accountBook.repository.AccountBookRepository;
 import nbdream.accountBook.service.dto.PostAccountBookReqDto;
@@ -46,27 +47,19 @@ public class AccountBookHistoryService {
                 .build();
         accountBookHistoryRepository.save(accountBookHistory);
 
-        //이미지를 등록했다면 targetId 업데이트
-        if(request.getImageUrls() != null){
-            List<String> imageUrlList = request.getImageUrls();
-            updateImageTargetId(imageUrlList, accountBookHistory);
-        }
-
+        updateImageTargetId(request.getImageUrls(), accountBookHistory);
         return ApiResponse.ok();
     }
 
     //장부 내역 수정
     @Transactional
-    public ApiResponse<Void> updateAccountBookHistory(PutAccountBookReqDto request, Long accountBookHistoryId) {
+    public ApiResponse<Void> updateAccountBookHistory(PutAccountBookReqDto request, Long memberId, Long accountBookHistoryId) {
         AccountBookHistory accountBookHistory = accountBookHistoryRepository.findById(accountBookHistoryId)
                 .orElseThrow(AccountBookHistoryNotFoundException::new);
 
-        //이미지를 등록했다면 targetId 업데이트
-        if(request.getImageUrls() != null){
-            List<String> imageUrlList = request.getImageUrls();
-            updateImageTargetId(imageUrlList, accountBookHistory);
+        if(!accountBookHistory.isWriter(memberId, accountBookHistory)){
+            throw new UnEditableAccountBookException();
         }
-
         accountBookHistory.update(
             accountBookHistory.getAccountBook(),
             AccountBookCategory.fromValue(request.getCategory()),
@@ -75,13 +68,39 @@ public class AccountBookHistoryService {
             request.getTitle(),
             request.getParsedRegisterDateTime()
         );
-
         accountBookHistoryRepository.save(accountBookHistory);
+
+        updateImageTargetId(request.getImageUrls(), accountBookHistory);
         return ApiResponse.ok();
     }
 
+
+    //장부 상세 조회
+
+    //장부 내역 삭제
+    @Transactional
+    public ApiResponse<Void> deleteAccountBookHistory(Long memberId, Long accountBookHistoryId) {
+        AccountBookHistory accountBookHistory = accountBookHistoryRepository.findById(accountBookHistoryId)
+                        .orElseThrow(AccountBookHistoryNotFoundException::new);
+
+        if(!accountBookHistory.isWriter(memberId, accountBookHistory)){
+            throw new UnEditableAccountBookException();
+        }
+        List<Image> imageList = imageRepository.findAllByTargetId(accountBookHistory.getId());
+        imageRepository.findAllByTargetId(accountBookHistory.getId())
+                .stream()
+                .forEach(image -> imageRepository.delete(image));
+
+        accountBookHistoryRepository.delete(accountBookHistory);
+        return ApiResponse.ok();
+    }
+
+    //이미지 타겟id 업데이트
     @Transactional
     public void updateImageTargetId(List<String> imageUrlList, AccountBookHistory accountBookHistory){
+        if(imageUrlList == null){
+            return;
+        }
         for(String url : imageUrlList){
             Image image = imageRepository.findByImageUrl(url).orElseThrow(ImageNotFoundException::new);
             image.update(accountBookHistory.getId());

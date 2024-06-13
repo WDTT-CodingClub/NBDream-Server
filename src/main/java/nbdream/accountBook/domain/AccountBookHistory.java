@@ -3,6 +3,8 @@ package nbdream.accountBook.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import nbdream.common.entity.BaseEntity;
+import nbdream.member.domain.Member;
+
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
@@ -57,5 +59,9 @@ public class AccountBookHistory extends BaseEntity {
     public String getKoreanDayOfWeek() {
         DayOfWeek dayOfWeek = this.dateTime.getDayOfWeek();
         return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN);
+    }
+
+    public boolean isWriter(Long memberId, AccountBookHistory accountBookHistory){
+        return memberId.equals(accountBookHistory.accountBook.getMember().getId());
     }
 }
