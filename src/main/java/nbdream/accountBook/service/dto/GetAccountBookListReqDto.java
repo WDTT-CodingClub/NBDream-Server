@@ -15,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 public class GetAccountBookListReqDto {
 
-    private Integer page = 0;
+    private Integer page;
     private String category;
     private String sort;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
