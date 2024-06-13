@@ -89,12 +89,12 @@ public class AccountBookService {
 
     // 내역을 DTO로 변환
     private GetAccountBookResDto convertToDto(AccountBookHistory history) {
-        List<Image> imgList = imageRepository.findAllByTargetId(history.getId());
-
-        String imgUrl = imgList.stream()
-                .findFirst()
-                .map(Image::getStoredPath)
-                .orElse(null);
+//        List<Image> imgList = imageRepository.findAllByTargetId(history.getId());
+//
+//        String imgUrl = imgList.stream()
+//                .findFirst()
+//                .map(Image::getStoredPath)
+//                .orElse(null);
 
         return GetAccountBookResDto.builder()
                 .id(history.getId().toString())
@@ -106,8 +106,8 @@ public class AccountBookService {
                 .dayName(history.getKoreanDayOfWeek())
                 .expense(history.getTransactionType() == TransactionType.EXPENSE ? (long) history.getAmount() : null)
                 .revenue(history.getTransactionType() == TransactionType.REVENUE ? (long) history.getAmount() : null)
-                .thumbnail(imgUrl)
-                .imageSize(imgList.size())
+//                .thumbnail(imgUrl)
+//                .imageSize(imgList.size())
                 .build();
     }
 
