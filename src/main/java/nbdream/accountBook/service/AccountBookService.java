@@ -12,6 +12,8 @@ import nbdream.accountBook.repository.specifications.AccountBookHistorySpecifica
 import nbdream.accountBook.service.dto.GetAccountBookListReqDto;
 import nbdream.accountBook.service.dto.GetAccountBookListResDto;
 import nbdream.accountBook.service.dto.GetAccountBookResDto;
+import nbdream.image.domain.Image;
+import nbdream.image.repository.ImageRepository;
 import nbdream.member.domain.Member;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
@@ -31,6 +33,7 @@ public class AccountBookService {
     private final AccountBookRepository accountBookRepository;
     private final MemberRepository memberRepository;
     private final AccountBookHistoryRepository accountBookHistoryRepository;
+    private final ImageRepository imageRepository;
 
     private static final int PAGE_SIZE = 3;
 
@@ -86,7 +89,13 @@ public class AccountBookService {
 
     // 내역을 DTO로 변환
     private GetAccountBookResDto convertToDto(AccountBookHistory history) {
-        // 예시로 변환 로직 추가
+        List<Image> imgList = imageRepository.findAllByTargetId(history.getId());
+
+        String imgUrl = imgList.stream()
+                .findFirst()
+                .map(Image::getStoredPath)
+                .orElse(null);
+
         return GetAccountBookResDto.builder()
                 .id(history.getId().toString())
                 .title(history.getContent())
@@ -97,6 +106,8 @@ public class AccountBookService {
                 .dayName(history.getKoreanDayOfWeek())
                 .expense(history.getTransactionType() == TransactionType.EXPENSE ? (long) history.getAmount() : null)
                 .revenue(history.getTransactionType() == TransactionType.REVENUE ? (long) history.getAmount() : null)
+                .thumbnail(imgUrl)
+                .imageSize(imgList.size())
                 .build();
     }
 
