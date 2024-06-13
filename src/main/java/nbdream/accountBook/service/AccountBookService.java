@@ -90,10 +90,9 @@ public class AccountBookService {
     // 내역을 DTO로 변환
     private GetAccountBookResDto convertToDto(AccountBookHistory history) {
         List<Image> imgList = imageRepository.findAllByTargetId(history.getId());
-
         String imgUrl = imgList.stream()
                 .findFirst()
-                .map(Image::getStoredPath)
+                .map(Image::getImageUrl)
                 .orElse(null);
 
         return GetAccountBookResDto.builder()
