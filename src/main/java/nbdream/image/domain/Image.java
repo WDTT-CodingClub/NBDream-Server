@@ -28,4 +28,8 @@ public class Image extends BaseEntity {
         this.targetId = targetId;
         this.imageUrl = imageUrl;
     }
+
+    public void delete() {
+        this.expired();
+    }
 }
