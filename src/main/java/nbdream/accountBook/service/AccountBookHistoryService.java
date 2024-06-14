@@ -56,7 +56,7 @@ public class AccountBookHistoryService {
 
         String imgUrl = imgList.stream()
                 .findFirst()
-                .map(Image::getStoredPath)
+                .map(Image::getImageUrl)
                 .orElse(null);
 
         return GetAccountBookResDto.builder()

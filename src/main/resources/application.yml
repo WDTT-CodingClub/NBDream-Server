@@ -1,14 +1,14 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ljw
-    password: 1324
+    password: 1234
     url: jdbc:mysql://34.47.100.5:3306/test?serverTimezone=Asia/Seoul
   cloud:
     gcp:
