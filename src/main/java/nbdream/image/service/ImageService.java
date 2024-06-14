@@ -50,14 +50,14 @@ public class ImageService {
         }
     }
 
-    public void deleteImage(String domain, String fileName) {
+    public void deleteImage(String imageUrl) {
         try {
             Storage storage = StorageOptions.newBuilder()
                     .setCredentials(GoogleCredentials.fromStream(gcpStorageProperties.getCredentialKey()))
                     .build()
                     .getService();
 
-            String blobPath = domain + "/" + fileName;
+            String blobPath = imageUrl.replace(BASIC_PATH, "");
             Blob blob = storage.get(gcpStorageProperties.getBucketName(), blobPath);
 
             Storage.BlobSourceOption preCondition =
