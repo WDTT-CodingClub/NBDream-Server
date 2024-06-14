@@ -9,7 +9,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ljw
     password: 1234
-    url: jdbc:mysql://34.47.100.5:3306/test?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://34.47.100.5:3306/nb_dream?serverTimezone=Asia/Seoul
+
   cloud:
     gcp:
       storage:
