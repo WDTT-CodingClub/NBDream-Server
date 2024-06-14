@@ -33,7 +33,7 @@ jobs:
           port: ${{ secrets.NB_SERVER_PORT }}
           source: "build/libs/*.jar"
           target: "/home/nbdream/app"
-          strip_components: 1
+          strip_components: 2
 
       - name: Deploy new version in VM
         uses: appleboy/ssh-action@master
