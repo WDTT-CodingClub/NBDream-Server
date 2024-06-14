@@ -47,7 +47,9 @@ public class AccountBookHistoryService {
                 .build();
         accountBookHistoryRepository.save(accountBookHistory);
 
-        updateImageTargetId(request.getImageUrls(), accountBookHistory);
+        request.getImageUrls()
+                .stream()
+                .forEach(url -> imageRepository.save(new Image(accountBookHistory.getId(), url)));
         return ApiResponse.ok();
     }
 
@@ -70,7 +72,9 @@ public class AccountBookHistoryService {
         );
         accountBookHistoryRepository.save(accountBookHistory);
 
-        updateImageTargetId(request.getImageUrls(), accountBookHistory);
+        request.getImageUrls()
+                .stream()
+                .forEach(url -> imageRepository.save(new Image(accountBookHistory.getId(), url)));
         return ApiResponse.ok();
     }
 
@@ -95,16 +99,4 @@ public class AccountBookHistoryService {
         return ApiResponse.ok();
     }
 
-    //이미지 타겟id 업데이트
-    @Transactional
-    public void updateImageTargetId(List<String> imageUrlList, AccountBookHistory accountBookHistory){
-        if(imageUrlList == null){
-            return;
-        }
-        for(String url : imageUrlList){
-            Image image = imageRepository.findByImageUrl(url).orElseThrow(ImageNotFoundException::new);
-            image.update(accountBookHistory.getId());
-            imageRepository.save(image);
-        }
-    }
 }
