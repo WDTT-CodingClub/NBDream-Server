@@ -2,6 +2,8 @@ package nbdream.comment.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.bulletin.domain.Bulletin;
@@ -11,6 +13,8 @@ import nbdream.member.domain.Member;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
+@AllArgsConstructor
 public class Comment extends BaseEntity {
 
     @Id

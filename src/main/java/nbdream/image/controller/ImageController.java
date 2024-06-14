@@ -26,7 +26,7 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping("/{domain}/images")
-    public ResponseEntity<String> uploadImage(@PathVariable("domain") String domain, MultipartFile image, HttpServletRequest request) {
+    public ResponseEntity<String> uploadImage(@PathVariable("domain") String domain, MultipartFile image) {
         if (domain == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid domain");
         }
