@@ -23,6 +23,9 @@ public class AccountBook extends BaseEntity {
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 
+    @OneToMany(mappedBy = "accountBook", cascade = CascadeType.ALL)
+    private List<AccountBookHistory> accountBookHistoryList;
+
     @Builder
     public AccountBook(Member member) {
         this.member = member;

@@ -1,20 +1,22 @@
 package nbdream.accountBook.service;
 
 import lombok.RequiredArgsConstructor;
+import nbdream.accountBook.domain.AccountBook;
 import nbdream.accountBook.domain.AccountBookCategory;
 import nbdream.accountBook.domain.AccountBookHistory;
 import nbdream.accountBook.domain.TransactionType;
+import nbdream.accountBook.exception.*;
 import nbdream.accountBook.repository.AccountBookHistoryRepository;
-import nbdream.accountBook.repository.specifications.AccountBookHistorySpecifications;
-import nbdream.accountBook.service.dto.GetAccountBookListReqDto;
-import nbdream.accountBook.service.dto.GetAccountBookResDto;
+import nbdream.accountBook.repository.AccountBookRepository;
+import nbdream.accountBook.service.dto.GetAccountBookDetailResDto;
+import nbdream.accountBook.service.dto.PostAccountBookReqDto;
+import nbdream.accountBook.service.dto.PutAccountBookReqDto;
+import nbdream.common.advice.response.ApiResponse;
 import nbdream.image.domain.Image;
 import nbdream.image.repository.ImageRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,54 +25,98 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountBookHistoryService {
 
+    private final AccountBookRepository accountBookRepository;
     private final AccountBookHistoryRepository accountBookHistoryRepository;
+    private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
-    private static final int PAGE_SIZE = 3;     // 페이지 크기
 
-    // 장부 내역의 카테고리 항목을 리스트로 반환
-    public List<String> getCategoryList() {
-        return List.of(AccountBookCategory.values())
-                .stream()
-                .map(AccountBookCategory::getValue)
-                .collect(Collectors.toList());
-    }
+    //장부 내역 작성
+    @Transactional
+    public ApiResponse<Void> writeAccountBookHistory(PostAccountBookReqDto request, Long memberId) {
+        AccountBook accountBook = accountBookRepository.findByMemberId(memberId)
+                .orElseThrow(AccountBookNotFoundException::new);
 
-    // 내 장부 내역을 리스트로 반환
-    public List<AccountBookHistory> getMyAccountBookHistoryList(GetAccountBookListReqDto reqDto, Long memberId) {
-        Pageable pageable = PageRequest.of(reqDto.getPage(), PAGE_SIZE);
-        Specification<AccountBookHistory> spec = AccountBookHistorySpecifications.withFilters(reqDto, memberId);
-        Page<AccountBookHistory> historyPage = accountBookHistoryRepository.findAll(spec, pageable);
-        return historyPage.getContent();
-    }
-
-    // 장부 내역을 dtoList로 변환
-    public List<GetAccountBookResDto> convertToDtoList(List<AccountBookHistory> historyList) {
-        return historyList.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    // 장부 내역을 dto로 변환
-    private GetAccountBookResDto convertToDto(AccountBookHistory history) {
-        List<Image> imgList = imageRepository.findAllByTargetId(history.getId());
-
-        String imgUrl = imgList.stream()
-                .findFirst()
-                .map(Image::getImageUrl)
-                .orElse(null);
-
-        return GetAccountBookResDto.builder()
-                .id(history.getId().toString())                         // 장부 내역의 id
-                .title(history.getContent())
-                .category(history.getAccountBookCategory().getValue())
-                .year(history.getDate().getYear())
-                .month(history.getDate().getMonthValue())
-                .day(history.getDate().getDayOfMonth())
-                .dayName(history.getKoreanDayOfWeek())
-                .expense(history.getTransactionType() == TransactionType.EXPENSE ? (long) history.getAmount() : null)
-                .revenue(history.getTransactionType() == TransactionType.REVENUE ? (long) history.getAmount() : null)
-                .thumbnail(imgUrl)
-                .imageSize(imgList.size())
+        AccountBookHistory accountBookHistory = AccountBookHistory.builder()
+                .accountBook(accountBook)
+                .accountBookCategory(AccountBookCategory.fromValue(request.getCategory()))
+                .transactionType(TransactionType.fromValue(request.getTransactionType()))
+                .amount(request.getAmount())
+                .content(request.getTitle())
+                .dateTime(request.getParsedRegisterDateTime())
                 .build();
+        accountBookHistoryRepository.save(accountBookHistory);
+
+        request.getImageUrls()
+                .stream()
+                .forEach(url -> imageRepository.save(new Image(accountBookHistory.getId(), url)));
+        return ApiResponse.ok();
+    }
+
+    //장부 내역 수정
+    @Transactional
+    public ApiResponse<Void> updateAccountBookHistory(PutAccountBookReqDto request, Long memberId, Long accountBookHistoryId) {
+        AccountBookHistory accountBookHistory = accountBookHistoryRepository.findById(accountBookHistoryId)
+                .orElseThrow(AccountBookHistoryNotFoundException::new);
+
+        if(!accountBookHistory.isWriter(memberId, accountBookHistory)){
+            throw new UnEditableAccountBookException();
+        }
+        accountBookHistory.update(
+            accountBookHistory.getAccountBook(),
+            AccountBookCategory.fromValue(request.getCategory()),
+            TransactionType.fromValue(request.getTransactionType()),
+            request.getAmount(),
+            request.getTitle(),
+            request.getParsedRegisterDateTime()
+        );
+        accountBookHistoryRepository.save(accountBookHistory);
+
+        request.getImageUrls()
+                .stream()
+                .forEach(url -> imageRepository.save(new Image(accountBookHistory.getId(), url)));
+        return ApiResponse.ok();
+    }
+
+
+    //장부 내역 삭제
+    @Transactional
+    public ApiResponse<Void> deleteAccountBookHistory(Long memberId, Long accountBookHistoryId) {
+        AccountBookHistory accountBookHistory = accountBookHistoryRepository.findById(accountBookHistoryId)
+                        .orElseThrow(AccountBookHistoryNotFoundException::new);
+
+        if(!accountBookHistory.isWriter(memberId, accountBookHistory)){
+            throw new UnEditableAccountBookException();
+        }
+        //이미지 삭제 (추후 이미지Service에서 처리할 것임)
+        /*List<Image> imageList = imageRepository.findAllByTargetId(accountBookHistory.getId());
+        imageRepository.findAllByTargetId(accountBookHistory.getId())
+                .stream()
+                .forEach(image -> imageRepository.delete(image));*/
+
+        accountBookHistoryRepository.delete(accountBookHistory);
+        return ApiResponse.ok();
+    }
+
+    //장부 상세 조회
+    public GetAccountBookDetailResDto getAccountBookDetail(Long memberId, Long accountBookHistoryId) {
+        AccountBookHistory accountBookHistory = accountBookHistoryRepository.findById(accountBookHistoryId)
+                .orElseThrow(AccountBookHistoryNotFoundException::new);
+        if(!accountBookHistory.isWriter(memberId, accountBookHistory)){
+            throw new UnAccessableAccountBookException();
+        }
+
+        List<String> imageUrls = imageRepository.findAllByTargetId(accountBookHistoryId)
+                .stream()
+                .map(Image::getImageUrl)
+                .collect(Collectors.toList());
+
+        return new GetAccountBookDetailResDto(
+                accountBookHistory.getId().toString(),
+                accountBookHistory.getContent(),
+                accountBookHistory.getAccountBookCategory().getValue(),
+                accountBookHistory.getTransactionType().getValue(),
+                accountBookHistory.getAmount(),
+                accountBookHistory.getDateTimeToString(),
+                imageUrls);
     }
 }

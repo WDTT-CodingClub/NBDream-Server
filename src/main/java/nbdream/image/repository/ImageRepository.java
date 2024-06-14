@@ -15,4 +15,5 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     List<Image> findAllByTargetIds(@Param("targetIds") List<Long> targetIds);
 
     Optional<Image> findByImageUrl(String imageUrl);
+
 }
