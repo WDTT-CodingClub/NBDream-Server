@@ -3,8 +3,12 @@ package nbdream.bulletin.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import nbdream.bulletin.domain.Bulletin;
 import nbdream.bulletin.domain.BulletinCategory;
+import nbdream.bulletin.dto.request.SearchBulletinCondDto;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 import static nbdream.bulletin.domain.QBulletin.bulletin;
 
@@ -25,4 +29,15 @@ public class SearchingBulletinRepository {
         return (crop == null || crop.isEmpty()) ? null : bulletin.crop.eq(crop);
     }
 
+    public List<Bulletin> searchBulletins(SearchBulletinCondDto cond, int size) {
+        return queryFactory.select(bulletin)
+                .from(bulletin)
+                .where(keywordLike(cond.getKeyword()),
+                        categoryEq(BulletinCategory.of(cond.getBulletinCategory())),
+                        cropEq(cond.getCrop()),
+                        bulletin.id.lt(cond.getLastBulletinId()))
+                .limit(size)
+                .orderBy(bulletin.id.desc())
+                .fetch();
+    }
 }

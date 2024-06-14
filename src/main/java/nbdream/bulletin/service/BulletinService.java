@@ -28,9 +28,8 @@ public class BulletinService {
 
         final Long bulletinId = bulletinRepository.save(bulletin).getId();
 
-        request.getImageUrls()
-                .stream()
-                .map(url -> imageRepository.save(new Image(bulletinId, url)));
+        request.getImageUrls().stream()
+                .forEach(imageUrl -> imageRepository.save(new Image(bulletinId, imageUrl)));
 
         return bulletinId;
     }
@@ -41,8 +40,7 @@ public class BulletinService {
 
         bulletin.update(member, request.getDreamCrop(), BulletinCategory.of(request.getBulletinCategory()), request.getContent());
 
-        request.getImageUrls()
-                .stream()
+        request.getImageUrls().stream()
                 .map(url -> imageRepository.save(new Image(bulletinId, url)));
 
         return bulletinId;
@@ -52,8 +50,7 @@ public class BulletinService {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
         final Bulletin bulletin = bulletinRepository.findById(bulletinId).orElseThrow(() -> new BulletinNotFoundException());
 
-        imageRepository.findAllByTargetId(bulletinId)
-                .stream()
+        imageRepository.findAllByTargetId(bulletinId).stream()
                 .forEach(image -> image.delete());
 
         bulletin.delete(member);

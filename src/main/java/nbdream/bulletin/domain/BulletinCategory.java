@@ -5,7 +5,7 @@ import java.util.Arrays;
 public enum BulletinCategory {
     FREE_TOPIC("free"), QUESTION("qna"), PESTS("bug");
 
-    private final String value;
+    private String value;
 
     BulletinCategory(String value) {
         this.value = value;
@@ -13,7 +13,7 @@ public enum BulletinCategory {
 
     public static BulletinCategory of(String value) {
         return Arrays.stream(BulletinCategory.values())
-                .filter(v -> v.equals(value))
+                .filter(bulletinCategory -> bulletinCategory.getValue().equals(value))
                 .findFirst()
                 .orElseThrow();
     }
@@ -21,5 +21,4 @@ public enum BulletinCategory {
     public String getValue() {
         return this.value;
     }
-
 }
