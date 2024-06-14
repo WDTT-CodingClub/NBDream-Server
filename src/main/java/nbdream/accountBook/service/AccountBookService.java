@@ -44,7 +44,7 @@ public class AccountBookService {
         List<AccountBookHistory> accountBookHistoryList = accountBookHistoryPage.getContent();*/
 
         //커서 페이징
-        Long cursor = request.getPage() == null ? 0 : request.getPage().longValue();
+        Long cursor = request.getLastContentsId() == null ? 0 : request.getLastContentsId();
         int maxResults = MAX_RESULTS;
         List<AccountBookHistory> accountBookHistoryList = accountBookHistoryRepository.findByMemberIdAndCursor(memberId, cursor, maxResults, request);
 
