@@ -7,6 +7,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
 import nbdream.image.config.GcpStorageProperties;
+import nbdream.image.dto.ImageDto;
 import nbdream.image.exception.GcsConnectionException;
 import nbdream.image.exception.ImageDeleteFailException;
 import nbdream.image.exception.InvalidDomainException;
@@ -50,21 +51,21 @@ public class ImageService {
         }
     }
 
-    public void deleteImage(String imageUrl) {
+    public void deleteImage(ImageDto request) {
         try {
             Storage storage = StorageOptions.newBuilder()
                     .setCredentials(GoogleCredentials.fromStream(gcpStorageProperties.getCredentialKey()))
                     .build()
                     .getService();
 
-            String blobPath = imageUrl.replace(BASIC_PATH, "");
+            String blobPath =request.imageUrl().replace(BASIC_PATH, "");
             Blob blob = storage.get(gcpStorageProperties.getBucketName(), blobPath);
 
             Storage.BlobSourceOption preCondition =
                     Storage.BlobSourceOption.generationMatch(blob.getGeneration());
 
             boolean isDeleted = storage.delete(gcpStorageProperties.getBucketName(), blobPath, preCondition);
-            if(isDeleted) {
+            if(!isDeleted) {
                 throw new ImageDeleteFailException();
             }
         } catch (IOException e) {

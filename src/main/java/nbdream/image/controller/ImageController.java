@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import nbdream.common.advice.response.ApiResponse;
+import nbdream.image.dto.ImageDto;
 import nbdream.image.service.ImageService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +26,9 @@ public class ImageController {
     }
 
     @Operation(summary = "이미지 삭제")
-    @DeleteMapping("/{image-url}")
-    public ApiResponse<Void> deleteImage(@PathVariable String domain, @PathVariable(name = "image-url") String imageUrl) {
-        imageService.deleteImage(imageUrl);
+    @DeleteMapping
+    public ApiResponse<Void> deleteImage(@RequestBody ImageDto request) {
+        imageService.deleteImage(request);
         return ApiResponse.ok();
     }
 }
