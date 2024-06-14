@@ -1,7 +1,11 @@
 package nbdream.comment.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import nbdream.auth.config.AuthenticatedMemberId;
+import nbdream.comment.domain.request.CreatePostRequest;
+import nbdream.comment.domain.request.UpdateCommentRequest;
 import nbdream.comment.service.CommentService;
 import nbdream.common.advice.response.ApiResponse;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,15 +19,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Tag(name = "Comment Controller")
 public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/bulletin/{id}/comment")
-    public ApiResponse<Long> postComment(@PathVariable Long bulletinId,
-                                         @RequestBody String commentDetail,
-                                         @AuthenticatedMemberId Long memberId) {
-        Long commentId = commentService.postComment(bulletinId, commentDetail, memberId);
+    @Operation(summary = "코멘트 생성")
+    @PostMapping("/bulletin/{bulletin-id}/comments")
+    public ApiResponse<Long> createComment(@PathVariable(name = "bulletin-id") Long bulletinId,
+                                           @RequestBody CreatePostRequest request,
+                                           @AuthenticatedMemberId Long memberId
+    ) {
+        Long commentId = commentService.postComment(bulletinId, request, memberId);
         return ApiResponse.ok(commentId);
     }
 
@@ -38,18 +45,20 @@ public class CommentController {
 //    }
 
 
-    @PatchMapping("/comment/{id}")
-    public ApiResponse<String> editComment(@PathVariable Long commentId,
-                                           @AuthenticatedMemberId Long memberId,
-                                           @RequestBody String commentDetail) {
+    @Operation(summary = "코멘트 수정")
+    @PatchMapping("/comments/{comment-id}")
+    public ApiResponse<String> updateComment(@PathVariable(name = "comment-id") Long commentId,
+                                             @AuthenticatedMemberId Long memberId,
+                                             @RequestBody UpdateCommentRequest request) {
 
-        commentService.editComment(commentId, memberId, commentDetail);
+        commentService.editComment(commentId, memberId, request);
         return ApiResponse.ok("UPDATED");
     }
 
 
-    @DeleteMapping("/comment/{id}")
-    public ApiResponse<String> deleteComment(@PathVariable Long commentId,
+    @Operation(summary = "코멘트 삭제")
+    @DeleteMapping("/comments/{comment-id}")
+    public ApiResponse<String> deleteComment(@PathVariable(name = "comment-id") Long commentId,
                                              @AuthenticatedMemberId Long memberId) {
         commentService.deleteComment(commentId, memberId);
         return ApiResponse.ok("DELETED");

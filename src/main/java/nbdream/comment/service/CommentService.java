@@ -6,7 +6,8 @@ import nbdream.bulletin.domain.Bulletin;
 import nbdream.bulletin.exception.BulletinNotFoundException;
 import nbdream.bulletin.repository.BulletinRepository;
 import nbdream.comment.domain.Comment;
-import nbdream.comment.domain.request.PostCommentRequest;
+import nbdream.comment.domain.request.CreatePostRequest;
+import nbdream.comment.domain.request.UpdateCommentRequest;
 import nbdream.comment.repository.CommentRepository;
 import nbdream.common.exception.UnauthorizedException;
 import nbdream.member.domain.Member;
@@ -23,7 +24,7 @@ public class CommentService {
     private final MemberRepository memberRepository;
     private final BulletinRepository bulletinRepository;
 
-    public Long postComment(Long bulletinId, String commentDetail, Long memberId) {
+    public Long postComment(Long bulletinId, CreatePostRequest request, Long memberId) {
         Member memberEntity = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
 
@@ -33,10 +34,10 @@ public class CommentService {
         Comment commentEntity = Comment.builder()
                 .author(memberEntity)
                 .bulletin(bulletinEntity)
-                .content(commentDetail)
+                .content(request.getCommentDetail())
                 .build();
 
-        commentRepository.save(commentEntity);
+        commentEntity = commentRepository.save(commentEntity);
 
         return commentEntity.getId();
     }
@@ -52,14 +53,14 @@ public class CommentService {
     }
 
 
-    public void editComment(Long commentId, Long memberId, String commentDetail) {
+    public void editComment(Long commentId, Long memberId, UpdateCommentRequest request) {
         if (checkAuthorization(commentId, memberId)) {
             Member commentEditor = memberRepository.getReferenceById(memberId);
 
             Comment commentEntity = Comment.builder()
                     .id(commentId)
                     .author(commentEditor)
-                    .content(commentDetail)
+                    .content(request.getCommentDetail())
                     .build();
             commentRepository.save(commentEntity);
         } else {
@@ -72,20 +73,20 @@ public class CommentService {
         if (checkAuthorization(commentId, memberId)) {
             Member commentEditor = memberRepository.getReferenceById(memberId);
             Comment commentEntity = commentRepository.getReferenceById(commentId);
+
+            commentRepository.delete(commentEntity);
+
         } else {
             throw new UnauthorizedException("NOT_AUTHORIZED");
         }
     }
 
-    protected boolean checkAuthorization(Long commentId, Long memberId) {
-        Member commentWriter = commentRepository.findById(commentId)
+    private boolean checkAuthorization(Long commentId, Long memberId) {
+        return commentRepository.findById(commentId)
                 .orElseThrow(MemberNotFoundException::new)
-                .getAuthor();
-
-        Member commentEditor = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
-
-        return commentWriter == commentEditor;
+                .getAuthor()
+                .getId()
+                .equals(memberId);
     }
 }
 
