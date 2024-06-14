@@ -7,7 +7,6 @@ import nbdream.accountBook.domain.AccountBookHistory;
 import nbdream.accountBook.exception.CategoryNotFoundException;
 import nbdream.accountBook.repository.AccountBookHistoryRepository;
 import nbdream.accountBook.repository.AccountBookRepository;
-import nbdream.accountBook.repository.specifications.AccountBookHistorySpecifications;
 import nbdream.accountBook.service.dto.GetAccountBookListReqDto;
 import nbdream.accountBook.service.dto.GetAccountBookListResDto;
 import nbdream.accountBook.service.dto.GetAccountBookResDto;
@@ -16,10 +15,6 @@ import nbdream.image.repository.ImageRepository;
 import nbdream.member.domain.Member;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +29,7 @@ public class AccountBookService {
     private final AccountBookHistoryRepository accountBookHistoryRepository;
     private final ImageRepository imageRepository;
 
-    private static final int PAGE_SIZE = 3;
+    private static final int MAX_RESULTS = 2;
 
     // 장부 조회에 필요한 리스트 가져오는 메서드
     public GetAccountBookListResDto getMyAccountBookList(GetAccountBookListReqDto request, Long memberId) {
@@ -42,10 +37,16 @@ public class AccountBookService {
                 .orElseGet(() -> createNewAccountBook(memberId));
         List<String> categories = getCategoryList();
 
-        Pageable pageable = PageRequest.of(request.getPage(), PAGE_SIZE);
+        //오프셋 페이징
+        /*Pageable pageable = PageRequest.of(request.getPage(), MAX_RESULTS);
         Specification<AccountBookHistory> spec = AccountBookHistorySpecifications.withFilters(request, memberId);
         Page<AccountBookHistory> accountBookHistoryPage = accountBookHistoryRepository.findAll(spec, pageable);
-        List<AccountBookHistory> accountBookHistoryList = accountBookHistoryPage.getContent();
+        List<AccountBookHistory> accountBookHistoryList = accountBookHistoryPage.getContent();*/
+
+        //커서 페이징
+        Long cursor = request.getPage() == null ? 0 : request.getPage().longValue();
+        int maxResults = MAX_RESULTS;
+        List<AccountBookHistory> accountBookHistoryList = accountBookHistoryRepository.findByMemberIdAndCursor(memberId, cursor, maxResults, request);
 
         Long totalRevenue = accountBook.getTotalRevenue(accountBookHistoryList);
         Long totalExpense = accountBook.getTotalExpense(accountBookHistoryList);

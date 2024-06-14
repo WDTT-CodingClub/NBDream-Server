@@ -87,10 +87,11 @@ public class AccountBookHistoryService {
         if(!accountBookHistory.isWriter(memberId, accountBookHistory)){
             throw new UnEditableAccountBookException();
         }
-        List<Image> imageList = imageRepository.findAllByTargetId(accountBookHistory.getId());
+        //이미지 삭제 (추후 이미지Service에서 처리할 것임)
+        /*List<Image> imageList = imageRepository.findAllByTargetId(accountBookHistory.getId());
         imageRepository.findAllByTargetId(accountBookHistory.getId())
                 .stream()
-                .forEach(image -> imageRepository.delete(image));
+                .forEach(image -> imageRepository.delete(image));*/
 
         accountBookHistoryRepository.delete(accountBookHistory);
         return ApiResponse.ok();
