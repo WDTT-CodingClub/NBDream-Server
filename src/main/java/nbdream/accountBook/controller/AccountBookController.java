@@ -3,10 +3,7 @@ package nbdream.accountBook.controller;
 import lombok.RequiredArgsConstructor;
 import nbdream.accountBook.service.AccountBookHistoryService;
 import nbdream.accountBook.service.AccountBookService;
-import nbdream.accountBook.service.dto.GetAccountBookListReqDto;
-import nbdream.accountBook.service.dto.GetAccountBookListResDto;
-import nbdream.accountBook.service.dto.PostAccountBookReqDto;
-import nbdream.accountBook.service.dto.PutAccountBookReqDto;
+import nbdream.accountBook.service.dto.*;
 import nbdream.auth.config.AuthenticatedMemberId;
 import nbdream.common.advice.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
@@ -36,19 +33,24 @@ public class AccountBookController {
     }
 
     //장부 내역 수정
-    @PutMapping("/update/{accountbook-history-id}")
+    @PutMapping("/update/{account-book-history-id}")
     public ApiResponse<Void> updatePost(@RequestBody PutAccountBookReqDto request,
                                         @AuthenticatedMemberId Long memberId,
-                                        @PathVariable("accountbook-history-id") final Long accountBookHistoryId) {
+                                        @PathVariable("account-book-history-id") final Long accountBookHistoryId) {
         return accountBookHistoryService.updateAccountBookHistory(request, memberId, accountBookHistoryId);
     }
 
     //장부 상세 조회
-
+    @GetMapping("/detail/{account-book-history-id}")
+    public ApiResponse<GetAccountBookDetailResDto> getMyAccountBookList(@AuthenticatedMemberId Long memberId,
+                                                                        @PathVariable("account-book-history-id") final Long accountBookHistoryId){
+        GetAccountBookDetailResDto response = accountBookHistoryService.getAccountBookDetail(memberId, accountBookHistoryId);
+        return ApiResponse.ok(response);
+    }
     //장부 삭제
-    @DeleteMapping("/delete/{accountbook-history-id}")
+    @DeleteMapping("/delete/{account-book-history-id}")
     public ApiResponse<Void> deleteAccountBookHistory(@AuthenticatedMemberId Long memberId,
-                                                      @PathVariable("accountbook-history-id") final Long accountBookHistoryId) {
+                                                      @PathVariable("account-book-history-id") final Long accountBookHistoryId) {
         return accountBookHistoryService.deleteAccountBookHistory(memberId, accountBookHistoryId);
     }
 }

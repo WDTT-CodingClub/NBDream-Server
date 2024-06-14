@@ -7,6 +7,7 @@ import nbdream.member.domain.Member;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
@@ -63,5 +64,10 @@ public class AccountBookHistory extends BaseEntity {
 
     public boolean isWriter(Long memberId, AccountBookHistory accountBookHistory){
         return memberId.equals(accountBookHistory.accountBook.getMember().getId());
+    }
+
+    public String getDateTimeToString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return this.dateTime.format(formatter);
     }
 }

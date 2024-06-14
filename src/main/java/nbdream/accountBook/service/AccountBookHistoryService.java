@@ -5,12 +5,10 @@ import nbdream.accountBook.domain.AccountBook;
 import nbdream.accountBook.domain.AccountBookCategory;
 import nbdream.accountBook.domain.AccountBookHistory;
 import nbdream.accountBook.domain.TransactionType;
-import nbdream.accountBook.exception.AccountBookHistoryNotFoundException;
-import nbdream.accountBook.exception.AccountBookNotFoundException;
-import nbdream.accountBook.exception.ImageNotFoundException;
-import nbdream.accountBook.exception.UnEditableAccountBookException;
+import nbdream.accountBook.exception.*;
 import nbdream.accountBook.repository.AccountBookHistoryRepository;
 import nbdream.accountBook.repository.AccountBookRepository;
+import nbdream.accountBook.service.dto.GetAccountBookDetailResDto;
 import nbdream.accountBook.service.dto.PostAccountBookReqDto;
 import nbdream.accountBook.service.dto.PutAccountBookReqDto;
 import nbdream.common.advice.response.ApiResponse;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -79,8 +78,6 @@ public class AccountBookHistoryService {
     }
 
 
-    //장부 상세 조회
-
     //장부 내역 삭제
     @Transactional
     public ApiResponse<Void> deleteAccountBookHistory(Long memberId, Long accountBookHistoryId) {
@@ -99,4 +96,26 @@ public class AccountBookHistoryService {
         return ApiResponse.ok();
     }
 
+    //장부 상세 조회
+    public GetAccountBookDetailResDto getAccountBookDetail(Long memberId, Long accountBookHistoryId) {
+        AccountBookHistory accountBookHistory = accountBookHistoryRepository.findById(accountBookHistoryId)
+                .orElseThrow(AccountBookHistoryNotFoundException::new);
+        if(!accountBookHistory.isWriter(memberId, accountBookHistory)){
+            throw new UnAccessableAccountBookException();
+        }
+
+        List<String> imageUrls = imageRepository.findAllByTargetId(accountBookHistoryId)
+                .stream()
+                .map(Image::getImageUrl)
+                .collect(Collectors.toList());
+
+        return new GetAccountBookDetailResDto(
+                accountBookHistory.getId().toString(),
+                accountBookHistory.getContent(),
+                accountBookHistory.getAccountBookCategory().getValue(),
+                accountBookHistory.getTransactionType().getValue(),
+                accountBookHistory.getAmount(),
+                accountBookHistory.getDateTimeToString(),
+                imageUrls);
+    }
 }
