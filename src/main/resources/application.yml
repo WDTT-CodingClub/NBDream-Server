@@ -1,15 +1,27 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
   datasource:
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: 
-    url: # 설정 필요
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ljw
+    password: 1234
+    url: jdbc:mysql://34.47.100.5:3306/test?serverTimezone=Asia/Seoul
+  cloud:
+    gcp:
+      storage:
+        enabled: true
+        credentials:
+          location: src/main/resources/rock-partition-425300-s4-4bd76d361694.json
+          scopes: https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/sqlservice.admin
+        project-id: rock-partition-425300-s4
+        bucket: nbdream_bucket_1
+    servlet:
+      multipart:
+        enabled: true
 
 oauth:
   provider:
@@ -26,17 +38,4 @@ jwt:
   refresh-token:
     expire-length: 129600000 # 15일
   token:
-    secret-key: ${{ secrets.TOKEN_SECRET_KEY}}
-
-cloud:
-    gcp:
-      storage:
-        enabled: true
-        credentials:
-          location: ${{ secrets.NB_STORAGE_KEY}}
-          scopes: https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/sqlservice.admin
-        project-id: rock-partition-425300-s4
-        bucket: nbdream_bucket_1
-    servlet:
-      multipart:
-        enabled: true
+    secret-key: asidlajsdlajsdoijqoiwjdoiqjasdasdaasdasdasdqqqzzzasdasd
