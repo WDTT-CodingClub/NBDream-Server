@@ -1,4 +1,4 @@
-package nbdream.bulletin.dto;
+package nbdream.bulletin.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
