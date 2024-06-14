@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import nbdream.auth.config.AuthenticatedMemberId;
-import nbdream.bulletin.dto.BulletinReqDto;
+import nbdream.bulletin.dto.request.BulletinReqDto;
 import nbdream.bulletin.service.BulletinService;
 import nbdream.common.advice.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;

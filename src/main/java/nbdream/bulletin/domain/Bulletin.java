@@ -28,11 +28,14 @@ public class Bulletin extends BaseEntity {
 
     private String content;
 
+    private int bookmarkedCount;
+
     public Bulletin(final Member author, final String crop, final BulletinCategory bulletinCategory, final String content) {
         this.author = author;
         this.crop = crop;
         this.bulletinCategory = bulletinCategory;
         this.content = content;
+        this.bookmarkedCount = 0;
     }
 
     public void update(final Member member, final String crop, final BulletinCategory category, final String content) {

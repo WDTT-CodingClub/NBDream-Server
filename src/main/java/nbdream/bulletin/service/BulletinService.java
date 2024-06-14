@@ -3,7 +3,7 @@ package nbdream.bulletin.service;
 import lombok.RequiredArgsConstructor;
 import nbdream.bulletin.domain.Bulletin;
 import nbdream.bulletin.domain.BulletinCategory;
-import nbdream.bulletin.dto.BulletinReqDto;
+import nbdream.bulletin.dto.request.BulletinReqDto;
 import nbdream.bulletin.exception.BulletinNotFoundException;
 import nbdream.bulletin.repository.BulletinRepository;
 import nbdream.image.domain.Image;

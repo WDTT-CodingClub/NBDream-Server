@@ -17,4 +17,9 @@ public enum BulletinCategory {
                 .findFirst()
                 .orElseThrow();
     }
+
+    public String getValue() {
+        return this.value;
+    }
+
 }
