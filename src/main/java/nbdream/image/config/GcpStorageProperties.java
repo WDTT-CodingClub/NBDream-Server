@@ -16,12 +16,14 @@ public class GcpStorageProperties {
 
     private final String credentials;
     private final String bucketName;
-    private final InputStream credentialKey;
 
     public GcpStorageProperties(@Value("${spring.cloud.gcp.storage.credentials.location}")String credentials,
-                                @Value("${spring.cloud.gcp.storage.bucket}")String bucketName) throws IOException {
+                                @Value("${spring.cloud.gcp.storage.bucket}")String bucketName){
         this.credentials = credentials;
         this.bucketName = bucketName;
-        this.credentialKey = ResourceUtils.getURL(credentials).openStream();
+    }
+
+    public InputStream getCredentialKey() throws IOException {
+        return ResourceUtils.getURL(credentials).openStream();
     }
 }
