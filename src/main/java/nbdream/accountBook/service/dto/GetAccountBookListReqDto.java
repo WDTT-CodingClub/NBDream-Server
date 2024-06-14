@@ -15,14 +15,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 public class GetAccountBookListReqDto {
 
-    private Integer page = 0;
+    private Integer page;
     private String category;
     private String sort;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private String start;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private String end;
-    private String cost;
+    private String transactionType;
 
     private AccountBookCategory categoryEnum;
     private TransactionType transactionTypeEnum;
