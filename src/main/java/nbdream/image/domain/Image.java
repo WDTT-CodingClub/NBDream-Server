@@ -8,10 +8,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@SQLRestriction("status= 'NORMAL'")
 public class Image extends BaseEntity {
 
     @Id
@@ -20,13 +22,14 @@ public class Image extends BaseEntity {
 
     private Long targetId;
 
-    private String storedPath;
+    private String imageUrl;
 
-    public Image(final String storedPath) {
-        this.storedPath = storedPath;
+    public Image(final Long targetId, final String imageUrl) {
+        this.targetId = targetId;
+        this.imageUrl = imageUrl;
     }
 
-    public void initTargetId(final Long targetId) {
-        this.targetId = targetId;
+    public void delete() {
+        this.expired();
     }
 }

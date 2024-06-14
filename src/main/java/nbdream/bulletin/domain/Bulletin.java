@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nbdream.bulletin.exception.UnEditableBulletinException;
 import nbdream.common.entity.BaseEntity;
+import nbdream.member.domain.Member;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,6 +17,10 @@ public class Bulletin extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private Member author;
+
     private String crop;
 
     @Enumerated(EnumType.STRING)
@@ -22,9 +28,26 @@ public class Bulletin extends BaseEntity {
 
     private String content;
 
-    public Bulletin(final String crop, final BulletinCategory bulletinCategory, final String content) {
+    public Bulletin(final Member author, final String crop, final BulletinCategory bulletinCategory, final String content) {
+        this.author = author;
         this.crop = crop;
         this.bulletinCategory = bulletinCategory;
         this.content = content;
+    }
+
+    public void update(final Member member, final String crop, final BulletinCategory category, final String content) {
+
+    }
+
+    public void delete(final Member member) {
+        if (!isAuthor(member)) {
+            throw new UnEditableBulletinException();
+        }
+
+        this.expired();
+    }
+
+    public boolean isAuthor(final Member member) {
+        return member.getId().equals(author.getId());
     }
 }
