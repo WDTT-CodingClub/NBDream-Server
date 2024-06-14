@@ -15,7 +15,7 @@ import java.util.Arrays;
 @OpenAPIDefinition(
         info = @Info(title = "NBDream API 명세서",
                 version = "v1"),
-        servers = {@Server(url = "https://http://34.47.73.18:8080/", description = "Dev"),
+        servers = {@Server(url = "http://34.47.73.18:8080/", description = "Dev"),
                    @Server(url = "http://localhost:8080/", description = "Local")})
 @Configuration
 public class SwaggerConfig {
