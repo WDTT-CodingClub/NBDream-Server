@@ -7,14 +7,17 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
 import nbdream.image.config.GcpStorageProperties;
+import nbdream.image.domain.Image;
 import nbdream.image.dto.ImageDto;
 import nbdream.image.exception.GcsConnectionException;
 import nbdream.image.exception.ImageDeleteFailException;
 import nbdream.image.exception.InvalidDomainException;
+import nbdream.image.repository.ImageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 import static nbdream.image.config.GcpStorageProperties.BASIC_PATH;
@@ -24,6 +27,7 @@ import static nbdream.image.config.GcpStorageProperties.BASIC_PATH;
 public class ImageService {
 
     private final GcpStorageProperties gcpStorageProperties;
+    private final ImageRepository imageRepository;
 
     public String uploadImage(String domain, MultipartFile image) {
         try {
@@ -68,6 +72,12 @@ public class ImageService {
             if(!isDeleted) {
                 throw new ImageDeleteFailException();
             }
+
+            Optional<Image> image = imageRepository.findByImageUrl(request.imageUrl());
+            if (!image.isEmpty()) {
+                imageRepository.delete(image.get());
+            }
+
         } catch (IOException e) {
             throw new GcsConnectionException();
         }
