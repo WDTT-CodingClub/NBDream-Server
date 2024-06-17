@@ -24,7 +24,4 @@ public class GetAccountBookListReqDto {
     private String end;
     private String transactionType;
 
-    private AccountBookCategory categoryEnum;
-    private TransactionType transactionTypeEnum;
-    private Sort sortEnum;
 }
