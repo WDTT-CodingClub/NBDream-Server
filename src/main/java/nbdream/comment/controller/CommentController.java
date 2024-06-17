@@ -7,15 +7,12 @@ import lombok.RequiredArgsConstructor;
 import nbdream.auth.config.AuthenticatedMemberId;
 import nbdream.comment.domain.request.CreatePostRequest;
 import nbdream.comment.domain.request.UpdateCommentRequest;
+import nbdream.comment.dto.CommentResDto;
 import nbdream.comment.service.CommentService;
 import nbdream.common.advice.response.ApiResponse;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,9 +38,11 @@ public class CommentController {
 //    }
 //
 //
-//    @GetMapping("/{nickname}/comment")
-//    public void getMyCommentsList(@PathVariable String nickname) {
-//    }
+    @Operation(summary = "작성한 코멘트 목록 조회")
+    @GetMapping("/my-comments")
+    public ApiResponse<List<CommentResDto>> getMyCommentsList(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId) {
+        return ApiResponse.ok(commentService.getMyCommentsList(memberId));
+    }
 
 
     @Operation(summary = "코멘트 수정")

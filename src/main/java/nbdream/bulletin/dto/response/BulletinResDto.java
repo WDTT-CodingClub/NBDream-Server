@@ -36,7 +36,7 @@ public class BulletinResDto {
         this.nickname = author.getNickname();
         this.profileImageUrl = author.getProfileImageUrl();
         this.content = bulletin.getContent();
-        this.crop = bulletin.getContent();
+        this.crop = bulletin.getCrop();
         this.imageUrls = imageUrls;
         this.bulletinCategory = bulletin.getBulletinCategory().getValue();
         this.createdTime = bulletin.getCreatedDate().toLocalDate();
