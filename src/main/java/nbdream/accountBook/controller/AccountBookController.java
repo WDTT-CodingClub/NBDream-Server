@@ -23,8 +23,14 @@ public class AccountBookController {
 
     @Operation(summary = "내 장부 조회", description = "")
     @GetMapping
-    public ApiResponse<GetAccountBookListResDto> getMyAccountBookList(@RequestBody GetAccountBookListReqDto request,
+    public ApiResponse<GetAccountBookListResDto> getMyAccountBookList(@RequestParam(required = false) Long lastContentsId,
+                                                                      @RequestParam(required = false) String category,
+                                                                      @RequestParam(required = false) String sort,
+                                                                      @RequestParam(required = false) String start,
+                                                                      @RequestParam(required = false) String end,
+                                                                      @RequestParam(required = false) String transactionType,
                                                                       @Parameter(hidden = true) @AuthenticatedMemberId Long memberId){
+        GetAccountBookListReqDto request = new GetAccountBookListReqDto(lastContentsId, category, sort, start, end, transactionType);
         GetAccountBookListResDto response = accountBookService.getMyAccountBookList(request, memberId);
         return ApiResponse.ok(response);
     }
