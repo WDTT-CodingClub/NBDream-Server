@@ -2,14 +2,11 @@ package nbdream.farm.domain;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Embeddable
-@NoArgsConstructor(access = PROTECTED)
 public class Location {
+    public final static String EMPTY = "";
 
     private String address;
 
@@ -23,8 +20,13 @@ public class Location {
 
     private double gridY;
 
-    public Location(final String pnuCode, final double latitude, final double longitude) {
-        this.pnuCode = pnuCode;
+    public Location() {
+        this.address = EMPTY;
+        this.pnuCode = EMPTY;
+    }
+
+    public void update(final String address, final double latitude, final double longitude) {
+        this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
     }
