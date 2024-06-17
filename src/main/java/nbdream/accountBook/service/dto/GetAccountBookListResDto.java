@@ -15,4 +15,5 @@ public class GetAccountBookListResDto {
     private long totalRevenue;
     private long totalExpense;
     private long totalCost;
+    private boolean hasNext;
 }

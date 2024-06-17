@@ -15,5 +15,4 @@ public interface AccountBookHistoryRepository
         PagingAndSortingRepository<AccountBookHistory, Long>,
         AccountBookHistoryRepositoryCustom {
 
-    List<AccountBookHistory> findByMemberIdAndCursor(Long memberId, Long cursor, int maxResults, GetAccountBookListReqDto request);
 }
