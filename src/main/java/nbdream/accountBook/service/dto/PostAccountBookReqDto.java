@@ -24,7 +24,7 @@ public class PostAccountBookReqDto {
     private String registerDateTime;
     List<String> imageUrls;
 
-    public LocalDateTime getParsedRegisterDateTime() {
+    public LocalDateTime parseToDateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         try {
             return LocalDateTime.parse(registerDateTime, formatter);

@@ -42,7 +42,7 @@ public class AccountBookHistoryService {
                 .transactionType(TransactionType.fromValue(request.getTransactionType()))
                 .amount(request.getAmount())
                 .content(request.getTitle())
-                .dateTime(request.getParsedRegisterDateTime())
+                .dateTime(request.parseToDateTime())
                 .build();
         accountBookHistoryRepository.save(accountBookHistory);
 
