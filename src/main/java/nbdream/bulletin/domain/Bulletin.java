@@ -65,8 +65,12 @@ public class Bulletin extends BaseEntity {
         this.expired();
     }
 
-    public void addBookmarkedCount() {
+    public void plusBookmarkedCount() {
         this.bookmarkedCount += 1;
+    }
+
+    public void minusBookmarkedCount() {
+        this.bookmarkedCount -= 1;
     }
 
     public boolean isAuthor(final Member member) {

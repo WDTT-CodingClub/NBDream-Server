@@ -1,4 +1,4 @@
-package nbdream.auth.presentation.interceptor;
+package nbdream.auth.controller.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

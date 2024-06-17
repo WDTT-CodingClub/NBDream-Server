@@ -32,4 +32,7 @@ public class BaseEntity {
     public void expired() {
         this.status = Status.EXPIRED;
     }
+    public void recover() {
+        this.status = Status.NORMAL;
+    }
 }

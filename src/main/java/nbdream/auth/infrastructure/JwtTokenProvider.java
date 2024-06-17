@@ -3,6 +3,8 @@ package nbdream.auth.infrastructure;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import nbdream.auth.dto.request.TokenRequest;
+import nbdream.auth.dto.response.TokenResponse;
 import nbdream.auth.exception.ExpiredTokenException;
 import nbdream.auth.exception.InvalidTokenException;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +47,17 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public TokenResponse refreshTokens(final TokenRequest request) {
+        Long accessTokenPayload = Long.valueOf(getPayload(request.accessToken()));
+        Long refreshTokenPayload = Long.valueOf(getPayload(request.refreshToken()));
+
+        if (!accessTokenPayload.equals(refreshTokenPayload)) {
+            throw new InvalidTokenException();
+        }
+
+        return new TokenResponse(createAccessToken(refreshTokenPayload), createRefreshToken(refreshTokenPayload));
+    }
+
     public String getPayload(String token) {
         try {
             return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
@@ -70,4 +83,5 @@ public class JwtTokenProvider {
             throw new ExpiredTokenException();
         }
     }
+
 }

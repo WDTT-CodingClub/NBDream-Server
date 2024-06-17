@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentResDto {
     private Long memberId;
+    private Long commentId;
     private String nickname;
     private String profileImageUrl;
     private String content;
@@ -21,6 +22,7 @@ public class CommentResDto {
 
     public CommentResDto(final Comment comment) {
         this.memberId = comment.getAuthor().getId();
+        this.commentId = comment.getId();
         this.nickname = comment.getAuthor().getNickname();
         this.profileImageUrl = comment.getAuthor().getProfileImageUrl();
         this.content = comment.getContent();
