@@ -20,36 +20,36 @@ public class AccountBookHistoryRepositoryCustomImpl implements AccountBookHistor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<AccountBookHistory> findByMemberIdAndCursor(Long memberId, Long cursorId, int maxResults, GetAccountBookListReqDto reqDto) {
+    public List<AccountBookHistory> findByMemberIdAndCursor(Long memberId, Long cursorId, int maxResults, GetAccountBookListReqDto request) {
         QAccountBookHistory accountBookHistory = QAccountBookHistory.accountBookHistory;
 
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(accountBookHistory.accountBook.member.id.eq(memberId));
 
-        if (reqDto.getCategory() != null && StringUtils.isNotBlank(reqDto.getCategory())) {
-            AccountBookCategory categoryEnum = AccountBookCategory.fromValue(reqDto.getCategory());
+        if (request.getCategory() != null && StringUtils.isNotBlank(request.getCategory())) {
+            AccountBookCategory categoryEnum = AccountBookCategory.fromValue(request.getCategory());
             builder.and(accountBookHistory.accountBookCategory.eq(categoryEnum));
         }
 
-        if (reqDto.getStart() != null && StringUtils.isNotBlank(reqDto.getStart())) {
-            LocalDate startDate = LocalDate.parse(reqDto.getStart());
+        if (request.getStart() != null && StringUtils.isNotBlank(request.getStart())) {
+            LocalDate startDate = LocalDate.parse(request.getStart());
             LocalDateTime startDateTime = startDate.atStartOfDay();
             builder.and(accountBookHistory.dateTime.goe(startDateTime));
         }
-        if (reqDto.getEnd() != null && StringUtils.isNotBlank(reqDto.getEnd())) {
-            LocalDate endDate = LocalDate.parse(reqDto.getEnd());
+        if (request.getEnd() != null && StringUtils.isNotBlank(request.getEnd())) {
+            LocalDate endDate = LocalDate.parse(request.getEnd());
             LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
             builder.and(accountBookHistory.dateTime.loe(endDateTime));
         }
 
-        if (reqDto.getTransactionType() != null && StringUtils.isNotBlank(reqDto.getTransactionType())) {
-            TransactionType transactionTypeEnum = TransactionType.fromValue(reqDto.getTransactionType());
+        if (request.getTransactionType() != null && StringUtils.isNotBlank(request.getTransactionType())) {
+            TransactionType transactionTypeEnum = TransactionType.fromValue(request.getTransactionType());
             builder.and(accountBookHistory.transactionType.eq(transactionTypeEnum));
         }
 
         boolean isDESC = true;  // 내림차순 or 오름차순 확인
-        if (reqDto.getSort() != null && StringUtils.isNotBlank(reqDto.getSort())) {
-            if (Sort.fromValue(reqDto.getSort()) == Sort.EARLIEST) {
+        if (request.getSort() != null && StringUtils.isNotBlank(request.getSort())) {
+            if (Sort.fromValue(request.getSort()) == Sort.OLDEST) {
                 isDESC = false;
             }
         }
@@ -57,7 +57,11 @@ public class AccountBookHistoryRepositoryCustomImpl implements AccountBookHistor
         JPAQuery<AccountBookHistory> query = queryFactory.selectFrom(accountBookHistory).where(builder);
 
         if (cursorId == null || cursorId == 0) {
-            query.orderBy(accountBookHistory.id.desc()).limit(2);
+            if(isDESC){
+                query.orderBy(accountBookHistory.id.desc()).limit(maxResults);
+            }else{
+                query.orderBy(accountBookHistory.id.asc()).limit(maxResults);
+            }
         } else {
             if (isDESC) {
                 builder.and(accountBookHistory.id.lt(cursorId));
