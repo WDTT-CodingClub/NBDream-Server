@@ -14,7 +14,7 @@ public enum OAuthAttributes {
             Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
             Map<String, Object> profile = (Map<String, Object>) account.get("profile");
             return OAuthUserProfile.builder()
-                    .socialId((String) attributes.get("id"))
+                    .socialId(attributes.get("id").toString())
                     .nickname((String) profile.get("nickname"))
                     .profileImageUrl((String) profile.get("profile_image_url"))
                     .loginType(LoginType.KAKAO)
