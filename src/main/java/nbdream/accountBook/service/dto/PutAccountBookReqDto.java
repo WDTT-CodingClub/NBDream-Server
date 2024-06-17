@@ -16,7 +16,6 @@ import java.util.List;
 @ToString
 public class PutAccountBookReqDto {
 
-    private String id;
     private String transactionType;
     private Long amount;
     private String category;
@@ -24,7 +23,7 @@ public class PutAccountBookReqDto {
     private String registerDateTime;
     private List<String> imageUrls;
 
-    public LocalDateTime getParsedRegisterDateTime() {
+    public LocalDateTime parseToDateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         try {
             return LocalDateTime.parse(registerDateTime, formatter);
