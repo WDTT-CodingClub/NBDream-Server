@@ -1,6 +1,7 @@
-package nbdream.auth.application;
+package nbdream.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import nbdream.auth.dto.request.TokenRequest;
 import nbdream.auth.dto.response.OAuthUserProfile;
 import nbdream.auth.dto.response.TokenResponse;
 import nbdream.auth.infrastructure.JwtTokenProvider;
