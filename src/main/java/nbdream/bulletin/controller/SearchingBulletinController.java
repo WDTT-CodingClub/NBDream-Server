@@ -1,8 +1,10 @@
 package nbdream.bulletin.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import nbdream.auth.config.AuthenticatedMemberId;
 import nbdream.bulletin.dto.request.SearchBulletinCondDto;
 import nbdream.bulletin.dto.response.BulletinResDto;
 import nbdream.bulletin.dto.response.BulletinsResDto;
@@ -20,8 +22,10 @@ public class SearchingBulletinController {
 
     @Operation(summary = "게시글 목록 조회", description = "처음 조회 시, 페이징에 사용되는 lastBulletinId 는 비어있는 상태로 요청해야 함")
     @GetMapping
-    public ApiResponse<BulletinsResDto> getBulletins(@RequestParam(value = "keyword", required = false) final String keyword, @RequestParam(value = "bulletinCategory", required = false) final String bulletinCategory,
-                                                     @RequestParam(value = "crop", required = false) final String crop, @RequestParam(value = "lastBulletinId", required = false) final Long lastBulletinId) {
+    public ApiResponse<BulletinsResDto> getBulletins(@RequestParam(value = "keyword", required = false) final String keyword,
+                                                     @RequestParam(value = "bulletinCategory", required = false) final String bulletinCategory,
+                                                     @RequestParam(value = "crop", required = false) final String crop,
+                                                     @RequestParam(value = "lastBulletinId", required = false) final Long lastBulletinId) {
 
         return ApiResponse.ok(searchingBulletinService.getBulletins(new SearchBulletinCondDto(keyword, bulletinCategory, crop, lastBulletinId)));
     }
@@ -32,5 +36,16 @@ public class SearchingBulletinController {
         return ApiResponse.ok(searchingBulletinService.getBulletinDetails(bulletinId));
     }
 
+    @Operation(summary = "북마크한 게시글 목록 조회")
+    @GetMapping("/bookmarks")
+    public ApiResponse<BulletinsResDto> getBookmarkBulletins(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId, final Long lastBulletinId) {
+        return ApiResponse.ok(searchingBulletinService.getBookmarkBulletins(memberId));
+    }
+
+    @Operation(summary = "작성한 게시글 목록 조회")
+    @GetMapping("/my-bulletins")
+    public ApiResponse<BulletinsResDto> getMyBulletins(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId, final Long lastBulletinId) {
+        return ApiResponse.ok(searchingBulletinService.getMyBulletins(memberId));
+    }
 }
 
