@@ -22,7 +22,7 @@ public class PostAccountBookReqDto {
     private String category;
     private String title;
     private String registerDateTime;
-    List<String> imageUrls;
+    private List<String> imageUrls;
 
     public LocalDateTime parseToDateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
