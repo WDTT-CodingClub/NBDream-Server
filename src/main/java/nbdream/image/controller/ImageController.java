@@ -10,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class ImageController {
 
     @Operation(summary = "이미지 업로드")
     @PostMapping(value = "/upload/{domain}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<String> uploadImage(@PathVariable("domain") String domain, @RequestPart MultipartFile image) throws IOException {
+    public ApiResponse<String> uploadImage(@PathVariable("domain") String domain, @RequestPart MultipartFile image) {
         return ApiResponse.ok(imageService.uploadImage(domain, image));
     }
 

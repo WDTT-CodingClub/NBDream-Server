@@ -29,26 +29,30 @@ public class ImageService {
     private final GcpStorageProperties gcpStorageProperties;
     private final ImageRepository imageRepository;
 
-    public String uploadImage(String domain, MultipartFile image) throws IOException {
-        if (domain == null || domain.isEmpty()) {
-            throw new InvalidDomainException();
+    public String uploadImage(String domain, MultipartFile image) {
+        try {
+            if (domain == null || domain.isEmpty()) {
+                throw new InvalidDomainException();
+            }
+
+            String uuid = UUID.randomUUID().toString();
+            String ext = image.getContentType();
+
+            Storage storage = StorageOptions.newBuilder()
+                    .setCredentials(GoogleCredentials.fromStream(gcpStorageProperties.getCredentialKey()))
+                    .build()
+                    .getService();
+
+            String blobName = domain + "/" + uuid;
+            BlobInfo blobInfo = BlobInfo.newBuilder(gcpStorageProperties.getBucketName(), blobName)
+                    .setContentType(ext)
+                    .build();
+
+            storage.create(blobInfo, image.getBytes());
+            return BASIC_PATH + blobName;
+        } catch (IOException e) {
+            throw new GcsConnectionException();
         }
-
-        String uuid = UUID.randomUUID().toString();
-        String ext = image.getContentType();
-
-        Storage storage = StorageOptions.newBuilder()
-                .setCredentials(GoogleCredentials.fromStream(gcpStorageProperties.getCredentialKey()))
-                .build()
-                .getService();
-
-        String blobName = domain + "/" + uuid;
-        BlobInfo blobInfo = BlobInfo.newBuilder(gcpStorageProperties.getBucketName(), blobName)
-                .setContentType(ext)
-                .build();
-
-        storage.create(blobInfo, image.getBytes());
-        return BASIC_PATH + blobName;
     }
 
     public void deleteImage(ImageDto request) {
