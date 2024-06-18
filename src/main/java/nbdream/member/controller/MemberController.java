@@ -24,13 +24,6 @@ public class MemberController {
     private final JwtTokenProvider jwtTokenProvider;
     private final MyProfileService myProfileService;
 
-    @Operation(summary = "닉네임 중복 확인", description = "닉네임이 이미 존재한다면 false, 사용할 수 있는 닉네임이면 true")
-    @PostMapping("/validate-nickname")
-    public ApiResponse<Boolean> isAvailableNickname(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
-                                                @RequestParam(name = "nickname") String nickname) {
-        return ApiResponse.ok(memberService.validateDuplicateNickname(nickname));
-    }
-
     @Operation(summary = "마이 페이지 조회")
     @GetMapping("/my-page")
     public ApiResponse<MyPageResDto> getMyPage(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId) {
