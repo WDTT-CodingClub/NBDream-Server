@@ -2,9 +2,7 @@ name: Java CICD with Gradle
 
 on:
   push:
-    branches: 
-      - "dev"
-      - "feature/land-elements"
+    branches: [ "dev" ]
     
 
 jobs:
