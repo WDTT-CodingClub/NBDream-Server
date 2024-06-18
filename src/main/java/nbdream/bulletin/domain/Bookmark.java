@@ -28,4 +28,12 @@ public class Bookmark extends BaseEntity {
         this.member = member;
         this.bulletin = bulletin;
     }
+
+    public void delete() {
+        this.expired();
+    }
+
+    public void recover() {
+        this.recover();
+    }
 }
