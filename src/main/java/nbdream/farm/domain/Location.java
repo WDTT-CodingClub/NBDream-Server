@@ -3,25 +3,27 @@ package nbdream.farm.domain;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Embeddable
 @NoArgsConstructor(access = PROTECTED)
+@ToString
 public class Location {
 
     private String address;
 
     private String pnuCode;
 
-    private double latitude;
+    private Double latitude;
 
-    private double longitude;
+    private Double longitude;
 
-    private double gridX;
+    private Double gridX;
 
-    private double gridY;
+    private Double gridY;
 
     public Location(final String pnuCode, final double latitude, final double longitude) {
         this.pnuCode = pnuCode;
