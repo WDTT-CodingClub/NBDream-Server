@@ -50,11 +50,8 @@ public class GeminiService {
         LandElements landElements = getLandElementsByMemberId(memberId)
                 .orElseThrow(LandElementsNotFoundException::new);
 
-        System.out.println("입력 문자 " + reqDto.getQuestion());
         String validQuestion = validQuestion(reqDto.getQuestion(), memberId, cropList, landElements);
         boolean isValid = isValid(reqDto.getQuestion(), cropList);
-        System.out.println("valid " + isValid);
-        System.out.println("변환된 문자\n"+validQuestion);
 
         if(!isValid){
             return validQuestion;

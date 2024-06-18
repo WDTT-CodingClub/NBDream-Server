@@ -46,3 +46,13 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+gemini:
+  api:
+    url: https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent
+    key: ${GEMINI_API_KEY}
+
+soil:
+  api:
+    url: http://apis.data.go.kr/1390802/SoilEnviron/SoilExam/getSoilExam
+    key: ${SOIL_ENVIRON_API_KEY}
