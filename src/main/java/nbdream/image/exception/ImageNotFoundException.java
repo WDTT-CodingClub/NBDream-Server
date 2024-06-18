@@ -1,4 +1,4 @@
-package nbdream.accountBook.exception;
+package nbdream.image.exception;
 
 import nbdream.common.exception.NotFoundException;
 
