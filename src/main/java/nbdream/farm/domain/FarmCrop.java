@@ -26,4 +26,8 @@ public class FarmCrop extends BaseEntity {
         this.farm = farm;
         this.crop = crop;
     }
+
+    public void delete() {
+        this.expired();
+    }
 }

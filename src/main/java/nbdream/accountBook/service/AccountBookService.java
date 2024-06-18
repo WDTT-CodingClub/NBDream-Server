@@ -29,7 +29,7 @@ public class AccountBookService {
     private final AccountBookHistoryRepository accountBookHistoryRepository;
     private final ImageRepository imageRepository;
 
-    private static final int MAX_RESULTS = 2;
+    private static final int PAGE_SIZE = 3;
 
     // 장부 조회에 필요한 리스트 가져오는 메서드
     public GetAccountBookListResDto getMyAccountBookList(GetAccountBookListReqDto request, Long memberId) {
@@ -37,25 +37,27 @@ public class AccountBookService {
                 .orElseGet(() -> createNewAccountBook(memberId));
         List<String> categories = getCategoryList();
 
-        //오프셋 페이징
-        /*Pageable pageable = PageRequest.of(request.getPage(), MAX_RESULTS);
-        Specification<AccountBookHistory> spec = AccountBookHistorySpecifications.withFilters(request, memberId);
-        Page<AccountBookHistory> accountBookHistoryPage = accountBookHistoryRepository.findAll(spec, pageable);
-        List<AccountBookHistory> accountBookHistoryList = accountBookHistoryPage.getContent();*/
-
         //커서 페이징
         Long cursor = request.getLastContentsId() == null ? 0 : request.getLastContentsId();
-        int maxResults = MAX_RESULTS;
-        List<AccountBookHistory> accountBookHistoryList = accountBookHistoryRepository.findByMemberIdAndCursor(memberId, cursor, maxResults, request);
+        List<AccountBookHistory> accountBookHistoryList = accountBookHistoryRepository.findByMemberIdAndCursor(memberId, cursor, PAGE_SIZE + 1, request);
 
-        Long totalRevenue = accountBook.getTotalRevenue(accountBookHistoryList);
-        Long totalExpense = accountBook.getTotalExpense(accountBookHistoryList);
+        boolean hasNext = hasNext(accountBookHistoryList);
+
+        Long totalRevenue = accountBookHistoryRepository.getTotalRevenue(memberId, request);
+        Long totalExpense = accountBookHistoryRepository.getTotalExpense(memberId, request);
         Long totalCost = totalRevenue + totalExpense;
 
         List<GetAccountBookResDto> items = convertToDtoList(accountBookHistoryList);
-        return createAccountBookListResDto(categories, items, totalRevenue, totalExpense, totalCost);
+        return createAccountBookListResDto(categories, items, totalRevenue, totalExpense, totalCost, hasNext);
     }
 
+    private boolean hasNext(List<AccountBookHistory> list){
+        boolean hasNext = list.size() > PAGE_SIZE ? true : false;
+        if (hasNext) {
+            list.remove(PAGE_SIZE);
+        }
+        return hasNext;
+    }
     // 장부 생성
     private AccountBook createNewAccountBook(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -111,13 +113,14 @@ public class AccountBookService {
 
     // resDto 생성
     private GetAccountBookListResDto createAccountBookListResDto(List<String> categories, List<GetAccountBookResDto> items,
-                                                                Long totalRevenue, Long totalExpense, Long totalCost) {
+                                                                Long totalRevenue, Long totalExpense, Long totalCost, boolean hasNext) {
         return GetAccountBookListResDto.builder()
                 .categories(categories)
                 .items(items)
                 .totalRevenue(totalRevenue)
                 .totalExpense(totalExpense)
                 .totalCost(totalCost)
+                .hasNext(hasNext)
                 .build();
     }
 

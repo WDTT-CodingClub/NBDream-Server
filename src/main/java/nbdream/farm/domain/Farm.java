@@ -1,15 +1,15 @@
 package nbdream.farm.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import nbdream.common.entity.BaseEntity;
 import nbdream.member.domain.Member;
 
+import static nbdream.farm.domain.Location.EMPTY;
+
+
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
 public class Farm extends BaseEntity {
@@ -27,17 +27,22 @@ public class Farm extends BaseEntity {
     @Embedded
     private Location location;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "land_elements_id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "land_elements_id")
     private LandElements landElements;
 
-    public Farm(final String name, final Location location, final LandElements landElements) {
-        this.name = name;
-        this.location = location;
-        this.landElements = landElements;
+    public Farm() {
+        this.name = EMPTY;
+        this.location = new Location();
+        this.landElements = new LandElements();
     }
 
     public void updateLandElements(final LandElements landElements){
         this.landElements = landElements;
     }
+    public void updateLocation(final String address, final double latitude, final double longitude) {
+        this.location.update(address, latitude, longitude);
+    }
+
+
 }

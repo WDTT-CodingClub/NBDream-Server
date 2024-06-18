@@ -12,7 +12,7 @@ import nbdream.common.entity.BaseEntity;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Crop extends BaseEntity {
+public class Crop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

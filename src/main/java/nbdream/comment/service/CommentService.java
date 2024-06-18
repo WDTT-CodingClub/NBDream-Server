@@ -8,6 +8,7 @@ import nbdream.bulletin.repository.BulletinRepository;
 import nbdream.comment.domain.Comment;
 import nbdream.comment.domain.request.CreatePostRequest;
 import nbdream.comment.domain.request.UpdateCommentRequest;
+import nbdream.comment.dto.CommentResDto;
 import nbdream.comment.repository.CommentRepository;
 import nbdream.common.exception.UnauthorizedException;
 import nbdream.member.domain.Member;
@@ -15,6 +16,9 @@ import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +53,14 @@ public class CommentService {
 
 
     @Transactional(readOnly = true)
-    public void getMyCommentsList() {
+    public List<CommentResDto> getMyCommentsList(final Long memberId) {
+        final Member author = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        final List<Comment> comments = commentRepository.findByAuthor(author);
+
+        return comments.stream()
+                .map(comment -> new CommentResDto(comment))
+                .collect(Collectors.toList());
     }
 
 
