@@ -49,8 +49,3 @@ jobs:
           username: ${{ secrets.NB_SERVER_USER }}
           script: sudo bash /home/nbdream/app/deploy-nbdream.sh
 
-      - name: Deploy to Server
-        run: ./deploy.sh
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SOIL_ENVIRON_API_KEY: ${{ secrets.SOIL_ENVIRON_API_KEY }}
