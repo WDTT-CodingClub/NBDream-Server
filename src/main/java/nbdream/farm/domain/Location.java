@@ -12,13 +12,13 @@ public class Location {
 
     private String pnuCode;
 
-    private Double latitude;
+    private double latitude;
 
-    private Double longitude;
+    private double longitude;
 
-    private Double gridX;
+    private double gridX;
 
-    private Double gridY;
+    private double gridY;
 
     public Location() {
         this.address = EMPTY;
