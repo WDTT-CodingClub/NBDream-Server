@@ -10,7 +10,7 @@ import lombok.*;
 public class GetAccountBookResDto {
 
     @NotNull
-    private String id;
+    private Long id;
     private String title;
     private String category;
     private int year;

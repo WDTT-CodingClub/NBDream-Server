@@ -21,7 +21,7 @@ public class AccountBookController {
     private final AccountBookService accountBookService;
     private final AccountBookHistoryService accountBookHistoryService;
 
-    @Operation(summary = "내 장부 조회", description = "")
+    @Operation(summary = "내 장부 조회", description = "요청 날짜 형식 : yyyy-MM-dd")
     @GetMapping
     public ApiResponse<GetAccountBookListResDto> getMyAccountBookList(@RequestParam(required = false) Long lastContentsId,
                                                                       @RequestParam(required = false) String category,
@@ -35,14 +35,14 @@ public class AccountBookController {
         return ApiResponse.ok(response);
     }
 
-    @Operation(summary = "장부 작성", description = "")
+    @Operation(summary = "장부 작성", description = "요청 날짜 형식 : yyyy-MM-dd HH:mm")
     @PostMapping("/register")
     public ApiResponse<Void> writeAccountBookHistory(@RequestBody PostAccountBookReqDto request,
                                                      @Parameter(hidden = true) @AuthenticatedMemberId Long memberId) {
         return accountBookHistoryService.writeAccountBookHistory(request, memberId);
     }
 
-    @Operation(summary = "장부 내역 수정", description = "")
+    @Operation(summary = "장부 내역 수정", description = "요청 날짜 형식 : yyyy-MM-dd HH:mm")
     @PutMapping("/update/{account-book-history-id}")
     public ApiResponse<Void> updatePost(@RequestBody PutAccountBookReqDto request,
                                         @Parameter(hidden = true) @AuthenticatedMemberId Long memberId,

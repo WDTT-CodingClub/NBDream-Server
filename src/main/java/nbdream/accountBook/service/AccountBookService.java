@@ -97,7 +97,7 @@ public class AccountBookService {
                 .orElse(null);
 
         return GetAccountBookResDto.builder()
-                .id(history.getId().toString())
+                .id(history.getId())
                 .title(history.getContent())
                 .category(history.getAccountBookCategory().getValue())
                 .year(history.getDateTime().getYear())
