@@ -1,5 +1,8 @@
 name: Java CICD with Gradle
 
+env:
+  RESOURCE_PATH: ./src/main/resources/application.yml
+
 on:
   push:
     branches: [ "dev" ]
@@ -22,11 +25,23 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Set yml file 
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }} 
+        env:
+          weather.service-key: ${{secrets.WEATHER_API_KEY}}
+          gemini.api.key: ${{secrets.GEMINI_API_KEY}}
+          soil.api.key: ${{secrets.SOIL_ENVIRON_API_KEY}}
+          jwt.token.secret-key: ${{secrets.TOKEN_SECRET_KEY}}
+          spring.cloud.gcp.storage.project-id: ${{secrets.GCP_PROJECT_ID}}
+          spring.cloud.gcp.storage.bucket: ${{secrets.GCP_BUCKET_NAME}}
+          spring.datasource.username: ${{secrets.DB_USERNAME}}
+          spring.datasource.password: ${{secrets.DB_PASSWORD}}
+          spring.datasource.url: ${{secrets.DB_URL}}
+
       - name: Build with Gradle
         run: ./gradlew clean build --exclude-task test
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SOIL_ENVIRON_API_KEY: ${{ secrets.SOIL_ENVIRON_API_KEY }}
 
       - name: Copy jar file to remote VM
         uses: appleboy/scp-action@master
