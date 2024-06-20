@@ -53,13 +53,18 @@ logging:
     org.hibernate.type: trace
 
 weather:
-  service-key: 
+  service-key: ${WEATHER_API_KEY}
 
 gemini:
   api:
     url: https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent
-    key: 
+    key: ${GEMINI_API_KEY}
 soil:
   api:
     url: http://apis.data.go.kr/1390802/SoilEnviron/SoilExam/getSoilExam
-    key: 
+    key: ${SOIL_ENVIRON_API_KEY}
+
+farm-work:
+  api:
+    url: http://api.nongsaro.go.kr/service/farmWorkingPlanNew
+    key: ${FARM_WORK_API_KEY}

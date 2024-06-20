@@ -4,6 +4,6 @@ import nbdream.common.exception.NotFoundException;
 
 public class CropNotFoundException extends NotFoundException {
     public CropNotFoundException() {
-        super("존재하지 않는 작물입니다.");
+        super("작물을 찾지 못하였습니다.");
     }
 }
