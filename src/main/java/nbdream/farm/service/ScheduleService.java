@@ -1,11 +1,14 @@
 package nbdream.farm.service;
 
 import lombok.RequiredArgsConstructor;
+import nbdream.farm.domain.Crop;
 import nbdream.farm.domain.FarmWorkSchedule;
+import nbdream.farm.exception.CropFromWorkScheduleNotFoundException;
+import nbdream.farm.exception.CropNotFoundException;
 import nbdream.farm.exception.FarmWorkScheduleNotFoundException;
-import nbdream.farm.repository.FarmWorkScheduleRepository;
+import nbdream.farm.repository.CropRepository;
 import nbdream.farm.repository.ScheduleRepository;
-import nbdream.farm.repository.SearchFarmWorkScheduleRepository;
+import nbdream.farm.repository.FarmWorkScheduleCustomRepository;
 import nbdream.farm.service.dto.schedule.request.FarmWorkListReqDto;
 import nbdream.farm.service.dto.schedule.response.FarmWorkListResDto;
 import nbdream.farm.service.dto.schedule.response.FarmWorkResDto;
@@ -18,16 +21,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final SearchFarmWorkScheduleRepository searchFarmWorkScheduleRepository;
+    private final FarmWorkScheduleCustomRepository farmWorkScheduleCustomRepository;
+    private final CropRepository cropRepository;
     private final ScheduleRepository scheduleRepository;
 
 
     // (작물, 월) 요청받아서 농작업일정을 반환
     public FarmWorkListResDto getFarmWorkSchedule(FarmWorkListReqDto request, Long memberId) {
-        List<FarmWorkSchedule> workScheduleList = searchFarmWorkScheduleRepository.findSchedulesByCropAndMonth(request.getCrop(), request.getMonth());
+        List<String> cropNames = farmWorkScheduleCustomRepository.findAllCropNames();
+        if(cropNames == null || cropNames.isEmpty() || !cropNames.contains(request.getCrop())){
+            throw new CropFromWorkScheduleNotFoundException();
+        }
+
+        List<FarmWorkSchedule> workScheduleList = farmWorkScheduleCustomRepository.findSchedulesByCropAndMonth(request.getCrop(), request.getMonth());
         if(workScheduleList == null || workScheduleList.isEmpty()){
             throw new FarmWorkScheduleNotFoundException();
-            }
+        }
+
         return createFarmWorkListResDto(workScheduleList);
     }
 

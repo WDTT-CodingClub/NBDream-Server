@@ -14,9 +14,15 @@ import static nbdream.farm.domain.QFarmWorkSchedule.farmWorkSchedule;
 
 @Repository
 @RequiredArgsConstructor
-public class SearchFarmWorkScheduleRepository {
+public class FarmWorkScheduleCustomRepository {
     private final JPAQueryFactory queryFactory;
 
+    public List<String> findAllCropNames() {
+        return queryFactory.select(farmWorkSchedule.workName)
+                .from(farmWorkSchedule)
+                .distinct()
+                .fetch();
+    }
 
     // 작물이름이 같은지 확인
     //      endMonth > 12 == true

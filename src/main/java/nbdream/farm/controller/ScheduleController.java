@@ -19,7 +19,7 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    @Operation(summary = "농작업 일정 조회", description = "ex) 감자, 1~12월")
+    @Operation(summary = "농작업 일정 조회", description = "(작물 : 고추, 벼, 감자, 고구마, 사과, 딸기, 마늘, 상추, 배추, 토마토) (월 : 1~12)")
     @GetMapping("/farm-work")
     public ApiResponse<FarmWorkListResDto> getFarmWorkSchedule(@RequestParam(required = true) String crop,
                                                               @RequestParam(required = true) int month,
