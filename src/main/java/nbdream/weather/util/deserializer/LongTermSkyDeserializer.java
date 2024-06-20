@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import nbdream.weather.domain.Sky;
 import nbdream.weather.dto.response.LongTermSkyRes;
-import nbdream.weather.util.LongTermWeatherSkyResult;
+import nbdream.weather.util.LongTermSkyResult;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class LongTermWeatherSkyDeserializer extends JsonDeserializer<LongTermWeatherSkyResult>{
+public class LongTermWeatherSkyDeserializer extends JsonDeserializer<LongTermSkyResult>{
 
     private final ObjectMapper objectMapper;
 
@@ -31,14 +31,14 @@ public class LongTermWeatherSkyDeserializer extends JsonDeserializer<LongTermWea
     }
 
     @Override
-    public LongTermWeatherSkyResult deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException, IOException {
+    public LongTermSkyResult deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException, IOException {
 
         JsonNode node = p.getCodec().readTree(p);
         JsonNode responseNode = node.findValue("response");
 
         JsonNode itemNode = responseNode.get("body").get("items").get("item");
-        List<LongTermWeatherSkyResult.item> items = Arrays.stream(objectMapper.treeToValue(itemNode, LongTermWeatherSkyResult.item[].class)).collect(Collectors.toList());
-        LongTermWeatherSkyResult.item item = items.get(0);
+        List<LongTermSkyResult.item> items = Arrays.stream(objectMapper.treeToValue(itemNode, LongTermSkyResult.item[].class)).collect(Collectors.toList());
+        LongTermSkyResult.item item = items.get(0);
 
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -54,6 +54,6 @@ public class LongTermWeatherSkyDeserializer extends JsonDeserializer<LongTermWea
             map.put(date, response);
         }
 
-        return new LongTermWeatherSkyResult(map);
+        return new LongTermSkyResult(map);
     }
 }

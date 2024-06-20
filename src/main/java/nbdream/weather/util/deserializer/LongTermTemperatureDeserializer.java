@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import nbdream.weather.dto.response.LongTermTemperatureRes;
-import nbdream.weather.util.LongTermWeatherTemperatureResult;
+import nbdream.weather.util.LongTermTemperatureResult;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class LongTermWeatherTemperatureDeserializer extends JsonDeserializer<LongTermWeatherTemperatureResult>{
+public class LongTermWeatherTemperatureDeserializer extends JsonDeserializer<LongTermTemperatureResult>{
 
     private final ObjectMapper objectMapper;
 
@@ -30,14 +30,14 @@ public class LongTermWeatherTemperatureDeserializer extends JsonDeserializer<Lon
     }
 
     @Override
-    public LongTermWeatherTemperatureResult deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException, IOException {
+    public LongTermTemperatureResult deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException, IOException {
 
         JsonNode node = p.getCodec().readTree(p);
         JsonNode responseNode = node.findValue("response");
 
         JsonNode itemNode = responseNode.get("body").get("items").get("item");
-        List<LongTermWeatherTemperatureResult.item> items = Arrays.stream(objectMapper.treeToValue(itemNode, LongTermWeatherTemperatureResult.item[].class)).collect(Collectors.toList());
-        LongTermWeatherTemperatureResult.item item = items.get(0);
+        List<LongTermTemperatureResult.item> items = Arrays.stream(objectMapper.treeToValue(itemNode, LongTermTemperatureResult.item[].class)).collect(Collectors.toList());
+        LongTermTemperatureResult.item item = items.get(0);
 
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -57,6 +57,6 @@ public class LongTermWeatherTemperatureDeserializer extends JsonDeserializer<Lon
             map.put(date, response);
         }
 
-        return new LongTermWeatherTemperatureResult(map);
+        return new LongTermTemperatureResult(map);
     }
 }
