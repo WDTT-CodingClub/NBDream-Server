@@ -2,9 +2,13 @@ package nbdream.farm.domain;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
+import lombok.ToString;
+import nbdream.farm.util.GpsTransfer;
+import nbdream.farm.util.Grid;
 
 @Getter
 @Embeddable
+@ToString
 public class Location {
     public final static String EMPTY = "";
 
@@ -16,9 +20,9 @@ public class Location {
 
     private double longitude;
 
-    private double gridX;
+    private int gridX;
 
-    private double gridY;
+    private int gridY;
 
     public Location() {
         this.address = EMPTY;
@@ -29,5 +33,8 @@ public class Location {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        Grid grid = GpsTransfer.convertGpsToGrid(latitude, longitude);
+        this.gridX = grid.getX();
+        this.gridY = grid.getY();
     }
 }

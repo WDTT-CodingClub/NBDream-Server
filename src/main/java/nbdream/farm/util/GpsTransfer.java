@@ -1,4 +1,4 @@
-package nbdream.common.util;
+package nbdream.farm.util;
 
 public class GpsTransfer {
 

@@ -1,4 +1,4 @@
-package nbdream.image.config;
+package nbdream.image.infrastructure;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
