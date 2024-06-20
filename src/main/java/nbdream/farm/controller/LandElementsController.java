@@ -16,28 +16,24 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 @Tag(name = "LandElements Controller")
 public class LandElementsController {
     private final LandElementsService landElementsService;
     private final GeminiService geminiService;
 
-    @Operation(summary = "토지 성분 분석", description = "")
-    @GetMapping("/auth/land-elements")
+    @Operation(summary = "토지 성분 분석", description = "테스트 시 농장에 주소가 등록되어 있어야 함")
+    @GetMapping("/land-elements")
     public ApiResponse<GetLandElementResDto> getLandElements(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId){
         return ApiResponse.ok(landElementsService.getLandElements(memberId));
     }
 
 
-    @Operation(summary = "AI 채팅", description = "")
-    @PostMapping("/auth/ai")
+    @Operation(summary = "AI 채팅", description = "테스트 시 토지 성분 분석이 먼저 되어야 함")
+    @PostMapping("/ai")
     public ApiResponse<PostAiChatResDto> gemini(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
                                                 @RequestBody PostAiChatReqDto reqDto){
         PostAiChatResDto response = new PostAiChatResDto(geminiService.getContents(reqDto, memberId));
         return ApiResponse.ok(response);
-//        try {
-//            return ResponseEntity.ok().body(geminiService.getContents(reqDto, memberId));
-//        } catch (HttpClientErrorException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
     }
 }
