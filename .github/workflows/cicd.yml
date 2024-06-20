@@ -1,7 +1,7 @@
 name: Java CICD with Gradle
 
 env:
-  RESOURCE_PATH: ../../src/main/resources/application.yml
+  RESOURCE_PATH: /home/nbdream/app/src/main/resources/application.yml
 
 on:
   push:
