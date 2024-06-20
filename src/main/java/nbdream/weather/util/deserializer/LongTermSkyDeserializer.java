@@ -7,25 +7,24 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import nbdream.weather.domain.Sky;
 import nbdream.weather.dto.response.LongTermSkyRes;
 import nbdream.weather.util.LongTermSkyResult;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 @RequiredArgsConstructor
-public class LongTermWeatherSkyDeserializer extends JsonDeserializer<LongTermSkyResult>{
+public class LongTermSkyDeserializer extends JsonDeserializer<LongTermSkyResult>{
 
     private final ObjectMapper objectMapper;
 
-    public LongTermWeatherSkyDeserializer()
+    public LongTermSkyDeserializer()
     {
         this.objectMapper = new ObjectMapper();
     }
@@ -41,19 +40,19 @@ public class LongTermWeatherSkyDeserializer extends JsonDeserializer<LongTermSky
         LongTermSkyResult.item item = items.get(0);
 
         LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        Map<String, LongTermSkyRes> map = new HashMap<>();
+        List<LongTermSkyRes> responses = new ArrayList<>();
         List<String> itemValues = List.of(item.getWf3Pm(), item.getWf4Pm(), item.getWf5Pm(), item.getWf6Pm(),
                 item.getWf7Pm(), item.getWf8(), item.getWf9(), item.getWf10());
 
         for (int i = 3; i <= 10; i++) {
             String date = now.plusDays(i).format(formatter);
             LongTermSkyRes response = new LongTermSkyRes(date);
-            response.setSky(Sky.of(itemValues.get(i - 3)));
-            map.put(date, response);
+            response.setSky(itemValues.get(i - 3));
+            responses.add(response);
         }
 
-        return new LongTermSkyResult(map);
+        return new LongTermSkyResult(responses);
     }
 }

@@ -9,22 +9,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import nbdream.weather.dto.response.LongTermTemperatureRes;
 import nbdream.weather.util.LongTermTemperatureResult;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 @RequiredArgsConstructor
-public class LongTermWeatherTemperatureDeserializer extends JsonDeserializer<LongTermTemperatureResult>{
+public class LongTermTemperatureDeserializer extends JsonDeserializer<LongTermTemperatureResult>{
 
     private final ObjectMapper objectMapper;
 
-    public LongTermWeatherTemperatureDeserializer()
+    public LongTermTemperatureDeserializer()
     {
         this.objectMapper = new ObjectMapper();
     }
@@ -40,10 +40,11 @@ public class LongTermWeatherTemperatureDeserializer extends JsonDeserializer<Lon
         LongTermTemperatureResult.item item = items.get(0);
 
         LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        Map<String, LongTermTemperatureRes> map = new HashMap<>();
-        List<List<Integer>> temperatures = List.of(List.of(item.getTaMin3(), item.getTaMax3()), List.of(item.getTaMin4(), item.getTaMax4()),
+        List<LongTermTemperatureRes> responses = new ArrayList<>();
+        List<List<Integer>> temperatures = List.of(
+                List.of(item.getTaMin3(), item.getTaMax3()), List.of(item.getTaMin4(), item.getTaMax4()),
                 List.of(item.getTaMin5(), item.getTaMax5()), List.of(item.getTaMin6(), item.getTaMax6()),
                 List.of(item.getTaMin7(), item.getTaMax7()), List.of(item.getTaMin8(), item.getTaMax8()),
                 List.of(item.getTaMin9(), item.getTaMax9()), List.of(item.getTaMin10(), item.getTaMax10()));
@@ -54,9 +55,9 @@ public class LongTermWeatherTemperatureDeserializer extends JsonDeserializer<Lon
             List<Integer> temperature = temperatures.get(i - 3);
             response.setLowestTemperature(temperature.get(0));
             response.setHighestTemperature(temperature.get(1));
-            map.put(date, response);
+            responses.add(response);
         }
 
-        return new LongTermTemperatureResult(map);
+        return new LongTermTemperatureResult(responses);
     }
 }

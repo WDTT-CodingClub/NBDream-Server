@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import nbdream.weather.domain.Sky;
 import nbdream.weather.dto.response.ShortTermWeatherRes;
 import nbdream.weather.util.ShortTermWeatherResult;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -17,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 @RequiredArgsConstructor
 public class ShortTermWeatherDeserializer extends JsonDeserializer<ShortTermWeatherResult> {
 
@@ -28,7 +32,7 @@ public class ShortTermWeatherDeserializer extends JsonDeserializer<ShortTermWeat
     }
 
     @Override
-    public ShortTermWeatherResult deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException, IOException {
+    public ShortTermWeatherResult deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 
         JsonNode node = p.getCodec().readTree(p);
         JsonNode responseNode = node.findValue("response");
@@ -52,23 +56,36 @@ public class ShortTermWeatherDeserializer extends JsonDeserializer<ShortTermWeat
         for(ShortTermWeatherResult.item item : items){
             if (map.get(item.getFcstDate()) == null) break;
             ShortTermWeatherRes response = map.get(item.getFcstDate());
-            if(item.getCategory().equals("TMP")) {
-                response.setCurrentTemperature(Integer.valueOf(item.getFcstValue()));
-            } else if (item.getCategory().equals("TMX")) {
+
+            if (item.getCategory().equals("TMX"))
                 response.setHighestTemperature(Math.round(Float.valueOf(item.getFcstValue())));
-            } else if (item.getCategory().equals("TMN")) {
+            if (item.getCategory().equals("TMN"))
                 response.setLowestTemperature(Math.round(Float.valueOf(item.getFcstValue())));
-            } else if (item.getCategory().equals("REH")) {
-                response.setHumidity(Integer.valueOf(item.getFcstValue()));
-            } else if (item.getCategory().equals("POP")) {
-                response.setPrecipitationProbability(Integer.valueOf(item.getFcstValue()));
-            } else if (item.getCategory().equals("PCP")) {
-                response.setPrecipitationAmount((item.getFcstValue().equals("강수없음")) ? 0 : Integer.valueOf(item.getFcstValue()));
-            } else if (item.getCategory().equals("WSD")) {
-                response.setWindSpeed(Math.round(Float.valueOf(item.getFcstValue())));
-            } else if (item.getCategory().equals("SKY")) {
-                response.setSky(Sky.of(Integer.valueOf(item.getFcstValue())));
+
+            if (item.getFcstTime().equals("1100")) {
+                if(item.getCategory().equals("TMP")) {
+                    response.setCurrentTemperature(Integer.valueOf(item.getFcstValue()));
+                } else if (item.getCategory().equals("REH")) {
+                    response.setHumidity(Integer.valueOf(item.getFcstValue()));
+                } else if (item.getCategory().equals("POP")) {
+                    response.setPrecipitationProbability(Integer.valueOf(item.getFcstValue()));
+                } else if (item.getCategory().equals("PCP")) {
+                    if (item.getFcstValue().equals("강수없음")) {
+                        response.setPrecipitationAmount(0);
+                    } else if (item.getFcstValue().equals("1mm 미만")) {
+                        response.setPrecipitationAmount(1);
+                    } else if (item.getFcstValue().equals("50mm 이상")) {
+                        response.setPrecipitationAmount(50);
+                    } else {
+                        response.setPrecipitationAmount(Math.round(Float.valueOf(item.getFcstValue().replace("m", ""))));
+                    }
+                } else if (item.getCategory().equals("WSD")) {
+                    response.setWindSpeed(Math.round(Float.valueOf(item.getFcstValue())));
+                } else if (item.getCategory().equals("SKY")) {
+                    response.setSky(Sky.of(Integer.parseInt(item.getFcstValue())).getValue());
+                }
             }
+
         }
         return new ShortTermWeatherResult(map);
     }
