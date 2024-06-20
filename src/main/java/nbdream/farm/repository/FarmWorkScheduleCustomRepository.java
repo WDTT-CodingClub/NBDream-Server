@@ -43,10 +43,8 @@ public class FarmWorkScheduleCustomRepository {
     }
 
     private BooleanExpression monthCondition(int month) {
-        // 변경된 부분 시작
         return endMonthGt12().and(monthLteEndMonthMinus12(month).or(beginMonthLteMonth(month)))
                 .or(endMonthLte12().and(monthBetween(month)));
-        // 변경된 부분 끝
     }
 
     private BooleanExpression endMonthGt12() {
@@ -57,7 +55,6 @@ public class FarmWorkScheduleCustomRepository {
         return farmWorkSchedule.endMonth.loe(12);
     }
 
-    // 변경된 부분 시작
     private BooleanExpression monthLteEndMonthMinus12(int month) {
         return farmWorkSchedule.endMonth.subtract(12).goe(month);
     }
@@ -65,7 +62,6 @@ public class FarmWorkScheduleCustomRepository {
     private BooleanExpression beginMonthLteMonth(int month) {
         return farmWorkSchedule.beginMonth.loe(month);
     }
-    // 변경된 부분 끝
 
     private BooleanExpression monthBetween(int month) {
         return farmWorkSchedule.beginMonth.loe(month)
