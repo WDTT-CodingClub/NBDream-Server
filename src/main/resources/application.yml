@@ -25,6 +25,7 @@ spring:
       multipart:
         enabled: true
 
+
 oauth:
   provider:
     kakao:
@@ -46,6 +47,9 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+weather:
+  service-key: ${WEATHER_API_KEY}
 
 gemini:
   api:
