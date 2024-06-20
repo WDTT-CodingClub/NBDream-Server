@@ -55,6 +55,11 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-gcp-starter:1.2.5.RELEASE'
 	implementation 'org.springframework.cloud:spring-cloud-gcp-storage:1.2.5.RELEASE'
 
+	// Json Object
+	// https://mvnrepository.com/artifact/org.json/json
+	implementation 'org.json:json:20231013'
+
+
 	// Database
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -66,6 +71,7 @@ dependencies {
 
 	//XML Parsing
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.1'
+
 }
 
 // QueryDsl setup
