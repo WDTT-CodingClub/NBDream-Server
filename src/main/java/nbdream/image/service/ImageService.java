@@ -6,7 +6,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
-import nbdream.image.config.GcpStorageProperties;
+import nbdream.image.infrastructure.GcpStorageProperties;
 import nbdream.image.domain.Image;
 import nbdream.image.dto.ImageDto;
 import nbdream.image.exception.GcsConnectionException;
@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static nbdream.image.config.GcpStorageProperties.BASIC_PATH;
+import static nbdream.image.infrastructure.GcpStorageProperties.BASIC_PATH;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +34,6 @@ public class ImageService {
             if (domain == null || domain.isEmpty()) {
                 throw new InvalidDomainException();
             }
-
             String uuid = UUID.randomUUID().toString();
             String ext = image.getContentType();
 

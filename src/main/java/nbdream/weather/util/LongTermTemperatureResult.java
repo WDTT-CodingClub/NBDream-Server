@@ -6,17 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.weather.dto.response.LongTermTemperatureRes;
-import nbdream.weather.util.deserializer.LongTermWeatherTemperatureDeserializer;
+import nbdream.weather.util.deserializer.LongTermTemperatureDeserializer;
 
-import java.util.Map;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonDeserialize(using = LongTermWeatherTemperatureDeserializer.class)
-public class LongTermWeatherTemperatureResult {
+@JsonDeserialize(using = LongTermTemperatureDeserializer.class)
+public class LongTermTemperatureResult {
 
-    private Map<String, LongTermTemperatureRes> items;
+    private List<LongTermTemperatureRes> items;
 
     @Getter
     @NoArgsConstructor

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import nbdream.weather.dto.response.ShortTermWeatherRes;
 import nbdream.weather.util.deserializer.ShortTermWeatherDeserializer;
 
@@ -19,6 +20,7 @@ public class ShortTermWeatherResult {
 
     @Getter
     @NoArgsConstructor
+    @ToString
     public static class item{
         private String baseDate;
         private String baseTime;

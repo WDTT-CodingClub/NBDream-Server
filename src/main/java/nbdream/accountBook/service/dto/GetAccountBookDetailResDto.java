@@ -16,7 +16,7 @@ import java.util.List;
 public class GetAccountBookDetailResDto {
 
     @NotNull
-    private String id;
+    private Long id;
     private String title;
     private String category;
     private String transactionType;

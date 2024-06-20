@@ -111,7 +111,7 @@ public class AccountBookHistoryService {
                 .collect(Collectors.toList());
 
         return new GetAccountBookDetailResDto(
-                accountBookHistory.getId().toString(),
+                accountBookHistory.getId(),
                 accountBookHistory.getContent(),
                 accountBookHistory.getAccountBookCategory().getValue(),
                 accountBookHistory.getTransactionType().getValue(),

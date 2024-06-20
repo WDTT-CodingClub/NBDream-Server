@@ -29,7 +29,7 @@ public class AccountBookService {
     private final AccountBookHistoryRepository accountBookHistoryRepository;
     private final ImageRepository imageRepository;
 
-    private static final int PAGE_SIZE = 3;
+    private static final int PAGE_SIZE = 10;
 
     // 장부 조회에 필요한 리스트 가져오는 메서드
     public GetAccountBookListResDto getMyAccountBookList(GetAccountBookListReqDto request, Long memberId) {
@@ -97,7 +97,7 @@ public class AccountBookService {
                 .orElse(null);
 
         return GetAccountBookResDto.builder()
-                .id(history.getId().toString())
+                .id(history.getId())
                 .title(history.getContent())
                 .category(history.getAccountBookCategory().getValue())
                 .year(history.getDateTime().getYear())
