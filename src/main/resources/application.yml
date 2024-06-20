@@ -60,3 +60,8 @@ soil:
   api:
     url: http://apis.data.go.kr/1390802/SoilEnviron/SoilExam/getSoilExam
     key: ${SOIL_ENVIRON_API_KEY}
+
+farm-work:
+  api:
+    url: http://api.nongsaro.go.kr/service/farmWorkingPlanNew
+    key: ${FARM_WORK_API_KEY}
