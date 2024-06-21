@@ -14,9 +14,13 @@ public interface BulletinRepository extends JpaRepository<Bulletin, Long> {
     @Query("SELECT b FROM Bulletin b LEFT JOIN FETCH b.comments WHERE b.id = :bulletinId")
     Optional<Bulletin> findByIdFetchComments(@Param("bulletinId") Long bulletinId);
 
-    @Query("SELECT b FROM Bulletin b LEFT JOIN FETCH b.comments WHERE b.id IN :bulletinIds")
-    List<Bulletin> findByIdsFetchComments(@Param("bulletinIds") List<Long> bulletinIds);
+    @Query("SELECT b FROM Bulletin b WHERE b.id IN :bulletinIds AND b.id < :lastBulletinId " +
+            "ORDER BY b.id DESC " +
+            "LIMIT 11")
+    List<Bulletin> findByIdsWithPaging(@Param("bulletinIds") List<Long> bulletinIds, @Param("lastBulletinId") Long lastBulletinId);
 
-    @Query("SELECT b FROM Bulletin b LEFT JOIN FETCH b.comments WHERE b.author.id = :authorId")
-    List<Bulletin> findByAuthorFetchComments(@Param("authorId") Long authorId);
+    @Query("SELECT b FROM Bulletin b WHERE b.author.id = :authorId AND b.id < :lastBulletinId " +
+            "ORDER BY b.id DESC " +
+            "LIMIT 11")
+    List<Bulletin> findByAuthorWithPaging(@Param("authorId") Long authorId, @Param("lastBulletinId") Long lastBulletinId);
 }

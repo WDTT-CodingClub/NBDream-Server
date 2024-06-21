@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
+import nbdream.common.entity.Status;
 import nbdream.member.domain.Member;
 
 @Entity
@@ -30,10 +31,10 @@ public class Bookmark extends BaseEntity {
     }
 
     public void delete() {
-        this.expired();
+        this.changeStatus(Status.EXPIRED);
     }
 
     public void recover() {
-        this.recover();
+        this.changeStatus(Status.NORMAL);
     }
 }

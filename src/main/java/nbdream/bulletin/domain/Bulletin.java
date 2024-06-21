@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import nbdream.bulletin.exception.UnEditableBulletinException;
 import nbdream.comment.domain.Comment;
 import nbdream.common.entity.BaseEntity;
+import nbdream.common.entity.Status;
 import nbdream.member.domain.Member;
 import org.hibernate.annotations.BatchSize;
 
@@ -62,7 +63,7 @@ public class Bulletin extends BaseEntity {
             throw new UnEditableBulletinException();
         }
 
-        this.expired();
+        this.changeStatus(Status.EXPIRED);
     }
 
     public void plusBookmarkedCount() {

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
+import nbdream.common.entity.Status;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,6 +29,6 @@ public class FarmCrop extends BaseEntity {
     }
 
     public void delete() {
-        this.expired();
+        this.changeStatus(Status.EXPIRED);
     }
 }

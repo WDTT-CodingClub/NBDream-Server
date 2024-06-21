@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 import nbdream.common.entity.BaseEntity;
+import nbdream.common.entity.Status;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -28,6 +29,6 @@ public class Image extends BaseEntity {
     }
 
     public void delete() {
-        this.expired();
+        this.changeStatus(Status.EXPIRED);
     }
 }

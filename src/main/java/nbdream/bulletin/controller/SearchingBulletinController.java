@@ -38,14 +38,16 @@ public class SearchingBulletinController {
 
     @Operation(summary = "북마크한 게시글 목록 조회")
     @GetMapping("/bookmarks")
-    public ApiResponse<BulletinsResDto> getBookmarkBulletins(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId, final Long lastBulletinId) {
-        return ApiResponse.ok(searchingBulletinService.getBookmarkBulletins(memberId));
+    public ApiResponse<BulletinsResDto> getBookmarkBulletins(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
+                                                             @RequestParam(value = "lastBulletinId", required = false) final Long lastBulletinId) {
+        return ApiResponse.ok(searchingBulletinService.getBookmarkBulletins(memberId, (lastBulletinId == null) ? Long.MAX_VALUE : lastBulletinId));
     }
 
     @Operation(summary = "작성한 게시글 목록 조회")
     @GetMapping("/my-bulletins")
-    public ApiResponse<BulletinsResDto> getMyBulletins(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId, final Long lastBulletinId) {
-        return ApiResponse.ok(searchingBulletinService.getMyBulletins(memberId));
+    public ApiResponse<BulletinsResDto> getMyBulletins(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
+                                                       @RequestParam(value = "lastBulletinId", required = false) final Long lastBulletinId) {
+        return ApiResponse.ok(searchingBulletinService.getMyBulletins(memberId, (lastBulletinId == null) ? Long.MAX_VALUE : lastBulletinId));
     }
 }
 

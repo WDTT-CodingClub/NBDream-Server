@@ -51,22 +51,22 @@ public class SearchingBulletinService {
         return bulletinMappingImagesAndComments(bulletins);
     }
 
-    public BulletinsResDto getBookmarkBulletins(final Long memberId) {
+    public BulletinsResDto getBookmarkBulletins(final Long memberId, final Long lastBulletinId) {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
         final List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
         final List<Long> bookmarkBulletinIds = bookmarks.stream()
                 .map(bookmark -> bookmark.getBulletin().getId())
                 .collect(Collectors.toList());
 
-        final List<Bulletin> bulletins = bulletinRepository.findByIdsFetchComments(bookmarkBulletinIds);
+        final List<Bulletin> bulletins = bulletinRepository.findByIdsWithPaging(bookmarkBulletinIds, lastBulletinId);
 
         return bulletinMappingImagesAndComments(bulletins);
     }
 
-    public BulletinsResDto getMyBulletins(final Long memberId) {
+    public BulletinsResDto getMyBulletins(final Long memberId, final Long bulletinId) {
         final Member author = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
 
-        final List<Bulletin> bulletins = bulletinRepository.findByAuthorFetchComments(author.getId());
+        final List<Bulletin> bulletins = bulletinRepository.findByAuthorWithPaging(author.getId(), bulletinId);
 
         return bulletinMappingImagesAndComments(bulletins);
     }
@@ -79,15 +79,18 @@ public class SearchingBulletinService {
         HashMap<Long, List<String>> imageMap = new HashMap<>();
         mappingImagesByTargetId(imageMap, imageRepository.findAllByTargetIds(bulletinIds));
 
+        boolean hasNext = hasNext(bulletins);
+
         final List<BulletinResDto> bulletinResDtos = bulletins.stream()
                 .map(bulletin -> new BulletinResDto(bulletin, bulletin.getAuthor(), imageMap.get(bulletin.getId()), bulletin.getComments()))
                 .collect(Collectors.toList());
 
-        return new BulletinsResDto(bulletinResDtos, hasNext(bulletins));
+        return new BulletinsResDto(bulletinResDtos, hasNext);
     }
 
     private boolean hasNext(List<Bulletin> bulletins) {
         if (bulletins.size() > PAGE_SIZE) {
+            System.out.println(bulletins);
             bulletins.remove(PAGE_SIZE);
             return true;
         }
