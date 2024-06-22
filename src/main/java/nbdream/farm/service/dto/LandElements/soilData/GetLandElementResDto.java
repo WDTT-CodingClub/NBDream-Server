@@ -1,4 +1,4 @@
-package nbdream.farm.service.dto.LandElements;
+package nbdream.farm.service.dto.LandElements.soilData;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +22,7 @@ public class GetLandElementResDto {
     private float selc; // 전기전도도
 
 
-    public void updateResDto(LandElements landElements){
+    public GetLandElementResDto updateResDto(LandElements landElements){
         this.acid = landElements.getAcid();
         this.vldpha = landElements.getVldpha();
         this.vldsia = landElements.getVldsia();
@@ -31,5 +31,6 @@ public class GetLandElementResDto {
         this.posifert_k = landElements.getPosifert_k();
         this.posifert_ca = landElements.getPosifert_ca();
         this.selc = landElements.getSelc();
+        return this;
     }
 }

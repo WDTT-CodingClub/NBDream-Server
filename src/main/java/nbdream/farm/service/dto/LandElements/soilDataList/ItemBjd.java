@@ -1,12 +1,17 @@
-package nbdream.farm.service.dto.LandElements;
+package nbdream.farm.service.dto.LandElements.soilDataList;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
-public class Item {
-    @JacksonXmlProperty(localName = "PNU_Code")
-    private String pnuCode;
+@ToString
+public class ItemBjd {
+    @JacksonXmlProperty(localName = "No")
+    private int no;
+
+    @JacksonXmlProperty(localName = "BJD_Code")
+    private String bjdCode;
 
     @JacksonXmlProperty(localName = "Any_Year")
     private int anyYear;

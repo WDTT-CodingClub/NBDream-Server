@@ -1,4 +1,4 @@
-package nbdream.farm.service.dto.LandElements;
+package nbdream.farm.service.dto.LandElements.soilData;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;
