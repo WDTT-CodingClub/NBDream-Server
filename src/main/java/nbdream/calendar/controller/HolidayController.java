@@ -22,7 +22,7 @@ public class HolidayController {
 
     private final HolidayService holidayService;
 
-    @Operation(summary = "특일정보 조회", description = "공휴일 정보 리스트를 반환")
+    @Operation(summary = "특일정보 조회", description = "조회 연도 형식: yyyy, 월 형식: MM(1월의 경우 01과 같이 입력해야 함)")
     @GetMapping("/holidays")
     public ApiResponse<List<HolidayResponse>> getHolidays(@RequestBody HolidayRequest request) {
         List<HolidayResponse> responses = holidayService.getAllHolidays(request.getSolYear(), request.getSolMonth());
