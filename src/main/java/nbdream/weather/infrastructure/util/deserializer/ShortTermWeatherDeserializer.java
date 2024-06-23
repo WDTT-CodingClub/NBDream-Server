@@ -1,6 +1,5 @@
-package nbdream.weather.util.deserializer;
+package nbdream.weather.infrastructure.util.deserializer;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -9,9 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import nbdream.weather.domain.Sky;
 import nbdream.weather.dto.response.ShortTermWeatherRes;
-import nbdream.weather.util.ShortTermWeatherResult;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import nbdream.weather.infrastructure.util.ShortTermWeatherResult;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
