@@ -6,6 +6,7 @@ import nbdream.accountBook.exception.CategoryNotFoundException;
 import nbdream.farm.domain.Crop;
 import nbdream.farm.domain.Farm;
 import nbdream.farm.domain.LandElements;
+import nbdream.farm.exception.CropNotFoundException;
 import nbdream.farm.exception.FetchApiInternalServerErrorException;
 import nbdream.farm.exception.LandElementsNotFoundException;
 import nbdream.farm.repository.CropRepository;
@@ -45,7 +46,7 @@ public class GeminiService {
     public String getContents(PostAiChatReqDto reqDto, Long memberId) {
         List<Crop> cropList = cropRepository.findAll();
         if(cropList == null || cropList.isEmpty()){
-            throw new CategoryNotFoundException();
+            throw new CropNotFoundException();
         }
         LandElements landElements = getLandElementsByMemberId(memberId)
                 .orElseThrow(LandElementsNotFoundException::new);
@@ -78,9 +79,11 @@ public class GeminiService {
     private boolean isValid(String question, List<Crop> cropList) {
         if(question.equals("1")){
             return true;
-        }else if(question.equals("2")){
-            return false;
-        }else if(isCrop(question, cropList)){
+        }
+//        else if(question.equals("2")){
+//            return false;
+//        }
+        else if(isCrop(question, cropList)){
             return true;
         }else{
             return false;
@@ -92,30 +95,33 @@ public class GeminiService {
 
         if(question.equals("1")){
             return "작물에 관해서 토지 성분 분석 결과가 궁굼해요. 토양 정보 : " + landElements.toStringForAIChat();
-        }else if(question.equals("2")){
-            return "어떤 작물이 궁굼하신가요? \n" +
-                    listToString(cropList) + "\n" +
-                    "(작물 이름만 입력해 주세요)";
-        }else if(isCrop(question, cropList)){
+        }
+//        else if(question.equals("2")){
+//            return "어떤 작물이 궁굼하신가요? \n" +
+//                    listToString(cropList) + "\n" +
+//                    "(작물 이름만 입력해 주세요)";
+//        }
+        else if(isCrop(question, cropList)){
             return "작물인 " + question + "에 대한 토양 적합성이 궁굼해. 토양 정보 : " + landElements.toStringForAIChat();
         }
         else{
-            return "저에게 여쭤보고 싶은게 있으신가요?\n" +
-                    "1. 토지 성분 분석 결과가 궁굼해요\n" +
-                    "2. 작물별 토양 적합성이 궁굼해요\n" +
-                    " (숫자로 입력해 주세요)";
+            return "잘못된 질문 요청입니다.";
+//            return "저에게 여쭤보고 싶은게 있으신가요?\n" +
+//                    "1. 토지 성분 분석 결과가 궁굼해요\n" +
+//                    "2. 작물별 토양 적합성이 궁굼해요\n" +
+//                    " (숫자로 입력해 주세요)";
         }
     }
 
-    public static String listToString(List<Crop> cropList) {
-        String str = "(가능한 작물 종류 : ";
-
-        for(Crop crop : cropList){
-            str += crop.getName() + " ";
-        }
-        str += ")";
-        return str;
-    }
+//    public static String listToString(List<Crop> cropList) {
+//        String str = "(가능한 작물 종류 : ";
+//
+//        for(Crop crop : cropList){
+//            str += crop.getName() + " ";
+//        }
+//        str += ")";
+//        return str;
+//    }
 
     public static boolean isCrop(String question, List<Crop> cropList) {
         for(Crop crop : cropList){

@@ -68,3 +68,13 @@ farm-work:
   api:
     url: http://api.nongsaro.go.kr/service/farmWorkingPlanNew
     key: ${FARM_WORK_API_KEY}
+
+holiday:
+  api:
+    url: http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/
+    key: ${HOLIDAY_API_KEY}
+
+kakao-local:
+  api:
+    url: https://dapi.kakao.com/v2/local/search/address
+    key: ${KAKAO_LOCAL_API_KEY}
