@@ -8,13 +8,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.bulletin.domain.Bulletin;
 import nbdream.common.entity.BaseEntity;
+import nbdream.common.entity.Status;
 import nbdream.member.domain.Member;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
 @AllArgsConstructor
+@SQLRestriction("status = 'NORMAL'")
 public class Comment extends BaseEntity {
 
     @Id
@@ -35,5 +38,9 @@ public class Comment extends BaseEntity {
         this.author = author;
         this.bulletin = bulletin;
         this.content = content;
+    }
+
+    public void delete() {
+        this.changeStatus(Status.EXPIRED);
     }
 }

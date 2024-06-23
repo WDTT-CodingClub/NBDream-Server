@@ -6,11 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
+import nbdream.common.entity.Status;
 import nbdream.farm.domain.Farm;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@SQLRestriction("status = 'NORMAL'")
 public class Member extends BaseEntity {
 
     @Id
@@ -49,5 +52,9 @@ public class Member extends BaseEntity {
     public void update(final String nickname, final String profileImageUrl) {
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public void delete() {
+        this.changeStatus(Status.EXPIRED);
     }
 }

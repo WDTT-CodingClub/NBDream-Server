@@ -27,7 +27,7 @@ public class Farm extends BaseEntity {
     @Embedded
     private Location location;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "land_elements_id")
     private LandElements landElements;
 
