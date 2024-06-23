@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface SkyRegionCodeRepository extends JpaRepository<SkyRegionCode, Long> {
 
-    @Query("SELECT s FROM SkyRegionCode s WHERE :address LIKE CONCAT('%', s.regionName, '%') " +
-            "LIMIT 1")
+    @Query(value = "SELECT s FROM SkyRegionCode s WHERE :address LIKE CONCAT('%', s.regionName, '%') " +
+            "LIMIT 1", nativeQuery = true)
     Optional<SkyRegionCode> findByAddress(@Param("address") String address);
 }
