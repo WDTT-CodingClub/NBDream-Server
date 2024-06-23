@@ -2,6 +2,7 @@ package nbdream.calendar.service;
 
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -15,10 +16,16 @@ import java.util.List;
 @Component
 public class HolidayExplorer {
 
+    @Value("${holiday.api.url}")
+    private String apiUrl;
+
+    @Value("${holiday.api.key}")
+    private String serviceKey;
+
     public JSONObject getHolidayExplorer(String operationUri, String solYear, String solMonth) throws IOException {
 
-        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/" + operationUri); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=bFhEY6Uvqs6W2Qn8%2BKlR2wuR9Dhc2HfF9E94b0pdX%2F2VIwsHMGdUfiRaGYbKsPhTi83uZpjkTPJnhaAsJ1jmsg%3D%3D"); /*Service Key*/
+        StringBuilder urlBuilder = new StringBuilder(apiUrl + operationUri); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + serviceKey); /*Service Key*/
         urlBuilder.append("&" + URLEncoder.encode("solYear", "UTF-8") + "=" + URLEncoder.encode(solYear, "UTF-8")); /*연*/
         urlBuilder.append("&" + URLEncoder.encode("solMonth", "UTF-8") + "=" + URLEncoder.encode(solMonth, "UTF-8")); /*월*/
         URL url = new URL(urlBuilder.toString());
