@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface TemperatureRegionCodeRepository extends JpaRepository<TemperatureRegionCode, Long> {
-    @Query("SELECT t FROM TemperatureRegionCode t WHERE :address LIKE CONCAT('%', t.regionName, '%')")
+    @Query("SELECT t FROM TemperatureRegionCode t WHERE :address LIKE CONCAT('%', t.regionName, '%') " +
+            "LIMIT 1")
     Optional<TemperatureRegionCode> findByAddress(@Param("address") String address);
 }
