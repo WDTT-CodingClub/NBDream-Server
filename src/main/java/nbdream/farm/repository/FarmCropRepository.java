@@ -14,6 +14,6 @@ public interface FarmCropRepository extends JpaRepository<FarmCrop, Long> {
     List<FarmCrop> findByFarmId(@Param("farmId") Long farmId);
 
     @Modifying
-    @Query("DELETE FROM FarmCrop f WHERE f.farm.idd = :farmId")
+    @Query("DELETE FROM FarmCrop f WHERE f.farm.id = :farmId")
     void deleteAllByFarmId(@Param("farmId") Long farmId);
 }
