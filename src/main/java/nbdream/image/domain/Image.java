@@ -12,7 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLRestriction("status= 'NORMAL'")
+@SQLRestriction("status = 'NORMAL'")
 public class Image extends BaseEntity {
 
     @Id

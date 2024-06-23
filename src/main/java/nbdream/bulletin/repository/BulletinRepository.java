@@ -23,4 +23,7 @@ public interface BulletinRepository extends JpaRepository<Bulletin, Long> {
             "ORDER BY b.id DESC " +
             "LIMIT 11")
     List<Bulletin> findByAuthorWithPaging(@Param("authorId") Long authorId, @Param("lastBulletinId") Long lastBulletinId);
+
+    @Query("SELECT b FROM Bulletin b WHERE b.author.id = :authorId")
+    List<Bulletin> findByAuthorId(@Param("authorId") Long authorId);
 }

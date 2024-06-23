@@ -1,4 +1,4 @@
-package nbdream.weather.util.url_bulider;
+package nbdream.weather.infrastructure.util.url_bulider;
 
 import lombok.Builder;
 import lombok.Getter;

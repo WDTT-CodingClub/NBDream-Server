@@ -23,7 +23,7 @@ public class AccountBook extends BaseEntity {
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 
-    @OneToMany(mappedBy = "accountBook", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "accountBook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccountBookHistory> accountBookHistoryList;
 
     @Builder
