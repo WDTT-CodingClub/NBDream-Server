@@ -40,6 +40,8 @@ jobs:
           spring.datasource.password: ${{secrets.DB_PASSWORD}}
           spring.datasource.url: ${{secrets.DB_URL}}
           farm-work.api.key: ${{secrets.FARM_WORK_API_KEY}}
+          holiday.api.key: ${{secrets.HOLIDAY_API_KEY}}
+          kakao-local.api.key: ${{secrets.KAKAO_LOCAL_API_KEY}}
 
       - name: Build with Gradle
         run: ./gradlew clean build --exclude-task test
