@@ -14,7 +14,7 @@ public class Location {
 
     private String address;
 
-    private String pnuCode;
+    private String bjdCode;
 
     private double latitude;
 
@@ -26,7 +26,7 @@ public class Location {
 
     public Location() {
         this.address = EMPTY;
-        this.pnuCode = EMPTY;
+        this.bjdCode = EMPTY;
     }
 
     public void update(final String address, final double latitude, final double longitude) {
