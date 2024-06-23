@@ -40,8 +40,8 @@ public class Farm extends BaseEntity {
     public void updateLandElements(final LandElements landElements){
         this.landElements = landElements;
     }
-    public void updateLocation(final String address, final double latitude, final double longitude) {
-        this.location.update(address, latitude, longitude);
+    public void updateLocation(final String address, final String bjdCode, final double latitude, final double longitude) {
+        this.location.update(address, bjdCode, latitude, longitude);
     }
 
 

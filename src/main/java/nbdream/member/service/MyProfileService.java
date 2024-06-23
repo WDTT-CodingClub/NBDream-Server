@@ -1,36 +1,20 @@
 package nbdream.member.service;
 
 import lombok.RequiredArgsConstructor;
-import nbdream.accountBook.domain.AccountBook;
-import nbdream.accountBook.exception.AccountBookNotFoundException;
-import nbdream.accountBook.repository.AccountBookRepository;
-import nbdream.bulletin.domain.Bulletin;
-import nbdream.bulletin.repository.BookmarkRepository;
-import nbdream.bulletin.repository.BulletinRepository;
-import nbdream.comment.domain.Comment;
-import nbdream.comment.repository.CommentRepository;
 import nbdream.farm.domain.Crop;
 import nbdream.farm.domain.Farm;
 import nbdream.farm.domain.FarmCrop;
 import nbdream.farm.domain.Location;
 import nbdream.farm.exception.CropNotFoundException;
-import nbdream.farm.exception.FarmNotFoundException;
 import nbdream.farm.repository.CropRepository;
 import nbdream.farm.repository.FarmCropRepository;
-import nbdream.farm.repository.FarmRepository;
-import nbdream.image.domain.Image;
-import nbdream.image.dto.ImageDto;
-import nbdream.image.repository.ImageRepository;
-import nbdream.image.service.ImageService;
-import nbdream.member.domain.LoginType;
+import nbdream.farm.service.LandElementsService;
+import nbdream.farm.util.Coordinates;
 import nbdream.member.domain.Member;
-import nbdream.member.domain.Withdrawal;
 import nbdream.member.dto.request.UpdateProfileReqDto;
-import nbdream.member.dto.request.WithdrawalReqDto;
 import nbdream.member.dto.response.MyPageResDto;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
-import nbdream.member.repository.WithdrawalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +29,7 @@ public class MyProfileService {
     private final MemberRepository memberRepository;
     private final FarmCropRepository farmCropRepository;
     private final CropRepository cropRepository;
+    private final LandElementsService landElementsService;
 
     @Transactional(readOnly = true)
     public MyPageResDto getMyPage(final Long memberId) {
@@ -66,12 +51,15 @@ public class MyProfileService {
                 .build();
     }
 
+    @Transactional
     public void updateProfile(final Long memberId, final UpdateProfileReqDto request) {
         final Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(() -> new MemberNotFoundException());
         final Farm farm = member.getFarm();
+        //farm 객체 업데이트 되기 전 실행
+        landElementsService.saveOrUpdateLandElements(farm, request.getBjdCode(), new Coordinates(request.getLatitude(), request.getLongitude()));
 
         member.update(request.getNickname(), request.getProfileImageUrl());
-        farm.updateLocation(request.getAddress(), request.getLatitude(), request.getLongitude());
+        farm.updateLocation(request.getAddress(),request.getBjdCode(), request.getLatitude(), request.getLongitude());
         updateFarmCrops(farm, request);
     }
 

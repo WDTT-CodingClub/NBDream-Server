@@ -15,6 +15,7 @@ public class UpdateProfileReqDto {
     private String nickname;
     private String profileImageUrl;
     private String address;
+    private String bjdCode;
     private double longitude;
     private double latitude;
     private List<String> crops;

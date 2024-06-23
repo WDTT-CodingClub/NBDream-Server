@@ -29,8 +29,9 @@ public class Location {
         this.bjdCode = EMPTY;
     }
 
-    public void update(final String address, final double latitude, final double longitude) {
+    public void update(final String address, final String bjdCode, final double latitude, final double longitude) {
         this.address = address;
+        this.bjdCode = bjdCode;
         this.latitude = latitude;
         this.longitude = longitude;
         Grid grid = GpsTransfer.convertGpsToGrid(latitude, longitude);
