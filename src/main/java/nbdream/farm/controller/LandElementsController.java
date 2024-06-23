@@ -6,12 +6,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import nbdream.auth.config.AuthenticatedMemberId;
 import nbdream.common.advice.response.ApiResponse;
+import nbdream.farm.domain.Farm;
+import nbdream.farm.repository.FarmRepository;
 import nbdream.farm.service.GeminiService;
 import nbdream.farm.service.LandElementsService;
-import nbdream.farm.service.dto.LandElements.GetLandElementResDto;
+import nbdream.farm.service.dto.LandElements.soilData.GetLandElementResDto;
 import nbdream.farm.service.dto.gemini.PostAiChatReqDto;
 import nbdream.farm.service.dto.gemini.PostAiChatResDto;
 import org.springframework.web.bind.annotation.*;
+
 
 
 @RestController
@@ -21,13 +24,14 @@ import org.springframework.web.bind.annotation.*;
 public class LandElementsController {
     private final LandElementsService landElementsService;
     private final GeminiService geminiService;
+    private final FarmRepository farmRepository;
 
-    @Operation(summary = "토지 성분 분석", description = "테스트 시 농장에 주소가 등록되어 있어야 함")
+
+    @Operation(summary = "토지 성분 분석 (법정동코드)", description = "테스트 시 농장에 법정동 코드, 위도, 경도가 등록되어 있어야 함. ")
     @GetMapping("/land-elements")
-    public ApiResponse<GetLandElementResDto> getLandElements(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId){
-        return ApiResponse.ok(landElementsService.getLandElements(memberId));
+    public ApiResponse<GetLandElementResDto> getLandElementsByBjd(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId) {
+        return ApiResponse.ok(landElementsService.getLandElementsByBjd(memberId));
     }
-
 
     @Operation(summary = "AI 채팅", description = "테스트 시 토지 성분 분석이 먼저 되어야 함")
     @PostMapping("/ai")
@@ -36,4 +40,13 @@ public class LandElementsController {
         PostAiChatResDto response = new PostAiChatResDto(geminiService.getContents(reqDto, memberId));
         return ApiResponse.ok(response);
     }
+
+
 }
+
+//    @Operation(summary = "토지 성분 분석", description = "테스트 시 농장에 주소가 등록되어 있어야 함. PNU 코드 이용")
+//    @GetMapping("/land-elements")
+//    public ApiResponse<GetLandElementResDto> getLandElements(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId){
+//        return ApiResponse.ok(landElementsService.getLandElements(memberId));
+//    }
+
