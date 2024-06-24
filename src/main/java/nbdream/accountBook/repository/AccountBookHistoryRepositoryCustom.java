@@ -7,7 +7,6 @@ import java.util.List;
 
 
 public interface AccountBookHistoryRepositoryCustom {
-    List<AccountBookHistory> findByMemberIdAndCursor(Long memberId, Long cursor, int pageSize, GetAccountBookListReqDto reqDto);
-    Long getTotalRevenue(Long memberId, GetAccountBookListReqDto request);
-    Long getTotalExpense(Long memberId, GetAccountBookListReqDto request);
+    List<AccountBookHistory> findByFilterAndCursor(Long memberId, Long cursor, int pageSize, GetAccountBookListReqDto reqDto);
+    List<AccountBookHistory> findAllByFilter(Long memberId, GetAccountBookListReqDto reqDto);
 }
