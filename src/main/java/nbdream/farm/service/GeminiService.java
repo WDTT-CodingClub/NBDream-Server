@@ -15,6 +15,9 @@ import nbdream.farm.repository.LandElementsRepository;
 import nbdream.farm.service.dto.gemini.ChatRequest;
 import nbdream.farm.service.dto.gemini.ChatResponse;
 import nbdream.farm.service.dto.gemini.PostAiChatReqDto;
+import nbdream.member.domain.Member;
+import nbdream.member.exception.MemberNotFoundException;
+import nbdream.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,9 +33,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class GeminiService {
-    private final FarmRepository farmRepository;
-    private final LandElementsRepository landElementsRepository;
+    private final MemberRepository memberRepository;
     private final CropRepository cropRepository;
+
     @Qualifier("geminiRestTemplate")
     @Autowired
     private RestTemplate restTemplate;
@@ -44,12 +47,12 @@ public class GeminiService {
     private String geminiApiKey;
 
     public String getContents(PostAiChatReqDto reqDto, Long memberId) {
+        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
         List<Crop> cropList = cropRepository.findAll();
         if(cropList == null || cropList.isEmpty()){
             throw new CropNotFoundException();
         }
-        LandElements landElements = getLandElementsByMemberId(memberId)
-                .orElseThrow(LandElementsNotFoundException::new);
+        LandElements landElements = member.getFarm().getLandElements();
 
         String validQuestion = validQuestion(reqDto.getQuestion(), memberId, cropList, landElements);
         boolean isValid = isValid(reqDto.getQuestion(), cropList);
@@ -132,8 +135,4 @@ public class GeminiService {
         return false;
     }
 
-    public Optional<LandElements> getLandElementsByMemberId(Long memberId) {
-        Optional<Farm> farmOptional = farmRepository.findByMemberId(memberId);
-        return farmOptional.map(Farm::getLandElements);
-    }
 }
