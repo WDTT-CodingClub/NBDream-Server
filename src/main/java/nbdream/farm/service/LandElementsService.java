@@ -4,13 +4,18 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.RequiredArgsConstructor;
 import nbdream.farm.domain.Farm;
 import nbdream.farm.domain.LandElements;
-import nbdream.farm.exception.*;
-import nbdream.farm.repository.FarmRepository;
+import nbdream.farm.exception.ClosestSoilDataInternalServerErrorException;
+import nbdream.farm.exception.FetchApiInternalServerErrorException;
+import nbdream.farm.exception.LandElementsNotFoundException;
+import nbdream.farm.exception.ParsingInternalServerErrorException;
 import nbdream.farm.repository.LandElementsRepository;
 import nbdream.farm.service.dto.LandElements.soilData.GetLandElementResDto;
 import nbdream.farm.service.dto.LandElements.soilDataList.ItemBjd;
 import nbdream.farm.service.dto.LandElements.soilDataList.SoilDataListResponse;
 import nbdream.farm.util.Coordinates;
+import nbdream.member.domain.Member;
+import nbdream.member.exception.MemberNotFoundException;
+import nbdream.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +34,7 @@ import static nbdream.farm.util.Coordinates.findNearestLocation;
 @RequiredArgsConstructor
 public class LandElementsService {
 
-    private final FarmRepository farmRepository;
+    private final MemberRepository memberRepository;
     private final LandElementsRepository landElementsRepository;
     private final KakaoAsyncService kakaoAsyncService;
     private final RestTemplate restTemplate;
@@ -41,52 +46,59 @@ public class LandElementsService {
     private String soilApiKey;
 
 
-    //유저의 토양 정보가 있으면 반환, 없으면 저장 후 반환
-    public GetLandElementResDto getLandElementsByBjd(Long memberId) {
-        Farm farm = farmRepository.findByMemberId(memberId)
-                .orElseThrow(FarmNotFoundException::new);
-        if (farm.getLocation() == null || farm.getLocation().getBjdCode() == null || farm.getLocation().getBjdCode().isBlank() ||
-                farm.getLocation().getLatitude() == 0 || farm.getLocation().getLongitude() == 0) {
-            throw new CoordinatesNotFoundException();
+    //유저의 토양 정보 반환
+    public GetLandElementResDto getLandElements(Long memberId) {
+        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
+        Farm farm = member.getFarm();
+        LandElements landElements = farm.getLandElements();
+        if(landElements == null){
+            throw new LandElementsNotFoundException();
         }
-
-        LandElements landElements = getOrFetchLandElements(farm);
-
         return new GetLandElementResDto().updateResDto(landElements);
     }
-
-    private LandElements getOrFetchLandElements(Farm farm) {
+    
+    //법정동 코드가 변경되었다면 저장 또는 업데이트
+    public void saveOrUpdateLandElements(Farm farm, String bjdCode, Coordinates coordinates) {
+        if(bjdCode.equals(farm.getLocation().getBjdCode())){
+            return ;
+        }
         LandElements landElements = farm.getLandElements();
         if (landElements == null) {
-            landElements = getNewLandElementsFromOpenApi(farm);
+            landElements = getNewLandElementsFromOpenApi(bjdCode, coordinates);
             landElementsRepository.save(landElements);
             farm.updateLandElements(landElements);
-            farmRepository.save(farm);
+        }else{
+            updateLandElements(farm, bjdCode, coordinates);
         }
-        return landElements;
     }
 
+    //업데이트
+    private void updateLandElements(Farm farm, String bjdCode, Coordinates coordinates){
+        LandElements landElements = farm.getLandElements();
+        LandElements newLandElements = getNewLandElementsFromOpenApi(bjdCode, coordinates);
+        landElements.update(newLandElements);
+        landElementsRepository.save(landElements);
+    }
 
     // 유저의 법정동 코드로 토양 리스트를 받아와서, 가장 가까운 위치의 토양 성분을 반환
-    private LandElements getNewLandElementsFromOpenApi(Farm farm) {
-        List<ItemBjd> soilDataList = fetchSoilDataFromApiByBjd(farm.getLocation().getBjdCode(), "List");
+    private LandElements getNewLandElementsFromOpenApi(String bjdCode, Coordinates coordinates) {
+        List<ItemBjd> soilDataList = fetchSoilDataFromApiByBjd(bjdCode, "List");
         //유저와 토양 리스트의 위치 비교
-        Coordinates userCoordinates = new Coordinates(farm.getLocation().getLatitude(), farm.getLocation().getLongitude());
         Map<Integer, Coordinates> coordinatesMap = getCoordinatesByAddressFromKakao(soilDataList);
-        int num = findNearestLocation(userCoordinates, coordinatesMap);
+        int num = findNearestLocation(coordinates, coordinatesMap);
 
-        ItemBjd closestData = soilDataList.stream()
+        ItemBjd itemBjd = soilDataList.stream()
                 .filter(soilData -> num == soilData.getNo())
                 .findFirst().orElseThrow(ClosestSoilDataInternalServerErrorException::new);
         return new LandElements(
-                closestData.getAcid(),
-                closestData.getVldpha(),
-                closestData.getVldsia(),
-                closestData.getOm(),
-                closestData.getPosifertMg(),
-                closestData.getPosifertK(),
-                closestData.getPosifertCa(),
-                closestData.getSelc()
+                itemBjd.getAcid(),
+                itemBjd.getVldpha(),
+                itemBjd.getVldsia(),
+                itemBjd.getOm(),
+                itemBjd.getPosifertMg(),
+                itemBjd.getPosifertK(),
+                itemBjd.getPosifertCa(),
+                itemBjd.getSelc()
         );
     }
 
@@ -150,17 +162,6 @@ public class LandElementsService {
                 .collect(Collectors.toList());
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         return coordinatesMap;
-    }
-
-
-    //농장 주소 수정시 실행되어야 할 메서드
-    public void updateLandElements(Long memberId){
-        Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
-        LandElements landElements = landElementsRepository.findById(farm.getLandElements().getId())
-                .orElseThrow(LandElementsNotFoundException::new);
-        LandElements newLandElements = getNewLandElementsFromOpenApi(farm);
-        landElements.update(newLandElements);
-        landElementsRepository.save(landElements);
     }
 
 }

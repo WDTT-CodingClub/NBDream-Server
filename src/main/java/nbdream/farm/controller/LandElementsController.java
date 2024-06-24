@@ -24,16 +24,15 @@ import org.springframework.web.bind.annotation.*;
 public class LandElementsController {
     private final LandElementsService landElementsService;
     private final GeminiService geminiService;
-    private final FarmRepository farmRepository;
 
 
-    @Operation(summary = "토지 성분 분석 (법정동코드)", description = "테스트 시 농장에 법정동 코드, 위도, 경도가 등록되어 있어야 함. ")
+    @Operation(summary = "토지 성분 분석 (법정동코드)", description = "테스트 전 주소 등록되어 있어야 함(프로필수정API 이용)")
     @GetMapping("/land-elements")
     public ApiResponse<GetLandElementResDto> getLandElementsByBjd(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId) {
-        return ApiResponse.ok(landElementsService.getLandElementsByBjd(memberId));
+        return ApiResponse.ok(landElementsService.getLandElements(memberId));
     }
 
-    @Operation(summary = "AI 채팅", description = "테스트 시 토지 성분 분석이 먼저 되어야 함")
+    @Operation(summary = "AI 채팅", description = "테스트 전 주소 등록되어 있어야 함(프로필수정API 이용), question : (1) 또는 (작물명)")
     @PostMapping("/ai")
     public ApiResponse<PostAiChatResDto> gemini(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
                                                 @RequestBody PostAiChatReqDto reqDto){

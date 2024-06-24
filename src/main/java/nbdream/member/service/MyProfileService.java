@@ -8,6 +8,8 @@ import nbdream.farm.domain.Location;
 import nbdream.farm.exception.CropNotFoundException;
 import nbdream.farm.repository.CropRepository;
 import nbdream.farm.repository.FarmCropRepository;
+import nbdream.farm.service.LandElementsService;
+import nbdream.farm.util.Coordinates;
 import nbdream.member.domain.Member;
 import nbdream.member.dto.request.UpdateProfileReqDto;
 import nbdream.member.dto.response.MyPageResDto;
@@ -22,10 +24,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MyProfileService {
     private final MemberRepository memberRepository;
     private final FarmCropRepository farmCropRepository;
     private final CropRepository cropRepository;
+    private final LandElementsService landElementsService;
 
     @Transactional(readOnly = true)
     public MyPageResDto getMyPage(final Long memberId) {
@@ -51,9 +55,11 @@ public class MyProfileService {
     public void updateProfile(final Long memberId, final UpdateProfileReqDto request) {
         final Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(() -> new MemberNotFoundException());
         final Farm farm = member.getFarm();
+        //farm 객체 업데이트 되기 전 실행
+        landElementsService.saveOrUpdateLandElements(farm, request.getBjdCode(), new Coordinates(request.getLatitude(), request.getLongitude()));
 
         member.update(request.getNickname(), request.getProfileImageUrl());
-        farm.updateLocation(request.getAddress(), request.getLatitude(), request.getLongitude());
+        farm.updateLocation(request.getAddress(),request.getBjdCode(), request.getLatitude(), request.getLongitude());
         updateFarmCrops(farm, request);
     }
 

@@ -27,7 +27,7 @@ public class Farm extends BaseEntity {
     @Embedded
     private Location location;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "land_elements_id")
     private LandElements landElements;
 
@@ -40,8 +40,8 @@ public class Farm extends BaseEntity {
     public void updateLandElements(final LandElements landElements){
         this.landElements = landElements;
     }
-    public void updateLocation(final String address, final double latitude, final double longitude) {
-        this.location.update(address, latitude, longitude);
+    public void updateLocation(final String address, final String bjdCode, final double latitude, final double longitude) {
+        this.location.update(address, bjdCode, latitude, longitude);
     }
 
 

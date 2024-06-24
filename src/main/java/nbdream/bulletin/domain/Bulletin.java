@@ -10,6 +10,7 @@ import nbdream.common.entity.BaseEntity;
 import nbdream.common.entity.Status;
 import nbdream.member.domain.Member;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@SQLRestriction("status = 'NORMAL'")
 public class Bulletin extends BaseEntity {
 
     @Id

@@ -1,4 +1,4 @@
-package nbdream.weather.util;
+package nbdream.weather.infrastructure.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.weather.dto.response.LongTermSkyRes;
-import nbdream.weather.util.deserializer.LongTermSkyDeserializer;
+import nbdream.weather.infrastructure.util.deserializer.LongTermSkyDeserializer;
 
 import java.util.List;
 

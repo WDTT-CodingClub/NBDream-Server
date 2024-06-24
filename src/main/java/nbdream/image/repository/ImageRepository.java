@@ -2,6 +2,7 @@ package nbdream.image.repository;
 
 import nbdream.image.domain.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -16,4 +17,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     Optional<Image> findByImageUrl(String imageUrl);
 
+    @Modifying
+    @Query("DELETE FROM Image i WHERE i.targetId = :targetId")
+    void deleteAllByTargetId(@Param("targetId") Long targetId);
 }
