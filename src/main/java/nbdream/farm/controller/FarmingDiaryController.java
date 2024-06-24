@@ -1,6 +1,7 @@
 package nbdream.farm.controller;
 
 import lombok.RequiredArgsConstructor;
+import nbdream.farm.service.FarmingDiaryFacade;
 import nbdream.farm.service.FarmingDiaryService;
 import nbdream.farm.service.dto.farmingdiary.CreateDiaryRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/calendar/diary")
 public class FarmingDiaryController {
 
-    private final FarmingDiaryService farmingDiaryService;
+    private final FarmingDiaryFacade farmingDiaryFacade;
 
     @PostMapping
     public void createFarmingDiary(@RequestBody CreateDiaryRequest request){
-        farmingDiaryService.createFarmingDiary(request);
+        farmingDiaryFacade.saveFarmingDiaryInfo(request);
     }
 
     @PutMapping("/{diary-id}")
