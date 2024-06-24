@@ -30,6 +30,10 @@ public class ApiResponse<T> {
         return of(HttpStatus.OK, "요청에 성공하였습니다.", data);
     }
 
+    public static <T> ApiResponse<T> ok(HttpStatus httpStatus, T data) {
+        return of(httpStatus, "요청에 성공하였습니다.", data);
+    }
+
     public static <T> ApiResponse<T> ok() {
         return of(HttpStatus.OK, "요청에 성공하였습니다.", null);
     }
