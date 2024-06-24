@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import nbdream.accountBook.domain.AccountBook;
 import nbdream.accountBook.domain.AccountBookCategory;
 import nbdream.accountBook.domain.AccountBookHistory;
+import nbdream.accountBook.domain.TransactionType;
 import nbdream.accountBook.exception.CategoryNotFoundException;
 import nbdream.accountBook.repository.AccountBookHistoryRepository;
 import nbdream.accountBook.repository.AccountBookRepository;
+import nbdream.accountBook.service.dto.GetAccountBookGraphResDto;
 import nbdream.accountBook.service.dto.GetAccountBookListReqDto;
 import nbdream.accountBook.service.dto.GetAccountBookListResDto;
 import nbdream.accountBook.service.dto.GetAccountBookResDto;
@@ -17,7 +19,7 @@ import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,20 +37,58 @@ public class AccountBookService {
     public GetAccountBookListResDto getMyAccountBookList(GetAccountBookListReqDto request, Long memberId) {
         AccountBook accountBook = accountBookRepository.findByMemberId(memberId)
                 .orElseGet(() -> createNewAccountBook(memberId));
-        List<String> categories = getCategoryList();
 
         //커서 페이징
         Long cursor = request.getLastContentsId() == null ? 0 : request.getLastContentsId();
-        List<AccountBookHistory> accountBookHistoryList = accountBookHistoryRepository.findByMemberIdAndCursor(memberId, cursor, PAGE_SIZE + 1, request);
+        List<AccountBookHistory> accountBookHistoryList = accountBookHistoryRepository.findByFilterAndCursor(memberId, cursor, PAGE_SIZE + 1, request);
 
         boolean hasNext = hasNext(accountBookHistoryList);
+        //
+        List<AccountBookHistory> allList = accountBookHistoryRepository.findAllByFilter(memberId, request);
 
-        Long totalRevenue = accountBookHistoryRepository.getTotalRevenue(memberId, request);
-        Long totalExpense = accountBookHistoryRepository.getTotalExpense(memberId, request);
+        List<String> categories = getCategoryList(allList);
+        Long totalRevenue = accountBook.getTotalRevenue(allList);
+        Long totalExpense = accountBook.getTotalExpense(allList);
         Long totalCost = totalRevenue + totalExpense;
+        List<GetAccountBookGraphResDto> revenuePercent = getPercentsByCategory(allList, totalRevenue, TransactionType.REVENUE);
+        List<GetAccountBookGraphResDto> expensePercent = getPercentsByCategory(allList, totalExpense, TransactionType.EXPENSE);
+
+        for (GetAccountBookGraphResDto item : revenuePercent){
+            System.out.println("수입 카테고리 퍼센트 : " + item);
+        }
+        for (GetAccountBookGraphResDto item : expensePercent){
+            System.out.println("지출 카테고리 퍼센트 : " + item);
+        }
 
         List<GetAccountBookResDto> items = convertToDtoList(accountBookHistoryList);
-        return createAccountBookListResDto(categories, items, totalRevenue, totalExpense, totalCost, hasNext);
+        return createAccountBookListResDto(categories, items, totalRevenue, totalExpense, totalCost, hasNext, revenuePercent, expensePercent);
+    }
+
+    //카테고리별 금액의 퍼센티지를 반환
+    private List<GetAccountBookGraphResDto> getPercentsByCategory(List<AccountBookHistory> allList, Long totalAmount, TransactionType transactionType) {
+        List<AccountBookHistory> list = new ArrayList<>();
+        for (AccountBookHistory item : allList) {
+            if (item.getTransactionType().equals(transactionType)) {
+                list.add(item);
+            }
+        }
+
+        Map<AccountBookCategory, Long> categoryMap = new HashMap<>();
+        for (AccountBookHistory item : list) {
+            AccountBookCategory category = item.getAccountBookCategory();
+            Long amount = item.getAmount();
+            categoryMap.put(category, categoryMap.getOrDefault(category, 0L) + amount);
+        }
+
+        List<GetAccountBookGraphResDto> result = new ArrayList<>();
+        for (Map.Entry<AccountBookCategory, Long> entry : categoryMap.entrySet()) {
+            AccountBookCategory category = entry.getKey();
+            Long sum = entry.getValue();
+            float percent = (float) sum / totalAmount * 100;
+            result.add(new GetAccountBookGraphResDto(percent, category.getValue()));
+        }
+
+        return result;
     }
 
     private boolean hasNext(List<AccountBookHistory> list){
@@ -58,6 +98,7 @@ public class AccountBookService {
         }
         return hasNext;
     }
+
     // 장부 생성
     private AccountBook createNewAccountBook(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -69,26 +110,20 @@ public class AccountBookService {
     }
 
     // 카테고리 목록 조회 메서드
-    private List<String> getCategoryList() {
-        List<String> categories = List.of(AccountBookCategory.values())
-                .stream()
-                .map(AccountBookCategory::getValue)
-                .collect(Collectors.toList());
-
-        if (categories == null || categories.isEmpty()) {
-            throw new CategoryNotFoundException();
+    private List<String> getCategoryList(List<AccountBookHistory> list) {
+        Set<String> categorySet = new HashSet<>();
+        for (AccountBookHistory item : list) {
+            categorySet.add(item.getAccountBookCategory().getValue());
         }
-        return categories;
+        return new ArrayList<>(categorySet);
     }
 
-    // 내역 리스트를 DTO로 변환
     private List<GetAccountBookResDto> convertToDtoList(List<AccountBookHistory> historyList) {
         return historyList.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
-    // 내역을 DTO로 변환
     private GetAccountBookResDto convertToDto(AccountBookHistory history) {
         List<Image> imgList = imageRepository.findAllByTargetId(history.getId());
         String imgUrl = imgList.stream()
@@ -111,15 +146,17 @@ public class AccountBookService {
                 .build();
     }
 
-    // resDto 생성
     private GetAccountBookListResDto createAccountBookListResDto(List<String> categories, List<GetAccountBookResDto> items,
-                                                                Long totalRevenue, Long totalExpense, Long totalCost, boolean hasNext) {
+                                                                Long totalRevenue, Long totalExpense, Long totalCost, boolean hasNext,
+                                                                 List<GetAccountBookGraphResDto> revenuePercent, List<GetAccountBookGraphResDto> expensePercent) {
         return GetAccountBookListResDto.builder()
                 .categories(categories)
                 .items(items)
                 .totalRevenue(totalRevenue)
                 .totalExpense(totalExpense)
                 .totalCost(totalCost)
+                .revenuePercent(revenuePercent)
+                .expensePercent(expensePercent)
                 .hasNext(hasNext)
                 .build();
     }

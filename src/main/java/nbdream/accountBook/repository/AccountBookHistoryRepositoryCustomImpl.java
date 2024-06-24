@@ -20,87 +20,14 @@ public class AccountBookHistoryRepositoryCustomImpl implements AccountBookHistor
 
     private final JPAQueryFactory queryFactory;
 
-    /*//////
-
-    private BooleanExpression categoryEq(String category) {
-        return (category == null) ? null : accountBookHistory.accountBookCategory.eq(AccountBookCategory.fromValue(category));
-    }
-    private BooleanExpression transactionTypeEq(String type) {
-        return (type == null) ? null : accountBookHistory.transactionType.eq(TransactionType.fromValue(type));
-    }
-    private BooleanExpression startDateGoe(String start) {
-        return (start == null) ? null : accountBookHistory.dateTime.goe(LocalDate.parse(start).atStartOfDay());
-    }
-    private BooleanExpression endDateLoe(String end) {
-        return (end == null) ? null : accountBookHistory.dateTime.loe(LocalDate.parse(end).atTime(LocalTime.MAX));
-    }
 
     @Override
-    public List<AccountBookHistory> filteringAccountBookHistory(Long memberId, Long cursorId, int PAGE_SIZE, GetAccountBookListReqDto request) {
-        QAccountBookHistory sub = new QAccountBookHistory("sub");
-        List<AccountBookHistory> list = new ArrayList<AccountBookHistory>();
-        try {
-            if(request.getSort() == null || Sort.fromValue(request.getSort()) == Sort.EARLIEST){
-                list = queryFactory
-                        .select(accountBookHistory)
-                        .from(accountBookHistory)
-                        .where(categoryEq(request.getCategory()),
-                                transactionTypeEq(request.getTransactionType()),
-                                startDateGoe(request.getStart()),
-                                endDateLoe(request.getEnd()),
-                                accountBookHistory.dateTime.loe(
-                                    JPAExpressions
-                                            .select(sub.dateTime)
-                                            .from(sub)
-                                            .where(sub.id.eq(cursorId))
-                        ))
-                        .limit(PAGE_SIZE)
-                        .orderBy(accountBookHistory.dateTime.desc(), accountBookHistory.id.desc())
-                        .fetch();
-            }else{
-                list = queryFactory
-                        .select(accountBookHistory)
-                        .from(accountBookHistory)
-                        .where(categoryEq(request.getCategory()),
-                                transactionTypeEq(request.getTransactionType()),
-                                startDateGoe(request.getStart()),
-                                endDateLoe(request.getEnd()),
-                                accountBookHistory.dateTime.goe(
-                                        JPAExpressions
-                                                .select(sub.dateTime)
-                                                .from(sub)
-                                                .where(sub.id.eq(cursorId))
-                                ))
-                        .limit(PAGE_SIZE)
-                        .orderBy(accountBookHistory.dateTime.asc(), accountBookHistory.id.asc())
-                        .fetch();
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }*/
-
-    @Override
-    public List<AccountBookHistory> findByMemberIdAndCursor(Long memberId, Long cursorId, int PAGE_SIZE, GetAccountBookListReqDto request) {
+    public List<AccountBookHistory> findByFilterAndCursor(Long memberId, Long cursorId, int PAGE_SIZE, GetAccountBookListReqDto request) {
         QAccountBookHistory accountBookHistory = QAccountBookHistory.accountBookHistory;
 
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(accountBookHistory.accountBook.member.id.eq(memberId));
-
-        if (request.getCategory() != null && StringUtils.isNotBlank(request.getCategory())) {
-            builder.and(accountBookHistory.accountBookCategory.eq(AccountBookCategory.fromValue(request.getCategory())));
-        }
-
-        if (request.getStart() != null && StringUtils.isNotBlank(request.getStart())) {
-            LocalDate startDate = LocalDate.parse(request.getStart());
-            builder.and(accountBookHistory.dateTime.goe(startDate.atStartOfDay()));
-        }
-        if (request.getEnd() != null && StringUtils.isNotBlank(request.getEnd())) {
-            LocalDate endDate = LocalDate.parse(request.getEnd());
-            builder.and(accountBookHistory.dateTime.loe(endDate.atTime(LocalTime.MAX)));
-        }
+        applyFilters(builder, request);
 
         if (request.getTransactionType() != null && StringUtils.isNotBlank(request.getTransactionType())) {
             builder.and(accountBookHistory.transactionType.eq(TransactionType.fromValue(request.getTransactionType())));
@@ -145,41 +72,18 @@ public class AccountBookHistoryRepositoryCustomImpl implements AccountBookHistor
         return query.fetch();
     }
 
-
     @Override
-    public Long getTotalRevenue(Long memberId, GetAccountBookListReqDto request) {
+    public List<AccountBookHistory> findAllByFilter(Long memberId, GetAccountBookListReqDto request){
         QAccountBookHistory accountBookHistory = QAccountBookHistory.accountBookHistory;
 
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(accountBookHistory.accountBook.member.id.eq(memberId))
-                .and(accountBookHistory.transactionType.eq(TransactionType.REVENUE));
+        builder.and(accountBookHistory.accountBook.member.id.eq(memberId));
 
         applyFilters(builder, request);
 
-        Long totalRevenue = queryFactory.select(accountBookHistory.amount.sum())
-                .from(accountBookHistory)
+        return  queryFactory.selectFrom(accountBookHistory)
                 .where(builder)
-                .fetchOne();
-
-        return totalRevenue != null ? totalRevenue : 0L;
-    }
-
-    @Override
-    public Long getTotalExpense(Long memberId, GetAccountBookListReqDto request) {
-        QAccountBookHistory accountBookHistory = QAccountBookHistory.accountBookHistory;
-
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(accountBookHistory.accountBook.member.id.eq(memberId))
-                .and(accountBookHistory.transactionType.eq(TransactionType.EXPENSE));
-
-        applyFilters(builder, request);
-
-        Long totalExpense = queryFactory.select(accountBookHistory.amount.sum())
-                .from(accountBookHistory)
-                .where(builder)
-                .fetchOne();
-
-        return totalExpense != null ? -totalExpense : 0L;
+                .fetch();
     }
 
     private void applyFilters(BooleanBuilder builder, GetAccountBookListReqDto request) {
