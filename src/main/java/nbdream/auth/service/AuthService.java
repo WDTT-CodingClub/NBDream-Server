@@ -2,6 +2,7 @@ package nbdream.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import nbdream.auth.dto.request.TokenRequest;
+import nbdream.auth.dto.response.LoginResponse;
 import nbdream.auth.dto.response.OAuthUserProfile;
 import nbdream.auth.dto.response.TokenResponse;
 import nbdream.auth.infrastructure.JwtTokenProvider;
@@ -26,22 +27,31 @@ public class AuthService {
     private final WebClient webClient;
 
     @Transactional
-    public TokenResponse oAuthLogin(String providerName, String oAuthAccessToken) {
+    public LoginResponse oAuthLogin(String providerName, String oAuthAccessToken) {
         String userInfoUri = oAuthProvider.getUserInfoUri(providerName);
 
         OAuthUserProfile oAuthUserProfile = getUserProfile(providerName, oAuthAccessToken, userInfoUri);
 
-        Member member = saveOrLogin(oAuthUserProfile);
+        LoginResponse loginResponse = saveOrLogin(oAuthUserProfile);
 
-        return new TokenResponse(tokenProvider.createAccessToken(member.getId()), tokenProvider.createRefreshToken(member.getId()));
+        loginResponse.setTokenResponse(new TokenResponse(tokenProvider.createAccessToken(loginResponse.getMemberId()),
+                tokenProvider.createRefreshToken(loginResponse.getMemberId())));
+
+        return loginResponse;
     }
 
-    private Member saveOrLogin(OAuthUserProfile oAuthUserProfile) {
+    private LoginResponse saveOrLogin(OAuthUserProfile oAuthUserProfile) {
         Optional<Member> member = memberRepository.findBySocialId(oAuthUserProfile.getSocialId());
         if (member.isEmpty()) {
-            return memberRepository.save(oAuthUserProfile.toMember());
+            return LoginResponse.builder()
+                    .alreadyExistMember(false)
+                    .memberId(memberRepository.save(oAuthUserProfile.toMember()).getId())
+                    .build();
         }
-        return member.get();
+        return LoginResponse.builder()
+                .alreadyExistMember(true)
+                .memberId(member.get().getId())
+                .build();
     }
 
     private OAuthUserProfile getUserProfile(String providerName, String oAuthAccessToken, String userInfoUri) {
