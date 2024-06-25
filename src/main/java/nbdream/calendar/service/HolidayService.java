@@ -3,7 +3,10 @@ package nbdream.calendar.service;
 import com.google.gson.Gson;
 import jakarta.persistence.SecondaryTable;
 import lombok.RequiredArgsConstructor;
+import nbdream.calendar.domain.Holiday;
 import nbdream.calendar.dto.HolidayResponse;
+import nbdream.calendar.repository.HolidayRepository;
+import nbdream.farm.domain.FarmingDiary;
 import nbdream.farm.exception.FetchApiInternalServerErrorException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,12 +17,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class HolidayService {
 
     private final HolidayExplorer holidayExplorer;
+    private final HolidayRepository holidayRepository;
 
     List<String> operationUris = List.of(
             "getHoliDeInfo",
@@ -41,6 +46,7 @@ public class HolidayService {
         }
         return new ArrayList<>(allHolidays);
     }
+
 
     private List<HolidayResponse> fetchHolidays(String operationUri, String solYear, String solMonth) throws IOException {
         JSONObject jsonObject = holidayExplorer.getHolidayExplorer(operationUri, solYear, solMonth);
@@ -74,5 +80,27 @@ public class HolidayService {
         }
         return holidayResponses;
     }
+
+
+    public void createHolidays(FarmingDiary farmingDiaryId, List<HolidayResponse> responses) {
+
+        List<Holiday> holidays = responses.stream()
+                .map(response -> {
+                    Holiday holiday = Holiday.builder()
+                            .farmingDiary(farmingDiaryId)
+                            .localDate(response.getLocalDate())
+                            .dateKind(response.getDateKind())
+                            .dateName(response.getDateName())
+                            .isHoliday(response.getIsHoliday())
+                            .build();
+                    return holiday;
+                })
+                .collect(Collectors.toList());
+
+        holidayRepository.saveAll(holidays);
+    }
+
+
+
 
 }
