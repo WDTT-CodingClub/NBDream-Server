@@ -29,8 +29,6 @@ public class KakaoAddressService {
     @Value("${kakao-local.api.key}")
     private String kakaoLocalAPIKey;
 
-
-
     // 매개변수 : 주소
     // 리턴 : 위도 경도
     public Coordinates kakaoAddressSearch(String query) {
@@ -48,6 +46,9 @@ public class KakaoAddressService {
 
             ResponseEntity<String> response = restTemplate.exchange(url.toURI(), HttpMethod.GET, entity, String.class);
             KakaoResponse kakaoResponse = objectMapper.readValue(response.getBody(), KakaoResponse.class);
+            if (kakaoResponse.getDocuments().isEmpty()) {
+                return null;
+            }
             return new Coordinates(kakaoResponse.getDocuments().get(0).getY(), kakaoResponse.getDocuments().get(0).getX());
         } catch (Exception e){
             throw new KakaoLocalServiceErrorException();

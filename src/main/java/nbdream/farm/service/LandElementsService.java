@@ -152,7 +152,7 @@ public class LandElementsService {
         List<CompletableFuture<Void>> futures = addressMap.entrySet().stream()
                 .map(entry -> kakaoAsyncService.getCoordinatesAsync(entry.getValue())
                         .thenAccept(coordinates -> {
-                            coordinatesMap.put(entry.getKey(), coordinates);
+                            if (coordinates != null) coordinatesMap.put(entry.getKey(), coordinates);
                         }))
                 .collect(Collectors.toList());
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
