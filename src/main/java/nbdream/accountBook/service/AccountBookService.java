@@ -5,7 +5,7 @@ import nbdream.accountBook.domain.AccountBook;
 import nbdream.accountBook.domain.AccountBookCategory;
 import nbdream.accountBook.domain.AccountBookHistory;
 import nbdream.accountBook.domain.TransactionType;
-import nbdream.accountBook.exception.CategoryNotFoundException;
+import nbdream.accountBook.exception.AccountBookNotFoundException;
 import nbdream.accountBook.repository.AccountBookHistoryRepository;
 import nbdream.accountBook.repository.AccountBookRepository;
 import nbdream.accountBook.service.dto.GetAccountBookGraphResDto;
@@ -14,9 +14,6 @@ import nbdream.accountBook.service.dto.GetAccountBookListResDto;
 import nbdream.accountBook.service.dto.GetAccountBookResDto;
 import nbdream.image.domain.Image;
 import nbdream.image.repository.ImageRepository;
-import nbdream.member.domain.Member;
-import nbdream.member.exception.MemberNotFoundException;
-import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -27,7 +24,6 @@ import java.util.stream.Collectors;
 public class AccountBookService {
 
     private final AccountBookRepository accountBookRepository;
-    private final MemberRepository memberRepository;
     private final AccountBookHistoryRepository accountBookHistoryRepository;
     private final ImageRepository imageRepository;
 
@@ -35,8 +31,7 @@ public class AccountBookService {
 
     // 장부 조회에 필요한 리스트 가져오는 메서드
     public GetAccountBookListResDto getMyAccountBookList(GetAccountBookListReqDto request, Long memberId) {
-        AccountBook accountBook = accountBookRepository.findByMemberId(memberId)
-                .orElseGet(() -> createNewAccountBook(memberId));
+        AccountBook accountBook = accountBookRepository.findByMemberId(memberId).orElseThrow(AccountBookNotFoundException::new);
 
         //커서 페이징
         Long cursor = request.getLastContentsId() == null ? 0 : request.getLastContentsId();
@@ -100,14 +95,14 @@ public class AccountBookService {
     }
 
     // 장부 생성
-    private AccountBook createNewAccountBook(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
-        AccountBook accountBook = AccountBook.builder()
-                .member(member)
-                .build();
-        return accountBookRepository.save(accountBook);
-    }
+//    private AccountBook createNewAccountBook(Long memberId) {
+//        Member member = memberRepository.findById(memberId)
+//                .orElseThrow(MemberNotFoundException::new);
+//        AccountBook accountBook = AccountBook.builder()
+//                .member(member)
+//                .build();
+//        return accountBookRepository.save(accountBook);
+//    }
 
     // 카테고리 목록 조회 메서드
     private List<String> getCategoryList(List<AccountBookHistory> list) {

@@ -50,8 +50,8 @@ public class Bulletin extends BaseEntity {
         this.bookmarkedCount = 0;
     }
 
-    public void update(final Member member, final String crop, final BulletinCategory category, final String content) {
-        if (!isAuthor(member)) {
+    public void update(final Long memberId, final String crop, final BulletinCategory category, final String content) {
+        if (!isAuthor(memberId)) {
             throw new UnEditableBulletinException();
         }
 
@@ -60,8 +60,8 @@ public class Bulletin extends BaseEntity {
         this.content = content;
     }
 
-    public void delete(final Member member) {
-        if (!isAuthor(member)) {
+    public void delete(final Long memberId) {
+        if (!isAuthor(memberId)) {
             throw new UnEditableBulletinException();
         }
 
@@ -76,7 +76,7 @@ public class Bulletin extends BaseEntity {
         this.bookmarkedCount -= 1;
     }
 
-    public boolean isAuthor(final Member member) {
-        return member.getId().equals(author.getId());
+    public boolean isAuthor(final Long memberId) {
+        return memberId.equals(author.getId());
     }
 }

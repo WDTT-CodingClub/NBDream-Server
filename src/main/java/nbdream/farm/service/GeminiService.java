@@ -7,6 +7,7 @@ import nbdream.farm.domain.Crop;
 import nbdream.farm.domain.Farm;
 import nbdream.farm.domain.LandElements;
 import nbdream.farm.exception.CropNotFoundException;
+import nbdream.farm.exception.FarmNotFoundException;
 import nbdream.farm.exception.FetchApiInternalServerErrorException;
 import nbdream.farm.exception.LandElementsNotFoundException;
 import nbdream.farm.repository.CropRepository;
@@ -33,8 +34,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class GeminiService {
-    private final MemberRepository memberRepository;
     private final CropRepository cropRepository;
+    private final FarmRepository farmRepository;
 
     @Qualifier("geminiRestTemplate")
     @Autowired
@@ -47,12 +48,12 @@ public class GeminiService {
     private String geminiApiKey;
 
     public String getContents(PostAiChatReqDto reqDto, Long memberId) {
-        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
+        final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         List<Crop> cropList = cropRepository.findAll();
         if(cropList == null || cropList.isEmpty()){
             throw new CropNotFoundException();
         }
-        LandElements landElements = member.getFarm().getLandElements();
+        LandElements landElements = farm.getLandElements();
 
         String validQuestion = validQuestion(reqDto.getQuestion(), memberId, cropList, landElements);
         boolean isValid = isValid(reqDto.getQuestion(), cropList);
