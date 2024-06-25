@@ -73,19 +73,8 @@ public class BulletinService {
             return BookmarkStatus.ON.getCode();
         }
 
-        handleExistingBookmark(bulletin, bookmark.get());
+        bookmarkRepository.delete(bookmark.get());
         return BookmarkStatus.OFF.getCode();
-    }
-
-    private void handleExistingBookmark(Bulletin bulletin, Bookmark bookmark) {
-        if (bookmark.getStatus().equals(Status.NORMAL)) {
-            bookmark.delete();
-            bulletin.minusBookmarkedCount();
-        }
-        if (bookmark.getStatus().equals(Status.EXPIRED)) {
-            bookmark.recover();
-            bulletin.plusBookmarkedCount();
-        }
     }
 
 }
