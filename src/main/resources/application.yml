@@ -13,9 +13,9 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: 
-    password: 
-    url: 
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
   cloud:
     gcp:
       storage:
@@ -23,8 +23,8 @@ spring:
         credentials:
           location: src/main/resources/rock-partition-425300-s4-4bd76d361694.json
           scopes: https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/sqlservice.admin
-        project-id: 
-        bucket: 
+        project-id: ${GCP_PROJECT_ID}
+        bucket: ${GCP_BUCKET_NAME}
     servlet:
       multipart:
         enabled: true
@@ -45,7 +45,7 @@ jwt:
   refresh-token:
     expire-length: 129600000 # 15일
   token:
-    secret-key: 
+    secret-key: ${TOKEN_SECRET_KEY}
     
 logging:
   level:

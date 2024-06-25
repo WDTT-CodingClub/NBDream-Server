@@ -12,10 +12,11 @@ import nbdream.bulletin.repository.BulletinRepository;
 import nbdream.comment.domain.Comment;
 import nbdream.comment.repository.CommentRepository;
 import nbdream.farm.domain.Farm;
+import nbdream.farm.domain.LandElements;
 import nbdream.farm.exception.FarmNotFoundException;
-import nbdream.farm.repository.CropRepository;
 import nbdream.farm.repository.FarmCropRepository;
 import nbdream.farm.repository.FarmRepository;
+import nbdream.farm.repository.LandElementsRepository;
 import nbdream.image.domain.Image;
 import nbdream.image.dto.ImageDto;
 import nbdream.image.repository.ImageRepository;
@@ -28,27 +29,34 @@ import nbdream.member.dto.request.WithdrawalReqDto;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
 import nbdream.member.repository.WithdrawalRepository;
+import nbdream.weather.repository.SimpleWeatherRepository;
+import nbdream.weather.repository.WeatherRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final FarmCropRepository farmCropRepository;
-    private final CropRepository cropRepository;
     private final BulletinRepository bulletinRepository;
     private final BookmarkRepository bookmarkRepository;
     private final CommentRepository commentRepository;
     private final ImageRepository imageRepository;
     private final ImageService imageService;
     private final FarmRepository farmRepository;
+    private final LandElementsRepository landElementsRepository;
+    private final SimpleWeatherRepository simpleWeatherRepository;
+    private final WeatherRepository weatherRepository;
     private final AccountBookRepository accountBookRepository;
     private final WithdrawalRepository withdrawalRepository;
+
 
     public TokenResponse signup(String nickname) {
         Member member = Member.builder()
@@ -57,10 +65,14 @@ public class MemberService {
                 .nickname(nickname)
                 .build();
 
-        Long id = memberRepository.save(member).getId();
-        return new TokenResponse(jwtTokenProvider.createAccessToken(id), jwtTokenProvider.createRefreshToken(id));
+        Member savedMember = memberRepository.save(member);
+        farmRepository.save(new Farm(savedMember));
+        accountBookRepository.save(new AccountBook(savedMember));
+        return new TokenResponse(jwtTokenProvider.createAccessToken(savedMember.getId()),
+                jwtTokenProvider.createRefreshToken(savedMember.getId()));
     }
 
+    @Transactional(readOnly = true)
     public LoginType getLoginType(final Long memberId) {
         final Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         return member.getLoginType();
@@ -72,9 +84,12 @@ public class MemberService {
 
     public void deleteMember(final Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+
         deleteMyBulletins(memberId);
         deleteMyComments(memberId);
         deleteMyBookmarks(memberId);
+        deleteLandElements(memberId);
+        deleteWeathers(memberId);
         deleteFarm(memberId);
         deleteAccountBook(memberId);
         member.delete();
@@ -120,6 +135,18 @@ public class MemberService {
         }
 
         imageRepository.deleteAllByTargetId(bulletinId);
+    }
+
+    public void deleteLandElements(final Long memberId) {
+        Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
+        LandElements landElements = farm.getLandElements();
+        landElementsRepository.delete(landElements);
+    }
+
+    public void deleteWeathers(final Long memberId) {
+        Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
+        simpleWeatherRepository.deleteAllByFarmId(farm.getId());
+        weatherRepository.deleteAllByFarmId(farm.getId());
     }
 
     public void deleteFarm(final Long memberId) {

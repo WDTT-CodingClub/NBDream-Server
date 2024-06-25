@@ -12,9 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class MyPageResDto {
+    private Long memberId;
     private String nickname;
     private String address;
     private String profileImageUrl;
+    private String bjdCode;
     private double longitude;
     private double latitude;
     private List<String> crops;

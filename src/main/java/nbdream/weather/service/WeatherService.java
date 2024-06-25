@@ -2,6 +2,8 @@ package nbdream.weather.service;
 
 import lombok.RequiredArgsConstructor;
 import nbdream.farm.domain.Farm;
+import nbdream.farm.exception.FarmNotFoundException;
+import nbdream.farm.repository.FarmRepository;
 import nbdream.member.domain.Member;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
@@ -26,14 +28,13 @@ import java.util.stream.Collectors;
 public class WeatherService {
 
     private final WeatherRepository weatherRepository;
-    private final MemberRepository memberRepository;
+    private final FarmRepository farmRepository;
     private final SimpleWeatherRepository simpleWeatherRepository;
     private final LoadLongTermWeatherService loadLongTermWeatherService;
     private final LoadShortTermWeatherService loadShortTermWeatherService;
 
     public WeatherRes getWeathers(final Long memberId) {
-        final Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
-        final Farm farm = member.getFarm();
+        Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
 
         Optional<Weather> todayWeather = weatherRepository.findByFarmIdAndDate(farm.getId(), LocalDate.now());
         if (todayWeather.isEmpty()) {

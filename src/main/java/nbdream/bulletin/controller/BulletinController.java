@@ -43,9 +43,8 @@ public class BulletinController {
 
     @Operation(summary = "북마크")
     @PostMapping("/{bulletin-id}/bookmark")
-    public ApiResponse<Void> bookmarkBulletin(@Parameter(hidden = true) @AuthenticatedMemberId final Long memberId,
+    public ApiResponse<Integer> bookmarkBulletin(@Parameter(hidden = true) @AuthenticatedMemberId final Long memberId,
                                             @PathVariable("bulletin-id") final Long bulletinId) {
-        bulletinService.bookmark(memberId, bulletinId);
-        return ApiResponse.ok();
+        return ApiResponse.ok(bulletinService.bookmark(memberId, bulletinId));
     }
 }

@@ -1,17 +1,15 @@
 package nbdream.farm.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
 import nbdream.member.domain.Member;
 
-import static nbdream.farm.domain.Location.EMPTY;
-
-
 @Entity
 @Getter
-@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Farm extends BaseEntity {
 
     @Id
@@ -22,8 +20,6 @@ public class Farm extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String name;
-
     @Embedded
     private Location location;
 
@@ -31,10 +27,10 @@ public class Farm extends BaseEntity {
     @JoinColumn(name = "land_elements_id")
     private LandElements landElements;
 
-    public Farm() {
-        this.name = EMPTY;
+    public Farm(final Member member) {
         this.location = new Location();
         this.landElements = new LandElements();
+        this.member = member;
     }
 
     public void updateLandElements(final LandElements landElements){

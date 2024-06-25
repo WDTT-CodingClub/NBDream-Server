@@ -4,17 +4,13 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.RequiredArgsConstructor;
 import nbdream.farm.domain.Farm;
 import nbdream.farm.domain.LandElements;
-import nbdream.farm.exception.ClosestSoilDataInternalServerErrorException;
-import nbdream.farm.exception.FetchApiInternalServerErrorException;
-import nbdream.farm.exception.LandElementsNotFoundException;
-import nbdream.farm.exception.ParsingInternalServerErrorException;
+import nbdream.farm.exception.*;
+import nbdream.farm.repository.FarmRepository;
 import nbdream.farm.repository.LandElementsRepository;
 import nbdream.farm.service.dto.LandElements.soilData.GetLandElementResDto;
 import nbdream.farm.service.dto.LandElements.soilDataList.ItemBjd;
 import nbdream.farm.service.dto.LandElements.soilDataList.SoilDataListResponse;
 import nbdream.farm.util.Coordinates;
-import nbdream.member.domain.Member;
-import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,8 +30,8 @@ import static nbdream.farm.util.Coordinates.findNearestLocation;
 @RequiredArgsConstructor
 public class LandElementsService {
 
-    private final MemberRepository memberRepository;
     private final LandElementsRepository landElementsRepository;
+    private final FarmRepository farmRepository;
     private final KakaoAsyncService kakaoAsyncService;
     private final RestTemplate restTemplate;
 
@@ -48,8 +44,7 @@ public class LandElementsService {
 
     //유저의 토양 정보 반환
     public GetLandElementResDto getLandElements(Long memberId) {
-        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
-        Farm farm = member.getFarm();
+        final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         LandElements landElements = farm.getLandElements();
         if(landElements == null){
             throw new LandElementsNotFoundException();
@@ -157,7 +152,7 @@ public class LandElementsService {
         List<CompletableFuture<Void>> futures = addressMap.entrySet().stream()
                 .map(entry -> kakaoAsyncService.getCoordinatesAsync(entry.getValue())
                         .thenAccept(coordinates -> {
-                            coordinatesMap.put(entry.getKey(), coordinates);
+                            if (coordinates != null) coordinatesMap.put(entry.getKey(), coordinates);
                         }))
                 .collect(Collectors.toList());
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();

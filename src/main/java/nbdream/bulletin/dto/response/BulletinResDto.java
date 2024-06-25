@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class BulletinResDto {
     private Long authorId;
     private Long bulletinId;
@@ -29,8 +28,12 @@ public class BulletinResDto {
     private LocalDate createdTime;
     private List<CommentResDto> comments;
     private int bookmarkedCount;
+    private boolean isAuthor;
+    private boolean isBookmarked;
 
-    public BulletinResDto(final Bulletin bulletin, final Member author, final List<String> imageUrls, final List<Comment> comments) {
+    @Builder
+    public BulletinResDto(final Bulletin bulletin, final Member author, final List<String> imageUrls,
+                          final List<Comment> comments, final boolean isAuthor, final boolean isBookmarked) {
         this.authorId = author.getId();
         this.bulletinId = bulletin.getId();
         this.nickname = author.getNickname();
@@ -42,6 +45,8 @@ public class BulletinResDto {
         this.createdTime = bulletin.getCreatedDate().toLocalDate();
         this.comments = comments.stream().map(comment -> new CommentResDto(comment)).collect(Collectors.toList());
         this.bookmarkedCount = bulletin.getBookmarkedCount();
+        this.isAuthor = isAuthor;
+        this.isBookmarked = isBookmarked;
     }
 }
 
