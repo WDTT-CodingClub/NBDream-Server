@@ -11,7 +11,6 @@ import nbdream.farm.service.dto.LandElements.soilData.GetLandElementResDto;
 import nbdream.farm.service.dto.LandElements.soilDataList.ItemBjd;
 import nbdream.farm.service.dto.LandElements.soilDataList.SoilDataListResponse;
 import nbdream.farm.util.Coordinates;
-import nbdream.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -145,7 +144,6 @@ public class LandElementsService {
     private Map<Integer, Coordinates> getCoordinatesByAddressFromKakao(List<ItemBjd> items) {
         Map<Integer, String> addressMap = new HashMap<>();
         Map<Integer, Coordinates> coordinatesMap = new ConcurrentHashMap<>();
-
         for (ItemBjd item : items) {
             addressMap.put(item.getNo(), item.getPnuNm());
         }
@@ -156,65 +154,12 @@ public class LandElementsService {
                         }))
                 .collect(Collectors.toList());
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        if(coordinatesMap.isEmpty()){
+            coordinatesMap.put(items.get(0).getNo(), new Coordinates(0,0));
+        }
         return coordinatesMap;
     }
 
 }
 
-//
-//
-//    // 요청 : 유저ID(PNU)
-//    // 응답 : 토양정보
-//    public GetLandElementResDto getLandElements(Long memberId) {
-//        Farm farm = farmRepository.findByMemberId(memberId)
-//                .orElseThrow(FarmNotFoundException::new);
-//        if (farm.getLocation() == null || farm.getLocation().getPnuCode() == null || farm.getLocation().getPnuCode().isEmpty()) {
-//            throw new PnuNotFoundException();
-//        }
-//
-//        LandElements landElements = farm.getLandElements();
-//        GetLandElementResDto response = new GetLandElementResDto();
-//        // 토양 정보가 없으면 받아와서 저장
-//        if (landElements == null) {
-//            landElements = fetchSoilDataFromApi(farm.getLocation().getPnuCode());
-//            landElementsRepository.save(landElements);
-//            farm.updateLandElements(landElements);
-//            farmRepository.save(farm);
-//        }
-//        response.updateResDto(landElements);
-//        return response;
-//    }
-//
-//    //토양검정(PNU)
-//    private LandElements fetchSoilDataFromApi(String pnuCode) {
-//        try {
-//            StringBuilder urlBuilder = new StringBuilder(soilApiUrl);
-//            urlBuilder.append("?serviceKey" +  "=" + soilApiKey);
-//            urlBuilder.append("&PNU_Code"  + "=" + pnuCode);
-//            URL url = new URL(urlBuilder.toString());
-//
-//            String xmlResponse = restTemplate.getForObject(url.toURI(), String.class);
-//            return parseSoilData(xmlResponse);
-//        } catch (Exception e) {
-//            throw new FetchApiInternalServerErrorException();
-//        }
-//    }
-//
-//    //파싱(PNU)
-//    private LandElements parseSoilData(String xmlResponse) {
-//        try{
-//            XmlMapper xmlMapper = new XmlMapper();
-//            SoilDataResponse response = xmlMapper.readValue(xmlResponse, SoilDataResponse.class);
-//            List<Item> items = response.getBody().getItems();
-//
-//            if(items != null && !(items.isEmpty())){
-//                Item item = items.get(0);
-//                LandElements landElements = new LandElements(item.getAcid(), item.getVldpha(), item.getVldsia(), item.getOm(), item.getPosifertMg(), item.getPosifertK(), item.getPosifertCa(), item.getSelc());
-//                return landElements;
-//            }
-//        }catch (Exception e){
-//            throw new ParsingInternalServerErrorException();
-//        }
-//        return null;
-//    }
 
