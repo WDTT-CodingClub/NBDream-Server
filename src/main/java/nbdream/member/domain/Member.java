@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nbdream.accountBook.domain.AccountBook;
 import nbdream.common.entity.BaseEntity;
 import nbdream.common.entity.Status;
 import nbdream.farm.domain.Farm;
@@ -32,10 +33,6 @@ public class Member extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private Authority authority;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "farm_id")
-    private Farm farm;
-
     private boolean privacyConsent;
 
     @Builder
@@ -46,7 +43,6 @@ public class Member extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
         this.authority = authority;
         this.privacyConsent = privacyConsent;
-        this.farm = new Farm();
     }
 
     public void update(final String nickname, final String profileImageUrl) {

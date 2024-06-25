@@ -2,12 +2,12 @@ package nbdream.accountBook.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
 import nbdream.member.domain.Member;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,15 +19,14 @@ public class AccountBook extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "member_id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @OneToMany(mappedBy = "accountBook", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AccountBookHistory> accountBookHistoryList;
+    private List<AccountBookHistory> accountBookHistoryList = new ArrayList<>();
 
-    @Builder
-    public AccountBook(Member member) {
+    public AccountBook(final Member member) {
         this.member = member;
     }
 
