@@ -25,15 +25,17 @@ public class SearchingBulletinController {
     public ApiResponse<BulletinsResDto> getBulletins(@RequestParam(value = "keyword", required = false) final String keyword,
                                                      @RequestParam(value = "bulletinCategory", required = false) final String bulletinCategory,
                                                      @RequestParam(value = "crop", required = false) final String crop,
-                                                     @RequestParam(value = "lastBulletinId", required = false) final Long lastBulletinId) {
+                                                     @RequestParam(value = "lastBulletinId", required = false) final Long lastBulletinId,
+                                                     @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId) {
 
-        return ApiResponse.ok(searchingBulletinService.getBulletins(new SearchBulletinCondDto(keyword, bulletinCategory, crop, lastBulletinId)));
+        return ApiResponse.ok(searchingBulletinService.getBulletins(memberId, new SearchBulletinCondDto(keyword, bulletinCategory, crop, lastBulletinId)));
     }
 
     @Operation(summary = "게시글 상세 조회")
     @GetMapping("/{bulletin-id}")
-    public ApiResponse<BulletinResDto> getBulletinDetails(@PathVariable("bulletin-id") final Long bulletinId) {
-        return ApiResponse.ok(searchingBulletinService.getBulletinDetails(bulletinId));
+    public ApiResponse<BulletinResDto> getBulletinDetails(@Parameter(hidden = true) @AuthenticatedMemberId final Long memberId,
+                                                          @PathVariable("bulletin-id") final Long bulletinId) {
+        return ApiResponse.ok(searchingBulletinService.getBulletinDetails(memberId, bulletinId));
     }
 
     @Operation(summary = "북마크한 게시글 목록 조회")
