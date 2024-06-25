@@ -7,8 +7,9 @@ import lombok.RequiredArgsConstructor;
 import nbdream.auth.config.AuthenticatedMemberId;
 import nbdream.common.advice.response.ApiResponse;
 import nbdream.farm.service.ScheduleService;
-import nbdream.farm.service.dto.schedule.request.FarmWorkListReqDto;
+import nbdream.farm.service.dto.schedule.request.*;
 import nbdream.farm.service.dto.schedule.response.FarmWorkListResDto;
+import nbdream.farm.service.dto.schedule.response.ScheduleListResDto;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,6 +27,45 @@ public class ScheduleController {
                                                               @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId){
         FarmWorkListReqDto request = new FarmWorkListReqDto(crop, month);
         return ApiResponse.ok(scheduleService.getFarmWorkSchedule(request, memberId));
+    }
+
+    @Operation(summary = "일정 등록", description = "날짜 : yyyy-MM-dd")
+    @PostMapping("/schedule/register")
+    public ApiResponse<Void> registerSchedule(@RequestBody PostScheduleReqDto request,
+                                         @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId){
+
+        return scheduleService.registerSchedule(request, memberId);
+    }
+
+    @Operation(summary = "일정 수정", description = "날짜 : yyyy-MM-dd")
+    @PutMapping("/schedule/update/{schedule-id}")
+    public ApiResponse<Void> updateSchedule(@RequestBody PutScheduleReqDto request,
+                                            @PathVariable("schedule-id") final Long scheduleId,
+                                              @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId){
+        return scheduleService.updateSchedule(request, scheduleId, memberId);
+    }
+
+    @Operation(summary = "일정 삭제", description = "")
+    @DeleteMapping("/schedule/delete/{schedule-id}")
+    public ApiResponse<Void> deleteSchedule(@PathVariable("schedule-id") final Long scheduleId,
+                                            @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId){
+        return scheduleService.deleteSchedule(scheduleId, memberId);
+    }
+
+    @Operation(summary = "주간 일정 조회", description = "날짜 형식 : yyyy-MM-dd")
+    @GetMapping("/schedule/week")
+    public ApiResponse<ScheduleListResDto> getWeeklySchedule(@RequestBody WeekScheduleListReqDto request,
+                                                             @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId){
+
+        return ApiResponse.ok(scheduleService.getWeeklySchedule(request, memberId));
+    }
+
+    @Operation(summary = "월간 일정 조회", description = "")
+    @GetMapping("/schedule/month")
+    public ApiResponse<ScheduleListResDto> getMonthlySchedule(@RequestBody ScheduleListReqDto request,
+                                                             @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId){
+
+        return ApiResponse.ok(scheduleService.getMonthlySchedule(request, memberId));
     }
 
 }
