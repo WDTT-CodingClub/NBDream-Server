@@ -29,11 +29,23 @@ public class Schedule extends BaseEntity {
 
     private String memo;
 
-    public Schedule(final Farm farm, final String title, final LocalDate startDate, final LocalDate endDate, final String memo) {
+    private String category;
+
+    public Schedule(final Farm farm, final String title, final LocalDate startDate, final LocalDate endDate, final String memo, final String category) {
         this.farm = farm;
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
         this.memo = memo;
+        this.category = category;
+    }
+
+    public Schedule update(final String title, final LocalDate startDate, final LocalDate endDate, final String memo, final String category) {
+        this.title = title;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.memo = memo;
+        this.category = category;
+        return this;
     }
 }
