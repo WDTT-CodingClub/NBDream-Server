@@ -3,6 +3,7 @@ package nbdream.member.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nbdream.auth.config.AuthenticatedMemberId;
 import nbdream.auth.dto.response.TokenResponse;
@@ -32,10 +33,10 @@ public class MemberController {
         return ApiResponse.ok(myProfileService.getMyPage(memberId));
     }
 
-    @Operation(summary = "프로필 수정")
+    @Operation(summary = "프로필 수정", description = "닉네임, 프로필 사진을 제외하고 필수항목")
     @PutMapping("/profile")
     public ApiResponse<Void> updateProfile(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
-                                           @RequestBody UpdateProfileReqDto request) {
+                                           @Valid @RequestBody UpdateProfileReqDto request) {
         myProfileService.updateProfile(memberId, request);
         return ApiResponse.ok();
     }
