@@ -14,6 +14,7 @@ import nbdream.weather.exception.SkyRegionCodeNotFoundException;
 import nbdream.weather.exception.TemperatureRegionCodeNotFoundException;
 import nbdream.weather.exception.WeatherServerConnectionFailException;
 import nbdream.weather.infrastructure.WeatherApiProperties;
+import nbdream.weather.infrastructure.util.DefaultLocation;
 import nbdream.weather.repository.SimpleWeatherRepository;
 import nbdream.weather.repository.SkyRegionCodeRepository;
 import nbdream.weather.repository.TemperatureRegionCodeRepository;
@@ -48,7 +49,21 @@ public class LoadLongTermWeatherService {
     private final SimpleWeatherRepository simpleWeatherRepository;
     private final WeatherApiProperties weatherApiProperties;
     private final ObjectMapper objectMapper;
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    private static final String DATE_PATTERN = "yyyyMMdd";
+    private static final String AM6 = "0600";
+
+//    public void loadLongTermWeather(final Long farmId) {
+//        final Farm farm = farmRepository.findById(farmId).orElseThrow(FarmNotFoundException::new);
+//        Location location = farm.getLocation();
+//
+//        if (location.getAddress().isEmpty()) {
+//            Location defaultLocation = new Location();
+//            defaultLocation.update(DefaultLocation.address, defaultLocation.getBjdCode(), defaultLocation.getLatitude(), defaultLocation.getLongitude());
+//            loadDefaultLongTermWeather(final defaultLocation);
+//        }
+//    }
 
     public void loadLongTermWeather(final Long farmId){
         final Farm farm = farmRepository.findById(farmId).orElseThrow(FarmNotFoundException::new);
@@ -67,6 +82,22 @@ public class LoadLongTermWeatherService {
 
         weathersRes.stream()
                 .forEach(weatherRes -> simpleWeatherRepository.save(weatherRes.toSimpleWeatherEntity(farm)));
+    }
+
+    public void loadDefaultLongTermWeather(final Location location){
+        final String skyRegionCode = getSkyRegionCode(location.getAddress());
+        final String temperatureRegionCode = getTemperatureRegionCode(location.getAddress());
+        final LocalDate now = LocalDate.now();
+
+        final LongTermSkyResult longTermSkyResult = loadLongTermSkyResult(skyRegionCode, now);
+        final LongTermTemperatureResult longTermTemperatureResult = loadLongTermTemperatureResult(temperatureRegionCode, now);
+
+        final List<LongTermSkyRes> sky = longTermSkyResult.getItems();
+        final List<LongTermTemperatureRes> temperature = longTermTemperatureResult.getItems();
+        final List<LongTermWeatherRes> weathersRes = combineSkyAndTemperatureToWeather(sky, temperature);
+
+        weathersRes.stream()
+                .forEach(weatherRes -> simpleWeatherRepository.save(weatherRes.toSimpleWeatherEntity(null)));
     }
 
     public LongTermSkyResult loadLongTermSkyResult(final String skyRegionCode, final LocalDate date) {
@@ -120,8 +151,8 @@ public class LoadLongTermWeatherService {
     }
 
     private String getTmFc(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        return date.format(formatter) + "0600";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
+        return date.format(formatter) + AM6;
     }
 
     private List<LongTermWeatherRes> combineSkyAndTemperatureToWeather(List<LongTermSkyRes> sky, List<LongTermTemperatureRes> temperature) {

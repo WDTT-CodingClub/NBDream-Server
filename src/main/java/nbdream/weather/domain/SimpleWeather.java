@@ -29,16 +29,20 @@ public class SimpleWeather {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
+    private String dayOfTheWeek;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "farm_id")
     private Farm farm;
 
     @Builder
-    public SimpleWeather(final int highestTemperature, final int lowestTemperature, final Sky sky, final LocalDate date, final Farm farm) {
+    public SimpleWeather(final int highestTemperature, final int lowestTemperature, final Sky sky,
+                         final String dayOfTheWeek, final LocalDate date, final Farm farm) {
         this.highestTemperature = highestTemperature;
         this.lowestTemperature = lowestTemperature;
         this.sky = sky;
         this.date = date;
+        this.dayOfTheWeek = dayOfTheWeek;
         this.farm = farm;
     }
 }

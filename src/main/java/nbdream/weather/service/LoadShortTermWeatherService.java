@@ -39,7 +39,10 @@ public class LoadShortTermWeatherService {
     private final SimpleWeatherRepository simpleWeatherRepository;
     private final WeatherApiProperties weatherApiProperties;
     private final ObjectMapper objectMapper;
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    private static final String HYPHEN = "-";
+    private static final String DATE_PATTERN = "yyyyMMdd";
 
     public void loadShortTermWeather(final Long farmId){
         final Farm farm = farmRepository.findById(farmId).orElseThrow(FarmNotFoundException::new);
@@ -50,9 +53,22 @@ public class LoadShortTermWeatherService {
 
         for (String date : weatherResMap.keySet()) {
             ShortTermWeatherRes weatherRes = weatherResMap.get(date);
-            weatherRes.setDate(date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)); // yyyyMMdd 형식의 String을 yyyy-MM-dd 로 변환
+            weatherRes.setDate(date.substring(0, 4) + HYPHEN + date.substring(4, 6) + HYPHEN + date.substring(6, 8)); // yyyyMMdd 형식의 String을 yyyy-MM-dd 로 변환
             weatherRepository.save(weatherRes.toWeatherEntity(farm));
             simpleWeatherRepository.save(weatherRes.toSimpleWeatherEntity(farm));
+        }
+    }
+
+    public void loadDefaultShortTermWeather(final Location location){
+
+        final ShortTermWeatherResult shortTermWeatherResult = loadShortTermResult(location, LocalDate.now());
+        final Map<String, ShortTermWeatherRes> weatherResMap = shortTermWeatherResult.getItems();
+
+        for (String date : weatherResMap.keySet()) {
+            ShortTermWeatherRes weatherRes = weatherResMap.get(date);
+            weatherRes.setDate(date.substring(0, 4) + HYPHEN + date.substring(4, 6) + HYPHEN + date.substring(6, 8)); // yyyyMMdd 형식의 String을 yyyy-MM-dd 로 변환
+            weatherRepository.save(weatherRes.toWeatherEntity(null));
+            simpleWeatherRepository.save(weatherRes.toSimpleWeatherEntity(null));
         }
     }
 
@@ -74,7 +90,7 @@ public class LoadShortTermWeatherService {
     }
 
     public String getBaseDate(final LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
         return date.format(formatter);
     }
 }

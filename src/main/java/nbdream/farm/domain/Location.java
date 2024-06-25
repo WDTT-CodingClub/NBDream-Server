@@ -1,6 +1,8 @@
 package nbdream.farm.domain;
 
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import nbdream.farm.util.GpsTransfer;
@@ -9,6 +11,8 @@ import nbdream.farm.util.Grid;
 @Getter
 @Embeddable
 @ToString
+@AllArgsConstructor
+@Builder
 public class Location {
     public final static String EMPTY = "";
 

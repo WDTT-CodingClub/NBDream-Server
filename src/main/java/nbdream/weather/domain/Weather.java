@@ -39,12 +39,16 @@ public class Weather {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
+    private String dayOfTheWeek;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "farm_id")
     private Farm farm;
 
     @Builder
-    public Weather(final int precipitationProbability, final int precipitationAmount, final int humidity, final int windSpeed, final int highestTemperature, final int lowestTemperature, final int currentTemperature, final Sky sky, final LocalDate date, final Farm farm) {
+    public Weather(final int precipitationProbability, final int precipitationAmount, final int humidity, final int windSpeed,
+                   final int highestTemperature, final int lowestTemperature, final int currentTemperature, final Sky sky,
+                   final LocalDate date, final String dayOfTheWeek, final Farm farm) {
         this.precipitationProbability = precipitationProbability;
         this.precipitationAmount = precipitationAmount;
         this.humidity = humidity;
@@ -54,6 +58,7 @@ public class Weather {
         this.currentTemperature = currentTemperature;
         this.sky = sky;
         this.date = date;
+        this.dayOfTheWeek = dayOfTheWeek;
         this.farm = farm;
     }
 }

@@ -13,8 +13,19 @@ public interface SimpleWeatherRepository extends JpaRepository<SimpleWeather, Lo
     @Query("DELETE FROM SimpleWeather s WHERE s.farm.id = :farmId")
     void deleteAllByFarmId(@Param("farmId") Long farmId);
 
+    @Modifying
+    @Query("DELETE FROM SimpleWeather s WHERE s.farm.id IS NULL")
+    void deleteAllDefaultWeather();
+
     @Query("SELECT s FROM SimpleWeather s WHERE s.farm.id = :farmId " +
             "ORDER BY s.date ASC " +
-            "LIMIT 6")
-    List<SimpleWeather> findByWeeksSimpleWeather(@Param("farmId") Long farmId);
+            "LIMIT 6 " +
+            "OFFSET 1")
+    List<SimpleWeather> findWeeksSimpleWeatherByFarmId(@Param("farmId") Long farmId);
+
+    @Query("SELECT s FROM SimpleWeather s WHERE s.farm.id IS NULL " +
+            "ORDER BY s.date ASC " +
+            "LIMIT 6 " +
+            "OFFSET 1")
+    List<SimpleWeather> findWeeksDefaultSimpleWeather();
 }
