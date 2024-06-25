@@ -2,6 +2,7 @@ package nbdream.farm.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
@@ -24,6 +25,7 @@ public class Work extends BaseEntity {
 
     private String content;
 
+    @Builder
     public Work(final FarmingDiary farmingDiary, final WorkCategory workCategory, final String content) {
         this.farmingDiary = farmingDiary;
         this.workCategory = workCategory;

@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
@@ -32,6 +33,7 @@ public class FarmingDiary extends BaseEntity {
 
     private String memo;
 
+    @Builder
     public FarmingDiary(final LocalDate date, final String crop, final int workingPeopleNumber, final int workingTime, final int workingArea, final String memo) {
         this.date = date;
         this.crop = crop;

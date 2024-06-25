@@ -15,5 +15,7 @@ public class GetAccountBookListResDto {
     private long totalRevenue;
     private long totalExpense;
     private long totalCost;
+    private List<GetAccountBookGraphResDto> revenuePercent;
+    private List<GetAccountBookGraphResDto> expensePercent;
     private boolean hasNext;
 }
