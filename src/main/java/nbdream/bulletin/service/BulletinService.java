@@ -41,10 +41,9 @@ public class BulletinService {
     }
 
     public Long updateBulletin(final Long memberId, final Long bulletinId, final BulletinReqDto request) {
-        final Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
         final Bulletin bulletin = bulletinRepository.findById(bulletinId).orElseThrow(() -> new BulletinNotFoundException());
 
-        bulletin.update(member, request.getDreamCrop(), BulletinCategory.of(request.getBulletinCategory()), request.getContent());
+        bulletin.update(memberId, request.getDreamCrop(), BulletinCategory.of(request.getBulletinCategory()), request.getContent());
 
         request.getImageUrls().stream()
                 .map(url -> imageRepository.save(new Image(bulletinId, url)));
@@ -53,20 +52,19 @@ public class BulletinService {
     }
 
     public void deleteBulletin(final Long memberId, final Long bulletinId) {
-        final Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
         final Bulletin bulletin = bulletinRepository.findById(bulletinId).orElseThrow(() -> new BulletinNotFoundException());
 
         imageRepository.findAllByTargetId(bulletinId).stream()
                 .forEach(image -> image.delete());
 
-        bulletin.delete(member);
+        bulletin.delete(memberId);
     }
 
     public void bookmark(final Long memberId, final Long bulletinId) {
-        final Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
+        final Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Bulletin bulletin = bulletinRepository.findById(bulletinId).orElseThrow(() -> new BulletinNotFoundException());
 
-        Optional<Bookmark> bookmark = bookmarkRepository.findByMemberAndBookmark(member, bulletin);
+        Optional<Bookmark> bookmark = bookmarkRepository.findByMemberAndBulletin(member, bulletin);
 
         if (bookmark.isEmpty()) {
             bookmarkRepository.save(new Bookmark(member, bulletin));

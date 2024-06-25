@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -35,20 +36,27 @@ public class SearchingBulletinService {
 
     private static final int PAGE_SIZE = 10;
 
-    public BulletinResDto getBulletinDetails(final Long bulletinId) {
+    public BulletinResDto getBulletinDetails(final Long memberId, final Long bulletinId) {
         final Bulletin bulletin = bulletinRepository.findByIdFetchComments(bulletinId).orElseThrow(() -> new BulletinNotFoundException());
 
         final List<String> imageUrls = imageRepository.findAllByTargetId(bulletinId).stream()
                 .map(image -> image.getImageUrl())
                 .collect(Collectors.toList());
 
-        return new BulletinResDto(bulletin, bulletin.getAuthor(), imageUrls, bulletin.getComments());
+        return BulletinResDto.builder()
+                .bulletin(bulletin)
+                .author(bulletin.getAuthor())
+                .imageUrls(imageUrls)
+                .comments(bulletin.getComments())
+                .isAuthor(bulletin.isAuthor(memberId))
+                .isBookmarked(isBookmarked(memberId, bulletinId))
+                .build();
     }
 
-    public BulletinsResDto getBulletins(SearchBulletinCondDto cond) {
+    public BulletinsResDto getBulletins(final Long memberId, SearchBulletinCondDto cond) {
         final List<Bulletin> bulletins = searchingBulletinRepository.searchBulletins(cond, PAGE_SIZE + 1);
 
-        return bulletinMappingImagesAndComments(bulletins);
+        return bulletinMappingImagesAndComments(memberId, bulletins);
     }
 
     public BulletinsResDto getBookmarkBulletins(final Long memberId, final Long lastBulletinId) {
@@ -60,7 +68,7 @@ public class SearchingBulletinService {
 
         final List<Bulletin> bulletins = bulletinRepository.findByIdsWithPaging(bookmarkBulletinIds, lastBulletinId);
 
-        return bulletinMappingImagesAndComments(bulletins);
+        return bulletinMappingImagesAndComments(memberId, bulletins);
     }
 
     public BulletinsResDto getMyBulletins(final Long memberId, final Long bulletinId) {
@@ -68,10 +76,10 @@ public class SearchingBulletinService {
 
         final List<Bulletin> bulletins = bulletinRepository.findByAuthorWithPaging(author.getId(), bulletinId);
 
-        return bulletinMappingImagesAndComments(bulletins);
+        return bulletinMappingImagesAndComments(memberId, bulletins);
     }
 
-    public BulletinsResDto bulletinMappingImagesAndComments(final List<Bulletin> bulletins) {
+    public BulletinsResDto bulletinMappingImagesAndComments(final Long memberId, final List<Bulletin> bulletins) {
         final List<Long> bulletinIds = bulletins.stream()
                 .map(bulletin -> bulletin.getId())
                 .collect(Collectors.toList());
@@ -82,7 +90,14 @@ public class SearchingBulletinService {
         boolean hasNext = hasNext(bulletins);
 
         final List<BulletinResDto> bulletinResDtos = bulletins.stream()
-                .map(bulletin -> new BulletinResDto(bulletin, bulletin.getAuthor(), imageMap.get(bulletin.getId()), bulletin.getComments()))
+                .map(bulletin -> BulletinResDto.builder()
+                        .bulletin(bulletin)
+                        .author(bulletin.getAuthor())
+                        .imageUrls(imageMap.get(bulletin.getId()))
+                        .comments(bulletin.getComments())
+                        .isAuthor(bulletin.isAuthor(memberId))
+                        .isBookmarked(isBookmarked(memberId, bulletin.getId()))
+                        .build())
                 .collect(Collectors.toList());
 
         return new BulletinsResDto(bulletinResDtos, hasNext);
@@ -105,4 +120,10 @@ public class SearchingBulletinService {
             imageMap.get(image.getTargetId()).add(image.getImageUrl());
         }
     }
+
+    private boolean isBookmarked(final Long memberId, final Long bulletinId) {
+        Optional<Bookmark> bookmark = bookmarkRepository.findByMemberIdAndBulletinId(memberId, bulletinId);
+        return (bookmark.isPresent()) ? true : false;
+    }
+
 }
