@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
 import nbdream.member.domain.Member;
 
-import static nbdream.farm.domain.Location.EMPTY;
-
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,8 +20,6 @@ public class Farm extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String name;
-
     @Embedded
     private Location location;
 
@@ -33,7 +28,6 @@ public class Farm extends BaseEntity {
     private LandElements landElements;
 
     public Farm(final Member member) {
-        this.name = EMPTY;
         this.location = new Location();
         this.landElements = new LandElements();
         this.member = member;

@@ -2,6 +2,7 @@ package nbdream.bulletin.service;
 
 import lombok.RequiredArgsConstructor;
 import nbdream.bulletin.domain.Bookmark;
+import nbdream.bulletin.domain.BookmarkStatus;
 import nbdream.bulletin.domain.Bulletin;
 import nbdream.bulletin.domain.BulletinCategory;
 import nbdream.bulletin.dto.request.BulletinReqDto;
@@ -60,7 +61,7 @@ public class BulletinService {
         bulletin.delete(memberId);
     }
 
-    public void bookmark(final Long memberId, final Long bulletinId) {
+    public int bookmark(final Long memberId, final Long bulletinId) {
         final Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Bulletin bulletin = bulletinRepository.findById(bulletinId).orElseThrow(() -> new BulletinNotFoundException());
 
@@ -69,8 +70,11 @@ public class BulletinService {
         if (bookmark.isEmpty()) {
             bookmarkRepository.save(new Bookmark(member, bulletin));
             bulletin.plusBookmarkedCount();
+            return BookmarkStatus.ON.getCode();
         }
-        if (bookmark.isPresent()) handleExistingBookmark(bulletin, bookmark.get());
+
+        handleExistingBookmark(bulletin, bookmark.get());
+        return BookmarkStatus.OFF.getCode();
     }
 
     private void handleExistingBookmark(Bulletin bulletin, Bookmark bookmark) {

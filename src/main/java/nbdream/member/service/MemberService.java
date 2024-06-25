@@ -29,6 +29,8 @@ import nbdream.member.dto.request.WithdrawalReqDto;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
 import nbdream.member.repository.WithdrawalRepository;
+import nbdream.weather.repository.SimpleWeatherRepository;
+import nbdream.weather.repository.WeatherRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,8 @@ public class MemberService {
     private final ImageService imageService;
     private final FarmRepository farmRepository;
     private final LandElementsRepository landElementsRepository;
+    private final SimpleWeatherRepository simpleWeatherRepository;
+    private final WeatherRepository weatherRepository;
     private final AccountBookRepository accountBookRepository;
     private final WithdrawalRepository withdrawalRepository;
 
@@ -85,6 +89,7 @@ public class MemberService {
         deleteMyComments(memberId);
         deleteMyBookmarks(memberId);
         deleteLandElements(memberId);
+        deleteWeathers(memberId);
         deleteFarm(memberId);
         deleteAccountBook(memberId);
         member.delete();
@@ -136,6 +141,12 @@ public class MemberService {
         Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         LandElements landElements = farm.getLandElements();
         landElementsRepository.delete(landElements);
+    }
+
+    public void deleteWeathers(final Long memberId) {
+        Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
+        simpleWeatherRepository.deleteAllByFarmId(farm.getId());
+        weatherRepository.deleteAllByFarmId(farm.getId());
     }
 
     public void deleteFarm(final Long memberId) {

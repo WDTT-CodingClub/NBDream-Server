@@ -67,8 +67,9 @@ public class MyProfileService {
         landElementsService.saveOrUpdateLandElements(farm, request.getBjdCode(), new Coordinates(request.getLatitude(), request.getLongitude()));
         member.update(request.getNickname(), request.getProfileImageUrl());
 
-        //farm의 위치가 바뀌었다면 기상청 API를 통해 다시 받아오고, 아니라면 DB에서 가져옴
         farm.updateLocation(request.getAddress(),request.getBjdCode(), request.getLatitude(), request.getLongitude());
+
+        //farm의 위치가 바뀌었다면 기상청 API를 통해 다시 받아오고, 아니라면 DB에서 가져옴
         weatherService.getWeathers(memberId);
         updateFarmCrops(farm, request);
     }
