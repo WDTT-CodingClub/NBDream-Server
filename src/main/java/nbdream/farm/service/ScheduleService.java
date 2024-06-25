@@ -9,10 +9,7 @@ import nbdream.farm.domain.Farm;
 import nbdream.farm.domain.FarmWorkSchedule;
 import nbdream.farm.domain.Schedule;
 import nbdream.farm.exception.*;
-import nbdream.farm.repository.CropRepository;
-import nbdream.farm.repository.ScheduleRepository;
-import nbdream.farm.repository.FarmWorkScheduleCustomRepository;
-import nbdream.farm.repository.SearchScheduleRepository;
+import nbdream.farm.repository.*;
 import nbdream.farm.service.dto.schedule.request.*;
 import nbdream.farm.service.dto.schedule.response.FarmWorkListResDto;
 import nbdream.farm.service.dto.schedule.response.FarmWorkResDto;
@@ -32,6 +29,7 @@ public class ScheduleService {
 
     private final FarmWorkScheduleCustomRepository farmWorkScheduleCustomRepository;
     private final MemberRepository memberRepository;
+    private final FarmRepository farmRepository;
     private final ScheduleRepository scheduleRepository;
     private final CropRepository cropRepository;
     private final SearchScheduleRepository searchScheduleRepository;
@@ -53,8 +51,7 @@ public class ScheduleService {
 
     //일정 등록
     public ApiResponse<Void> registerSchedule(PostScheduleReqDto request, Long memberId) {
-        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
-        Farm farm = member.getFarm();
+        final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         List<Crop> crops = cropRepository.findAll();
         ValidCheckCategory(request.getCategory(), crops);
 
@@ -64,9 +61,9 @@ public class ScheduleService {
     }
     //일정 수정
     public ApiResponse<Void> updateSchedule(PutScheduleReqDto request, Long scheduleId, Long memberId) {
-        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
+        final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
-        if(member.getFarm().getId() != schedule.getFarm().getId()){
+        if(farm.getId() != schedule.getFarm().getId()){
             throw new UnEditableScheduleException();
         }
         List<Crop> crops = cropRepository.findAll();
@@ -78,9 +75,9 @@ public class ScheduleService {
     }
     //일정 삭제
     public ApiResponse<Void> deleteSchedule(Long scheduleId, Long memberId) {
-        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
+        final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
-        if(member.getFarm().getId() != schedule.getFarm().getId()){
+        if(farm.getId() != schedule.getFarm().getId()){
             throw new UnEditableScheduleException();
         }
         scheduleRepository.delete(schedule);
@@ -88,7 +85,7 @@ public class ScheduleService {
     }
 
     public ScheduleResDto getScheduleDetail(Long scheduleId, Long memberId) {
-        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
+        final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
 
         return new ScheduleResDto().updateResponse(schedule);
@@ -97,21 +94,22 @@ public class ScheduleService {
 
     //주간 일정 조회
     public ScheduleListResDto getWeeklySchedule(WeekScheduleListReqDto request, Long memberId) {
-        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
+        final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
+        System.out.println(request);
         List<Crop> crops = cropRepository.findAll();
         ValidCheckCategory(request.getCategory(), crops);
         List<Schedule> schedules = searchScheduleRepository.
-                searchSchedule(member.getFarm().getId(), request.getCategory(), request.parseStartDate(), request.parseStartDate().plusDays(7));
+                searchSchedule(farm.getId(), request.getCategory(), request.parseStartDate(), request.parseStartDate().plusDays(7));
         return new ScheduleListResDto().createResponse(schedules);
     }
 
     //월간 일정 조회
     public ScheduleListResDto getMonthlySchedule(ScheduleListReqDto request, Long memberId) {
-        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
+        final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         List<Crop> crops = cropRepository.findAll();
         ValidCheckCategory(request.getCategory(), crops);
         List<Schedule> schedules = searchScheduleRepository.
-                searchSchedule(member.getFarm().getId(), request.getCategory(), request.createStartDate(), request.createEndDate());
+                searchSchedule(farm.getId(), request.getCategory(), request.createStartDate(), request.createEndDate());
         return new ScheduleListResDto().createResponse(schedules);
     }
 

@@ -63,18 +63,19 @@ public class ScheduleController {
 
     @Operation(summary = "주간 일정 조회", description = "날짜 형식 : yyyy-MM-dd, 카테고리 : 작물명 또는 '전체'")
     @GetMapping("/schedule/week")
-    public ApiResponse<ScheduleListResDto> getWeeklySchedule(@RequestBody WeekScheduleListReqDto request,
+    public ApiResponse<ScheduleListResDto> getWeeklySchedule(@RequestParam("category") String category,
+                                                             @RequestParam("startDate") String startDate,
                                                              @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId){
-
-        return ApiResponse.ok(scheduleService.getWeeklySchedule(request, memberId));
+        return ApiResponse.ok(scheduleService.getWeeklySchedule(new WeekScheduleListReqDto(category, startDate), memberId));
     }
 
-    @Operation(summary = "월간 일정 조회", description = "카테고리 : 작물명 또는 '전체'")
+    @Operation(summary = "월간 일정 조회", description = "날짜 : (year=2024, month 6 또는 06)   카테고리 : 작물명 또는 '전체'")
     @GetMapping("/schedule/month")
-    public ApiResponse<ScheduleListResDto> getMonthlySchedule(@RequestBody ScheduleListReqDto request,
+    public ApiResponse<ScheduleListResDto> getMonthlySchedule(@RequestParam("category") String category,
+                                                              @RequestParam("year") int year,
+                                                              @RequestParam("month") int month,
                                                              @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId){
-
-        return ApiResponse.ok(scheduleService.getMonthlySchedule(request, memberId));
+        return ApiResponse.ok(scheduleService.getMonthlySchedule(new ScheduleListReqDto(category, year, month), memberId));
     }
 
 }
