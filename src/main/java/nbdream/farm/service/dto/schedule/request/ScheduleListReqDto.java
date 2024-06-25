@@ -15,7 +15,7 @@ import java.time.format.DateTimeParseException;
 @Getter
 @ToString
 public class ScheduleListReqDto {
-    private String crop;
+    private String category;
     private int year;
     private int month;
 

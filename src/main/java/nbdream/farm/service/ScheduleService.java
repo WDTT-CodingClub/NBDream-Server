@@ -17,6 +17,7 @@ import nbdream.farm.service.dto.schedule.request.*;
 import nbdream.farm.service.dto.schedule.response.FarmWorkListResDto;
 import nbdream.farm.service.dto.schedule.response.FarmWorkResDto;
 import nbdream.farm.service.dto.schedule.response.ScheduleListResDto;
+import nbdream.farm.service.dto.schedule.response.ScheduleResDto;
 import nbdream.member.domain.Member;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
@@ -86,14 +87,21 @@ public class ScheduleService {
         return ApiResponse.ok();
     }
 
+    public ScheduleResDto getScheduleDetail(Long scheduleId, Long memberId) {
+        Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
+
+        return new ScheduleResDto().updateResponse(schedule);
+    }
+
 
     //주간 일정 조회
     public ScheduleListResDto getWeeklySchedule(WeekScheduleListReqDto request, Long memberId) {
         Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
         List<Crop> crops = cropRepository.findAll();
-        ValidCheckCategory(request.getCrop(), crops);
+        ValidCheckCategory(request.getCategory(), crops);
         List<Schedule> schedules = searchScheduleRepository.
-                searchSchedule(member.getFarm().getId(), request.getCrop(), request.parseStartDate(), request.parseStartDate().plusDays(7));
+                searchSchedule(member.getFarm().getId(), request.getCategory(), request.parseStartDate(), request.parseStartDate().plusDays(7));
         return new ScheduleListResDto().createResponse(schedules);
     }
 
@@ -101,9 +109,9 @@ public class ScheduleService {
     public ScheduleListResDto getMonthlySchedule(ScheduleListReqDto request, Long memberId) {
         Member member = memberRepository.findByIdFetchFarm(memberId).orElseThrow(MemberNotFoundException::new);
         List<Crop> crops = cropRepository.findAll();
-        ValidCheckCategory(request.getCrop(), crops);
+        ValidCheckCategory(request.getCategory(), crops);
         List<Schedule> schedules = searchScheduleRepository.
-                searchSchedule(member.getFarm().getId(), request.getCrop(), request.createStartDate(), request.createEndDate());
+                searchSchedule(member.getFarm().getId(), request.getCategory(), request.createStartDate(), request.createEndDate());
         return new ScheduleListResDto().createResponse(schedules);
     }
 
@@ -115,4 +123,5 @@ public class ScheduleService {
         }
         throw new CategoryNotFoundException();
     }
+
 }

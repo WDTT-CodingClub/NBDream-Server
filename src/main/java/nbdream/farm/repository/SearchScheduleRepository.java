@@ -22,15 +22,10 @@ public class SearchScheduleRepository {
         return queryFactory.selectFrom(schedule)
                 .where(
                         schedule.farm.id.eq(farmId),
-                        categoryEq(category),
+                        schedule.category.eq(category),
                         dateCond(startDate, endDate)
                 )
                 .fetch();
-    }
-
-    //전체면 전체검색, 작물이름이면 작물이름+전체
-    private BooleanExpression categoryEq(String category) {
-        return category.equals("전체") ? null : schedule.category.eq(category).or(schedule.category.eq("전체"));
     }
 
     private BooleanExpression dateCond(LocalDate startDate, LocalDate endDate) {

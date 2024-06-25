@@ -15,7 +15,7 @@ import java.time.format.DateTimeParseException;
 @Getter
 @ToString
 public class WeekScheduleListReqDto {
-    private String crop;
+    private String category;
     private String startDate;
 
     public LocalDate parseStartDate() {

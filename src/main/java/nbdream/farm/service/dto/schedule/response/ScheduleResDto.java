@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import nbdream.farm.domain.Schedule;
 
 import java.time.LocalDate;
 
@@ -18,4 +19,14 @@ public class ScheduleResDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private String memo;
+
+    public ScheduleResDto updateResponse(Schedule schedule){
+        this.id = schedule.getId();
+        this.category = schedule.getCategory();
+        this.title = schedule.getTitle();
+        this.startDate = schedule.getStartDate();
+        this.endDate = schedule.getEndDate();
+        this.memo = schedule.getMemo();
+        return this;
+    }
 }
