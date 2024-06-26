@@ -3,7 +3,6 @@ package nbdream.farm.service;
 import lombok.RequiredArgsConstructor;
 import nbdream.accountBook.exception.CategoryNotFoundException;
 import nbdream.common.advice.response.ApiResponse;
-import nbdream.common.exception.UnauthorizedException;
 import nbdream.farm.domain.Crop;
 import nbdream.farm.domain.Farm;
 import nbdream.farm.domain.FarmWorkSchedule;
@@ -12,15 +11,10 @@ import nbdream.farm.exception.*;
 import nbdream.farm.repository.*;
 import nbdream.farm.service.dto.schedule.request.*;
 import nbdream.farm.service.dto.schedule.response.FarmWorkListResDto;
-import nbdream.farm.service.dto.schedule.response.FarmWorkResDto;
 import nbdream.farm.service.dto.schedule.response.ScheduleListResDto;
 import nbdream.farm.service.dto.schedule.response.ScheduleResDto;
-import nbdream.member.domain.Member;
-import nbdream.member.exception.MemberNotFoundException;
-import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,7 +22,6 @@ import java.util.List;
 public class ScheduleService {
 
     private final FarmWorkScheduleCustomRepository farmWorkScheduleCustomRepository;
-    private final MemberRepository memberRepository;
     private final FarmRepository farmRepository;
     private final ScheduleRepository scheduleRepository;
     private final CropRepository cropRepository;
@@ -41,11 +34,9 @@ public class ScheduleService {
             throw new CropFromWorkScheduleNotFoundException();
         }
 
-        List<FarmWorkSchedule> workScheduleList = farmWorkScheduleCustomRepository.findSchedulesByCropAndMonth(request.getCrop(), request.getMonth());
-        if(workScheduleList == null || workScheduleList.isEmpty()){
-            throw new FarmWorkScheduleNotFoundException();
-        }
+        validateMonth(request.getMonth());
 
+        List<FarmWorkSchedule> workScheduleList = farmWorkScheduleCustomRepository.findSchedulesByCropAndMonth(request.getCrop(), request.getMonth());
         return new FarmWorkListResDto().createFarmWorkListResDto(workScheduleList);
     }
 
@@ -87,7 +78,9 @@ public class ScheduleService {
     public ScheduleResDto getScheduleDetail(Long scheduleId, Long memberId) {
         final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
-
+        if(farm.getId() != schedule.getFarm().getId()){
+            throw new ScheduleNotFoundException();
+        }
         return new ScheduleResDto().updateResponse(schedule);
     }
 
@@ -95,7 +88,6 @@ public class ScheduleService {
     //주간 일정 조회
     public ScheduleListResDto getWeeklySchedule(WeekScheduleListReqDto request, Long memberId) {
         final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
-        System.out.println(request);
         List<Crop> crops = cropRepository.findAll();
         ValidCheckCategory(request.getCategory(), crops);
         List<Schedule> schedules = searchScheduleRepository.
@@ -120,6 +112,12 @@ public class ScheduleService {
             }
         }
         throw new CategoryNotFoundException();
+    }
+
+    private void validateMonth(int month) {
+        if(month < 1 || month > 12) {
+            throw new InvalidDateFormatException();
+        }
     }
 
 }
