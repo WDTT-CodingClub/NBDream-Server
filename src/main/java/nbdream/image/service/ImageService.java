@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -80,5 +81,23 @@ public class ImageService {
         } catch (IOException e) {
             throw new GcsConnectionException();
         }
+    }
+
+    public void saveImageUrls(Long targetId, List<String> imageUrls) {
+        imageUrls.stream()
+                .forEach(imageUrl -> imageRepository.save(new Image(targetId, imageUrl)));
+    }
+
+    public void updateImageUrls(Long targetId, List<String> imageUrls) {
+        deleteImageUrls(targetId);
+        saveImageUrls(targetId, imageUrls);
+    }
+
+    public void deleteImageUrls(Long targetId) {
+       imageRepository.deleteAllByTargetId(targetId);
+    }
+
+    public List<Image> findAllByTargetId(Long targetId) {
+        return imageRepository.findAllByTargetId(targetId);
     }
 }

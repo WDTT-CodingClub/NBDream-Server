@@ -1,14 +1,16 @@
 package nbdream.farm.service.dto.farmingdiary;
 
+import lombok.Builder;
 import lombok.Getter;
 import nbdream.calendar.dto.HolidayResponse;
-import nbdream.farm.service.dto.work.CreateWorkRequest;
+import nbdream.farm.service.dto.work.WorkDto;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-public class CreateDiaryRequest {
+@Builder
+public class FarmingDiaryResponse {
 
     private String crop;
 
@@ -16,15 +18,18 @@ public class CreateDiaryRequest {
 
     private List<HolidayResponse> holidayResponses;
 
+    private String weatherForecast;
+
+    private List<String> imageUrls;
+
     private int workingPeopleNumber;
 
     private int workingTime;
 
     private int workingArea;
 
-    private List<CreateWorkRequest> workRequests;
+    private List<WorkDto> workDtos;
 
     private String memo;
-
 
 }

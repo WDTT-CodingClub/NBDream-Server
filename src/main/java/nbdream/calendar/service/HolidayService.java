@@ -101,6 +101,23 @@ public class HolidayService {
     }
 
 
+    public void updateHolidays(FarmingDiary farmingDiary, List<HolidayResponse> responses) {
+        deleteHolidays(farmingDiary.getId());
+        createHolidays(farmingDiary, responses);
+    }
+
+    public void deleteHolidays(Long farmingDiaryId) {
+        List<Holiday> holidays = holidayRepository.findAllByFarmingDiaryId(farmingDiaryId);
+
+        for(Holiday holiday : holidays) {
+            holidayRepository.delete(holiday);
+        }
+    }
+
+    public List<Holiday> findAllByFarmingDiaryId(Long farmingDiaryId) {
+        return holidayRepository.findAllByFarmingDiaryId(farmingDiaryId);
+    }
+
 
 
 }

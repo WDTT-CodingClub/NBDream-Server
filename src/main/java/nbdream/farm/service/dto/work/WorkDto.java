@@ -1,12 +1,14 @@
 package nbdream.farm.service.dto.work;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class CreateWorkRequest {
+@AllArgsConstructor
+public class WorkDto {
 
     private String workCategory;
 
-    private String description;
+    private String content;
 
 }

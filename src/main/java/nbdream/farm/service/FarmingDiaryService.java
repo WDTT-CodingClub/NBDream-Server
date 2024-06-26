@@ -2,13 +2,10 @@ package nbdream.farm.service;
 
 import lombok.RequiredArgsConstructor;
 import nbdream.farm.domain.FarmingDiary;
+import nbdream.farm.exception.FarmingDiaryNotFoundException;
 import nbdream.farm.repository.FarmingDiaryRepository;
-import nbdream.farm.service.dto.farmingdiary.CreateDiaryRequest;
+import nbdream.farm.service.dto.farmingdiary.FarmingDiaryRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
 @Service
 @RequiredArgsConstructor
@@ -17,28 +14,53 @@ public class FarmingDiaryService {
     private final FarmingDiaryRepository farmingDiaryRepository;
 
 
-    public FarmingDiary createFarmingDiary(CreateDiaryRequest request) {
+    public FarmingDiary createFarmingDiary(FarmingDiaryRequest request) {
 
-        FarmingDiary farmingDiaryEntity = FarmingDiary.builder()
+        FarmingDiary farmingDiary = FarmingDiary.builder()
                 .date(request.getDate())
                 .crop(request.getCrop())
+                .weatherForecast(request.getWeatherForecast())
                 .workingPeopleNumber(request.getWorkingPeopleNumber())
                 .workingTime(request.getWorkingTime())
                 .workingArea(request.getWorkingArea())
                 .memo(request.getMemo())
                 .build();
 
-        farmingDiaryEntity = farmingDiaryRepository.save(farmingDiaryEntity);
+        farmingDiary = farmingDiaryRepository.save(farmingDiary);
 
-        return farmingDiaryEntity;
+        return farmingDiary;
     }
 
 
-    public void updateFarmingDiary(){}
+    public FarmingDiary updateFarmingDiary(Long farmingDiaryId, FarmingDiaryRequest request) {
+
+        FarmingDiary farmingDiary = findByFarmingDiaryId(farmingDiaryId);
+
+        farmingDiary = FarmingDiary.builder()
+                .crop(request.getCrop())
+                .date(request.getDate())
+                .weatherForecast(request.getWeatherForecast())
+                .workingTime(request.getWorkingTime())
+                .workingArea(request.getWorkingArea())
+                .workingPeopleNumber(request.getWorkingPeopleNumber())
+                .memo(request.getMemo())
+                .build();
+
+        farmingDiaryRepository.save(farmingDiary);
+
+        return farmingDiary;
+    }
 
 
-    public void deleteFarmingDiary(Long farmingDiaryId){}
+    public FarmingDiary findByFarmingDiaryId(Long farmingDiaryId){
+        FarmingDiary farmingDiary = farmingDiaryRepository
+                .findById(farmingDiaryId)
+                .orElseThrow(FarmingDiaryNotFoundException::new);
+        return farmingDiary;
+    }
 
+    public void deleteByFarmingDiaryId(Long farmingDiaryId) {
+        farmingDiaryRepository.deleteById(farmingDiaryId);
+    }
 
-    public void getFarmingDiaries(){}
 }

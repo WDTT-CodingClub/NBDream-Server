@@ -25,6 +25,8 @@ public class FarmingDiary extends BaseEntity {
 
     private String crop;
 
+    private String weatherForecast;
+
     private int workingPeopleNumber;
 
     private int workingTime;
@@ -34,9 +36,10 @@ public class FarmingDiary extends BaseEntity {
     private String memo;
 
     @Builder
-    public FarmingDiary(final LocalDate date, final String crop, final int workingPeopleNumber, final int workingTime, final int workingArea, final String memo) {
+    public FarmingDiary(final LocalDate date, final String crop, final String weatherForecast, final int workingPeopleNumber, final int workingTime, final int workingArea, final String memo) {
         this.date = date;
         this.crop = crop;
+        this.weatherForecast = weatherForecast;
         this.workingPeopleNumber = workingPeopleNumber;
         this.workingTime = workingTime;
         this.workingArea = workingArea;
