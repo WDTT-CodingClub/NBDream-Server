@@ -87,7 +87,9 @@ public class ScheduleService {
     public ScheduleResDto getScheduleDetail(Long scheduleId, Long memberId) {
         final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
-
+        if(farm.getId() != schedule.getFarm().getId()){
+            throw new ScheduleNotFoundException();
+        }
         return new ScheduleResDto().updateResponse(schedule);
     }
 
@@ -95,7 +97,6 @@ public class ScheduleService {
     //주간 일정 조회
     public ScheduleListResDto getWeeklySchedule(WeekScheduleListReqDto request, Long memberId) {
         final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
-        System.out.println(request);
         List<Crop> crops = cropRepository.findAll();
         ValidCheckCategory(request.getCategory(), crops);
         List<Schedule> schedules = searchScheduleRepository.
