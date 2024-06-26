@@ -27,6 +27,12 @@ public class AccountBookHistoryRepositoryCustomImpl implements AccountBookHistor
 
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(accountBookHistory.accountBook.member.id.eq(memberId));
+
+        if (request.getCategory() != null && StringUtils.isNotBlank(request.getCategory())) {
+            AccountBookCategory categoryEnum = AccountBookCategory.fromValue(request.getCategory());
+            builder.and(accountBookHistory.accountBookCategory.eq(categoryEnum));
+        }
+
         applyFilters(builder, request);
 
         if (request.getTransactionType() != null && StringUtils.isNotBlank(request.getTransactionType())) {
@@ -88,11 +94,6 @@ public class AccountBookHistoryRepositoryCustomImpl implements AccountBookHistor
 
     private void applyFilters(BooleanBuilder builder, GetAccountBookListReqDto request) {
         QAccountBookHistory accountBookHistory = QAccountBookHistory.accountBookHistory;
-
-        if (request.getCategory() != null && StringUtils.isNotBlank(request.getCategory())) {
-            AccountBookCategory categoryEnum = AccountBookCategory.fromValue(request.getCategory());
-            builder.and(accountBookHistory.accountBookCategory.eq(categoryEnum));
-        }
 
         if (request.getStart() != null && StringUtils.isNotBlank(request.getStart())) {
             LocalDate startDate = LocalDate.parse(request.getStart());
