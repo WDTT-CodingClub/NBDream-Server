@@ -74,6 +74,7 @@ public class BulletinService {
         }
 
         bookmarkRepository.delete(bookmark.get());
+        bulletin.minusBookmarkedCount();
         return BookmarkStatus.OFF.getCode();
     }
 
