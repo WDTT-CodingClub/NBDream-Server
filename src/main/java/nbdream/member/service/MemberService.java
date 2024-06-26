@@ -101,6 +101,7 @@ public class MemberService {
             deleteBulletinComments(bulletin.getId());
             deleteBulletinBookmarks(bulletin.getId());
             deleteBulletinImages(bulletin.getId());
+            bulletinRepository.delete(bulletin);
         }
     }
 

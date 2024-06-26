@@ -40,6 +40,10 @@ public class Comment extends BaseEntity {
         this.content = content;
     }
 
+    public Comment upateComment(String content){
+        this.content = content;
+        return this;
+    }
     public void delete() {
         this.changeStatus(Status.EXPIRED);
     }
