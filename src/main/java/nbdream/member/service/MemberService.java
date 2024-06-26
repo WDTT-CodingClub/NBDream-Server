@@ -13,10 +13,12 @@ import nbdream.comment.domain.Comment;
 import nbdream.comment.repository.CommentRepository;
 import nbdream.farm.domain.Farm;
 import nbdream.farm.domain.LandElements;
+import nbdream.farm.domain.Schedule;
 import nbdream.farm.exception.FarmNotFoundException;
 import nbdream.farm.repository.FarmCropRepository;
 import nbdream.farm.repository.FarmRepository;
 import nbdream.farm.repository.LandElementsRepository;
+import nbdream.farm.repository.ScheduleRepository;
 import nbdream.image.domain.Image;
 import nbdream.image.dto.ImageDto;
 import nbdream.image.repository.ImageRepository;
@@ -56,6 +58,8 @@ public class MemberService {
     private final WeatherRepository weatherRepository;
     private final AccountBookRepository accountBookRepository;
     private final WithdrawalRepository withdrawalRepository;
+    private final ScheduleRepository scheduleRepository;
+
 
 
     public TokenResponse signup(String nickname) {
@@ -90,9 +94,18 @@ public class MemberService {
         deleteMyBookmarks(memberId);
         deleteLandElements(memberId);
         deleteWeathers(memberId);
+        deleteSchedule(memberId);
         deleteFarm(memberId);
         deleteAccountBook(memberId);
         member.delete();
+    }
+
+    private void deleteSchedule(Long memberId) {
+        Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
+        List<Schedule> schedules = scheduleRepository.findByFarmId(farm.getId());
+        for(Schedule schedule : schedules){
+            scheduleRepository.delete(schedule);
+        }
     }
 
     public void deleteMyBulletins(final Long memberId) {
