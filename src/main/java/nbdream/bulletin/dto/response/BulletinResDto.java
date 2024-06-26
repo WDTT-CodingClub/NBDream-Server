@@ -10,6 +10,8 @@ import nbdream.comment.dto.CommentResDto;
 import nbdream.member.domain.Member;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +27,7 @@ public class BulletinResDto {
     private String crop;
     private List<String> imageUrls;
     private String bulletinCategory;
-    private LocalDate createdTime;
+    private String createdTime;
     private List<CommentResDto> comments;
     private int bookmarkedCount;
     private boolean isAuthor;
@@ -42,7 +44,7 @@ public class BulletinResDto {
         this.crop = bulletin.getCrop();
         this.imageUrls = imageUrls;
         this.bulletinCategory = bulletin.getBulletinCategory().getValue();
-        this.createdTime = bulletin.getCreatedDate().toLocalDate();
+        this.createdTime = bulletin.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
         this.comments = comments.stream().map(comment -> new CommentResDto(comment)).collect(Collectors.toList());
         this.bookmarkedCount = bulletin.getBookmarkedCount();
         this.isAuthor = isAuthor;
