@@ -33,11 +33,6 @@ public class CommentController {
     }
 
 
-//    @GetMapping("/bulletin/{id}/comment")
-//    public void getCommentsList(@PathVariable Long bulletinId) {
-//    }
-//
-//
     @Operation(summary = "작성한 코멘트 목록 조회")
     @GetMapping("/my-comments")
     public ApiResponse<List<CommentResDto>> getMyCommentsList(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId) {

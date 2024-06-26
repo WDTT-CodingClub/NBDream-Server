@@ -47,10 +47,6 @@ public class CommentService {
     }
 
 
-    @Transactional(readOnly = true)
-    public void getCommentsList(Long bulletinId) {
-    }
-
 
     @Transactional(readOnly = true)
     public List<CommentResDto> getMyCommentsList(final Long memberId) {
