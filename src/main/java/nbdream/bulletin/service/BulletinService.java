@@ -9,6 +9,7 @@ import nbdream.bulletin.dto.request.BulletinReqDto;
 import nbdream.bulletin.exception.BulletinNotFoundException;
 import nbdream.bulletin.repository.BookmarkRepository;
 import nbdream.bulletin.repository.BulletinRepository;
+import nbdream.comment.repository.CommentRepository;
 import nbdream.common.entity.Status;
 import nbdream.image.domain.Image;
 import nbdream.image.repository.ImageRepository;
@@ -28,6 +29,7 @@ public class BulletinService {
     private final BulletinRepository bulletinRepository;
     private final ImageRepository imageRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final CommentRepository commentRepository;
 
     public Long createBulletin(final Long memberId, final BulletinReqDto request) {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
@@ -57,6 +59,8 @@ public class BulletinService {
 
         imageRepository.findAllByTargetId(bulletinId).stream()
                 .forEach(image -> image.delete());
+        commentRepository.findByBulletinId(bulletinId).stream()
+                        .forEach(comment -> comment.delete());
 
         bulletin.delete(memberId);
     }
