@@ -20,9 +20,9 @@ import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -30,9 +30,9 @@ import java.util.Optional;
 public class BulletinService {
     private final MemberRepository memberRepository;
     private final BulletinRepository bulletinRepository;
+    private final CommentRepository commentRepository;
     private final ImageRepository imageRepository;
     private final BookmarkRepository bookmarkRepository;
-    private final CommentRepository commentRepository;
     private final ImageService imageService;
 
     public Long createBulletin(final Long memberId, final BulletinReqDto request) {
@@ -60,8 +60,11 @@ public class BulletinService {
     public void deleteBulletin(final Long memberId, final Long bulletinId) {
         final Bulletin bulletin = bulletinRepository.findById(bulletinId).orElseThrow(() -> new BulletinNotFoundException());
 
-        imageRepository.findAllByTargetId(bulletinId).stream()
-                .forEach(image -> image.delete());
+        List<String> imageUrls = imageRepository.findAllByTargetId(bulletinId).stream()
+                .map(Image::getImageUrl)
+                .collect(Collectors.toList());
+        imageService.deleteImageUrlsWithImage(imageUrls);
+
         commentRepository.findByBulletinId(bulletinId).stream()
                         .forEach(comment -> comment.delete());
 
