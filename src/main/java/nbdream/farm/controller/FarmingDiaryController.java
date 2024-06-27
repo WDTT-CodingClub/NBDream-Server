@@ -1,21 +1,17 @@
 package nbdream.farm.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import nbdream.auth.config.AuthenticatedMemberId;
 import nbdream.common.advice.response.ApiResponse;
 import nbdream.farm.service.FarmingDiaryFacade;
 import nbdream.farm.service.FarmingDiaryService;
-import nbdream.farm.service.dto.farmingdiary.FarmingDiaryRequest;
-import nbdream.farm.service.dto.farmingdiary.FarmingDiaryResponse;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import nbdream.farm.service.dto.farmingdiary.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +24,9 @@ public class FarmingDiaryController {
 
     @PostMapping
     @Operation(summary = "영농일지 작성")
-    public ApiResponse<Long> createFarmingDiary(@RequestBody FarmingDiaryRequest request){
-        Long farmingDiaryId = farmingDiaryFacade.saveFarmingDiaryInfo(request);
+    public ApiResponse<Long> createFarmingDiary(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
+                                                @RequestBody FarmingDiaryRequest request){
+        Long farmingDiaryId = farmingDiaryFacade.saveFarmingDiaryInfo(memberId, request);
         return ApiResponse.ok(farmingDiaryId);
     }
 
@@ -55,5 +52,21 @@ public class FarmingDiaryController {
     public ApiResponse<FarmingDiaryResponse> getFarmingDiary(@PathVariable(name = "diary-id") Long farmingDiaryId) {
         FarmingDiaryResponse response = farmingDiaryFacade.fetchFarmingDiaryInfoDetail(farmingDiaryId);
         return ApiResponse.ok(response);
+    }
+
+    @GetMapping
+    @Operation(summary = "영농일지 월간 조회")
+    public ApiResponse<FarmingDiaryListResponse> getMonthlyFarmingDiary(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
+                                                                        @RequestParam("year") int year, @RequestParam("month") int month,
+                                                                        @RequestParam("crop") String crop) {
+        return ApiResponse.ok(farmingDiaryFacade.fetchMonthlyFarmingDiary(new FarmingDiaryListRequest(crop, year, month), memberId));
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "영농일지 검색", description = "날짜 입력 시 yyyy-MM-dd 형태로 입력해야 함, 영농일지 memo나 작업 내용에 qeury 값이 포함되는 영농일지들을 가져오도록 구현")
+    public ApiResponse<FarmingDiaryListResponse> searchFarmingDiary(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
+                                                                    @RequestParam("crop") String crop, @RequestParam("query") String query,
+                                                                    @RequestParam("start_date") LocalDate startDate, @RequestParam("end_date") LocalDate endDate) {
+        return ApiResponse.ok(farmingDiaryFacade.searchFarmingDiary(new SearchFarmingDiaryCond(crop, query, startDate, endDate), memberId));
     }
 }

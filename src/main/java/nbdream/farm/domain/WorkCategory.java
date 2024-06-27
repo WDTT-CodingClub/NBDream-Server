@@ -1,6 +1,9 @@
 package nbdream.farm.domain;
 
 import lombok.Getter;
+import nbdream.farm.exception.WorkCategoryNotFoundException;
+
+import java.util.Arrays;
 
 @Getter
 public enum WorkCategory {
@@ -32,6 +35,13 @@ public enum WorkCategory {
 
     WorkCategory(String description) {
         this.description = description;
+    }
+
+    public static WorkCategory of(String value) {
+        return Arrays.stream(values())
+                .filter(workCategory -> workCategory.description.equals(value))
+                .findFirst()
+                .orElseThrow(WorkCategoryNotFoundException::new);
     }
 
 }

@@ -1,14 +1,12 @@
 package nbdream.farm.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.common.entity.BaseEntity;
+import nbdream.farm.service.dto.farmingdiary.FarmingDiaryRequest;
 
 import java.time.LocalDate;
 
@@ -35,8 +33,13 @@ public class FarmingDiary extends BaseEntity {
 
     private String memo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farm_id")
+    private Farm farm;
+
     @Builder
-    public FarmingDiary(final LocalDate date, final String crop, final String weatherForecast, final int workingPeopleNumber, final int workingTime, final int workingArea, final String memo) {
+    public FarmingDiary(final LocalDate date, final String crop, final String weatherForecast, final int workingPeopleNumber,
+                        final int workingTime, final int workingArea, final String memo, final Farm farm) {
         this.date = date;
         this.crop = crop;
         this.weatherForecast = weatherForecast;
@@ -44,5 +47,16 @@ public class FarmingDiary extends BaseEntity {
         this.workingTime = workingTime;
         this.workingArea = workingArea;
         this.memo = memo;
+        this.farm = farm;
+    }
+
+    public void update(final FarmingDiaryRequest request) {
+        this.date = request.getDate();
+        this.crop = request.getCrop();
+        this.weatherForecast = request.getWeatherForecast();
+        this.workingPeopleNumber = request.getWorkingPeopleNumber();
+        this.workingTime = request.getWorkingTime();
+        this.workingArea = request.getWorkingArea();
+        this.memo = request.getMemo();
     }
 }

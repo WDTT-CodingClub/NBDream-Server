@@ -22,7 +22,7 @@ public class WorkService {
                 .map(request -> {
                     Work work = Work.builder()
                             .farmingDiary(farmingDiaryId)
-                            .workCategory(WorkCategory.valueOf(request.getWorkCategory()))
+                            .workCategory(WorkCategory.of(request.getWorkCategory()))
                             .content(request.getContent())
                             .build();
                     return work;

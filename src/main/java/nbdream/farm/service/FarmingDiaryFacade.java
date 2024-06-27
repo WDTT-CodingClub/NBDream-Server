@@ -1,12 +1,12 @@
 package nbdream.farm.service;
 
+import lombok.RequiredArgsConstructor;
 import nbdream.calendar.domain.Holiday;
 import nbdream.calendar.dto.HolidayResponse;
 import nbdream.calendar.service.HolidayService;
 import nbdream.farm.domain.FarmingDiary;
 import nbdream.farm.domain.Work;
-import nbdream.farm.service.dto.farmingdiary.FarmingDiaryRequest;
-import nbdream.farm.service.dto.farmingdiary.FarmingDiaryResponse;
+import nbdream.farm.service.dto.farmingdiary.*;
 import nbdream.farm.service.dto.work.WorkDto;
 import nbdream.image.domain.Image;
 import nbdream.image.service.ImageService;
@@ -17,16 +17,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class FarmingDiaryFacade {
 
-    FarmingDiaryService farmingDiaryService;
-    WorkService workService;
-    HolidayService holidayService;
-    ImageService imageService;
+    private final FarmingDiaryService farmingDiaryService;
+    private final WorkService workService;
+    private final HolidayService holidayService;
+    private final ImageService imageService;
 
-    public Long saveFarmingDiaryInfo(FarmingDiaryRequest request) {
-        FarmingDiary farmingDiary = farmingDiaryService.createFarmingDiary(request);
+    public Long saveFarmingDiaryInfo(final Long memberId, FarmingDiaryRequest request) {
+        FarmingDiary farmingDiary = farmingDiaryService.createFarmingDiary(memberId, request);
         workService.createWorks(farmingDiary, request.getWorkDtos());
         holidayService.createHolidays(farmingDiary, request.getHolidayResponses());
         imageService.saveImageUrls(farmingDiary.getId(), request.getImageUrls());
@@ -66,6 +67,7 @@ public class FarmingDiaryFacade {
                 .collect(Collectors.toList());
 
         FarmingDiaryResponse response = FarmingDiaryResponse.builder()
+                .farmingDiaryId(farmingDiaryId)
                 .crop(farmingDiary.getCrop())
                 .date(farmingDiary.getDate())
                 .holidayResponses(holidayResponses)
@@ -81,6 +83,25 @@ public class FarmingDiaryFacade {
         return response;
     }
 
+    public FarmingDiaryListResponse fetchMonthlyFarmingDiary(final FarmingDiaryListRequest request, final Long memberId) {
+        List<FarmingDiary> monthlyFarmingDiary = farmingDiaryService.findMonthlyFarmingDiary(request, memberId);
+
+        List<FarmingDiaryResponse> farmingDiaryResponses = monthlyFarmingDiary.stream()
+                .map(farmingDiary -> fetchFarmingDiaryInfoDetail(farmingDiary.getId()))
+                .collect(Collectors.toList());
+
+        return new FarmingDiaryListResponse(farmingDiaryResponses);
+    }
+
+    public FarmingDiaryListResponse searchFarmingDiary(final SearchFarmingDiaryCond cond, final Long memberId) {
+        List<FarmingDiary> farmingDiaries = farmingDiaryService.searchFarmingDiary(cond, memberId);
+
+        List<FarmingDiaryResponse> farmingDiaryResponses = farmingDiaries.stream()
+                .map(farmingDiary -> fetchFarmingDiaryInfoDetail(farmingDiary.getId()))
+                .collect(Collectors.toList());
+
+        return new FarmingDiaryListResponse(farmingDiaryResponses);
+    }
 
     public void deleteFarmingDiaryInfo(Long farmingDiaryId) {
        farmingDiaryService.findByFarmingDiaryId(farmingDiaryId);
