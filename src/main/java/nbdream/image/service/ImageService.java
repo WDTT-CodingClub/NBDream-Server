@@ -66,13 +66,13 @@ public class ImageService {
 
             String blobPath =request.imageUrl().replace(BASIC_PATH, "");
             Blob blob = storage.get(gcpStorageProperties.getBucketName(), blobPath);
-
-            Storage.BlobSourceOption preCondition =
-                    Storage.BlobSourceOption.generationMatch(blob.getGeneration());
-
-            boolean isDeleted = storage.delete(gcpStorageProperties.getBucketName(), blobPath, preCondition);
-            if(!isDeleted) {
-                throw new ImageDeleteFailException();
+            if (blob != null) {
+                Storage.BlobSourceOption preCondition =
+                        Storage.BlobSourceOption.generationMatch(blob.getGeneration());
+                boolean isDeleted = storage.delete(gcpStorageProperties.getBucketName(), blobPath, preCondition);
+                if(!isDeleted) {
+                    throw new ImageDeleteFailException();
+                }
             }
 
             Optional<Image> image = imageRepository.findByImageUrl(request.imageUrl());
