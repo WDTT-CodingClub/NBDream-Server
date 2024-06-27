@@ -83,7 +83,9 @@ public class MyProfileService {
         for (FarmCrop farmCrop : farmCrops) {
             if (!request.getCrops().contains(farmCrop.getCrop().getName())) {
                 farmCropRepository.delete(farmCrop);
+                continue;
             }
+            cropNames.add(farmCrop.getCrop().getName());
         }
 
         for (String cropName : request.getCrops()) {

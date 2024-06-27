@@ -39,7 +39,7 @@ public class FarmingDiaryFacade {
         FarmingDiary farmingDiary = farmingDiaryService.updateFarmingDiary(farmingDiaryId, request);
         workService.updateWorks(farmingDiary, request.getWorkDtos());
         holidayService.updateHolidays(farmingDiary, request.getHolidayResponses());
-        imageService.updateImageUrls(farmingDiary.getId(), request.getImageUrls());
+        imageService.updateTargetImages(farmingDiary.getId(), request.getImageUrls());
         return farmingDiary.getId();
     }
 

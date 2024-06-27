@@ -6,19 +6,22 @@ import nbdream.bulletin.domain.BookmarkStatus;
 import nbdream.bulletin.domain.Bulletin;
 import nbdream.bulletin.domain.BulletinCategory;
 import nbdream.bulletin.dto.request.BulletinReqDto;
+import nbdream.bulletin.dto.request.UpdateBulletinReqDto;
 import nbdream.bulletin.exception.BulletinNotFoundException;
 import nbdream.bulletin.repository.BookmarkRepository;
 import nbdream.bulletin.repository.BulletinRepository;
 import nbdream.comment.repository.CommentRepository;
-import nbdream.common.entity.Status;
 import nbdream.image.domain.Image;
 import nbdream.image.repository.ImageRepository;
+import nbdream.image.service.ImageService;
 import nbdream.member.domain.Member;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class BulletinService {
     private final ImageRepository imageRepository;
     private final BookmarkRepository bookmarkRepository;
     private final CommentRepository commentRepository;
+    private final ImageService imageService;
 
     public Long createBulletin(final Long memberId, final BulletinReqDto request) {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
@@ -48,8 +52,7 @@ public class BulletinService {
 
         bulletin.update(memberId, request.getDreamCrop(), BulletinCategory.of(request.getBulletinCategory()), request.getContent());
 
-        request.getImageUrls().stream()
-                .map(url -> imageRepository.save(new Image(bulletinId, url)));
+        imageService.updateTargetImages(bulletinId, request.getImageUrls());
 
         return bulletinId;
     }
