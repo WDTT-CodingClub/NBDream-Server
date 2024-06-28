@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.bulletin.domain.Bulletin;
+import nbdream.comment.exception.UneditableCommentException;
 import nbdream.common.entity.BaseEntity;
 import nbdream.common.entity.Status;
 import nbdream.member.domain.Member;
@@ -34,17 +35,23 @@ public class Comment extends BaseEntity {
 
     private String content;
 
-    public Comment(final Member author, final Bulletin bulletin, final String content) {
-        this.author = author;
-        this.bulletin = bulletin;
+    public void update(Long memberId, String content) {
+        if (!isAuthor(memberId)) {
+            throw new UneditableCommentException();
+        }
+
         this.content = content;
     }
 
-    public Comment upateComment(String content){
-        this.content = content;
-        return this;
-    }
-    public void delete() {
+    public void delete(Long memberId) {
+        if (!isAuthor(memberId)) {
+            throw new UneditableCommentException();
+        }
+
         this.changeStatus(Status.EXPIRED);
+    }
+
+    public boolean isAuthor(final Long memberId) {
+        return memberId.equals(author.getId());
     }
 }
