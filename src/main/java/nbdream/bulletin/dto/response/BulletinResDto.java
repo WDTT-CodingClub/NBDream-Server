@@ -35,7 +35,7 @@ public class BulletinResDto {
 
     @Builder
     public BulletinResDto(final Bulletin bulletin, final Member author, final List<String> imageUrls,
-                          final List<Comment> comments, final boolean isAuthor, final boolean isBookmarked) {
+                          final List<CommentResDto> comments, final boolean isAuthor, final boolean isBookmarked) {
         this.authorId = author.getId();
         this.bulletinId = bulletin.getId();
         this.nickname = author.getNickname();
@@ -45,7 +45,7 @@ public class BulletinResDto {
         this.imageUrls = imageUrls;
         this.bulletinCategory = bulletin.getBulletinCategory().getValue();
         this.createdTime = bulletin.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
-        this.comments = comments.stream().map(comment -> new CommentResDto(comment)).collect(Collectors.toList());
+        this.comments = comments;
         this.bookmarkedCount = bulletin.getBookmarkedCount();
         this.isAuthor = isAuthor;
         this.isBookmarked = isBookmarked;

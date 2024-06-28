@@ -10,6 +10,7 @@ import nbdream.bulletin.exception.BulletinNotFoundException;
 import nbdream.bulletin.repository.BookmarkRepository;
 import nbdream.bulletin.repository.BulletinRepository;
 import nbdream.bulletin.repository.SearchingBulletinRepository;
+import nbdream.comment.dto.CommentResDto;
 import nbdream.image.domain.Image;
 import nbdream.image.repository.ImageRepository;
 import nbdream.member.domain.Member;
@@ -43,11 +44,12 @@ public class SearchingBulletinService {
                 .map(image -> image.getImageUrl())
                 .collect(Collectors.toList());
 
+        final List<CommentResDto> comments = bulletin.getComments().stream().map(comment -> new CommentResDto(comment, memberId)).toList();
         return BulletinResDto.builder()
                 .bulletin(bulletin)
                 .author(bulletin.getAuthor())
                 .imageUrls(imageUrls)
-                .comments(bulletin.getComments())
+                .comments(comments)
                 .isAuthor(bulletin.isAuthor(memberId))
                 .isBookmarked(isBookmarked(memberId, bulletinId))
                 .build();
@@ -94,7 +96,7 @@ public class SearchingBulletinService {
                         .bulletin(bulletin)
                         .author(bulletin.getAuthor())
                         .imageUrls(imageMap.get(bulletin.getId()))
-                        .comments(bulletin.getComments())
+                        .comments(bulletin.getComments().stream().map(comment -> new CommentResDto(comment, memberId)).toList())
                         .isAuthor(bulletin.isAuthor(memberId))
                         .isBookmarked(isBookmarked(memberId, bulletin.getId()))
                         .build())
