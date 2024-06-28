@@ -35,7 +35,7 @@ public class SearchingBulletinService {
     private final BookmarkRepository bookmarkRepository;
     private final MemberRepository memberRepository;
 
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 100;
 
     public BulletinResDto getBulletinDetails(final Long memberId, final Long bulletinId) {
         final Bulletin bulletin = bulletinRepository.findByIdFetchComments(bulletinId).orElseThrow(() -> new BulletinNotFoundException());
