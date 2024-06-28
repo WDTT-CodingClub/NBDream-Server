@@ -9,8 +9,8 @@ import nbdream.comment.domain.Comment;
 import nbdream.comment.domain.request.CreatePostRequest;
 import nbdream.comment.domain.request.UpdateCommentRequest;
 import nbdream.comment.dto.CommentResDto;
+import nbdream.comment.exception.NotFoundCommentException;
 import nbdream.comment.repository.CommentRepository;
-import nbdream.common.exception.UnauthorizedException;
 import nbdream.member.domain.Member;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
@@ -48,11 +48,6 @@ public class CommentService {
 
 
     @Transactional(readOnly = true)
-    public void getCommentsList(Long bulletinId) {
-    }
-
-
-    @Transactional(readOnly = true)
     public List<CommentResDto> getMyCommentsList(final Long memberId) {
         final Member author = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
@@ -65,41 +60,19 @@ public class CommentService {
 
 
     public void editComment(Long commentId, Long memberId, UpdateCommentRequest request) {
-        if (checkAuthorization(commentId, memberId)) {
-            Member commentEditor = memberRepository.getReferenceById(memberId);
 
-            Comment commentEntity = Comment.builder()
-                    .id(commentId)
-                    .author(commentEditor)
-                    .content(request.getCommentDetail())
-                    .build();
-            commentRepository.save(commentEntity);
-        } else {
-            throw new UnauthorizedException("NOT_AUTHORIZED");
-        }
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundCommentException());
+        comment.update(memberId, request.getCommentDetail());
+        commentRepository.save(comment);
     }
 
 
     public void deleteComment(Long commentId, Long memberId) {
-        if (checkAuthorization(commentId, memberId)) {
-            Member commentEditor = memberRepository.getReferenceById(memberId);
-            Comment commentEntity = commentRepository.getReferenceById(commentId);
-
-            commentRepository.delete(commentEntity);
-
-        } else {
-            throw new UnauthorizedException("NOT_AUTHORIZED");
-        }
-    }
-
-    private boolean checkAuthorization(Long commentId, Long memberId) {
-        return commentRepository.findById(commentId)
-                .orElseThrow(MemberNotFoundException::new)
-                .getAuthor()
-                .getId()
-                .equals(memberId);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundCommentException());
+        comment.delete(memberId);
     }
 }
+
 
 
 

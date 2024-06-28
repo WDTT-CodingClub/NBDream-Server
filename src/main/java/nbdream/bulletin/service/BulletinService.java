@@ -9,7 +9,6 @@ import nbdream.bulletin.dto.request.BulletinReqDto;
 import nbdream.bulletin.exception.BulletinNotFoundException;
 import nbdream.bulletin.repository.BookmarkRepository;
 import nbdream.bulletin.repository.BulletinRepository;
-import nbdream.common.entity.Status;
 import nbdream.image.domain.Image;
 import nbdream.image.repository.ImageRepository;
 import nbdream.member.domain.Member;
