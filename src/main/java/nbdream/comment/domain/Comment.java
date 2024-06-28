@@ -51,6 +51,10 @@ public class Comment extends BaseEntity {
         this.changeStatus(Status.EXPIRED);
     }
 
+    public void delete() {
+        this.changeStatus(Status.EXPIRED);
+    }
+
     public boolean isAuthor(final Long memberId) {
         return memberId.equals(author.getId());
     }
