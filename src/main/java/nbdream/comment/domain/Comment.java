@@ -54,4 +54,5 @@ public class Comment extends BaseEntity {
     public boolean isAuthor(final Long memberId) {
         return memberId.equals(author.getId());
     }
+
 }
