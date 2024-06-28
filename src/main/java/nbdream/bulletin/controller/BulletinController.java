@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import nbdream.auth.config.AuthenticatedMemberId;
 import nbdream.bulletin.dto.request.BulletinReqDto;
+import nbdream.bulletin.dto.request.UpdateBulletinReqDto;
 import nbdream.bulletin.service.BulletinService;
 import nbdream.common.advice.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +26,11 @@ public class BulletinController {
         return ApiResponse.ok(bulletinService.createBulletin(memberId, request));
     }
 
-    @Operation(summary = "게시글 수정", description = "게시글 수정 시, 추가한 이미지 url만 반환해야 정상적으로 동작(저장되어 있는 이미지 url은 반환x)")
+    @Operation(summary = "게시글 수정")
     @PutMapping("/{bulletin-id}")
     public ApiResponse<Long> updateBulletin(@Parameter(hidden = true) @AuthenticatedMemberId final Long memberId,
-                                        @PathVariable("bulletin-id") final Long bulletinId,
-                                        @RequestBody final BulletinReqDto request) {
+                                            @PathVariable("bulletin-id") final Long bulletinId,
+                                            @RequestBody final BulletinReqDto request) {
         return ApiResponse.ok(bulletinService.updateBulletin(memberId, bulletinId, request));
     }
 

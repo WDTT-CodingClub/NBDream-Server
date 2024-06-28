@@ -17,9 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static nbdream.image.infrastructure.GcpStorageProperties.BASIC_PATH;
 
@@ -64,13 +66,13 @@ public class ImageService {
 
             String blobPath =request.imageUrl().replace(BASIC_PATH, "");
             Blob blob = storage.get(gcpStorageProperties.getBucketName(), blobPath);
-
-            Storage.BlobSourceOption preCondition =
-                    Storage.BlobSourceOption.generationMatch(blob.getGeneration());
-
-            boolean isDeleted = storage.delete(gcpStorageProperties.getBucketName(), blobPath, preCondition);
-            if(!isDeleted) {
-                throw new ImageDeleteFailException();
+            if (blob != null) {
+                Storage.BlobSourceOption preCondition =
+                        Storage.BlobSourceOption.generationMatch(blob.getGeneration());
+                boolean isDeleted = storage.delete(gcpStorageProperties.getBucketName(), blobPath, preCondition);
+                if(!isDeleted) {
+                    throw new ImageDeleteFailException();
+                }
             }
 
             Optional<Image> image = imageRepository.findByImageUrl(request.imageUrl());
@@ -95,6 +97,33 @@ public class ImageService {
 
     public void deleteImageUrls(Long targetId) {
        imageRepository.deleteAllByTargetId(targetId);
+    }
+
+    public void deleteImageUrlsWithImage(List<String> imageUrls) {
+        imageRepository.deleteAllByImageUrl(imageUrls);
+        for (String imageUrl : imageUrls) {
+            deleteImage(new ImageDto(imageUrl));
+        }
+    }
+
+    public void updateTargetImages(final Long targetId, final List<String> imageUrls) {
+        List<Image> images = imageRepository.findAllByTargetId(targetId);
+        List<String> savedImageUrls = images.stream().map(image -> image.getImageUrl()).collect(Collectors.toList());
+        List<String> deletedImageUrls = new ArrayList<>();
+
+        for (Image image : images) {
+            if (!imageUrls.contains(image.getImageUrl())) {
+                deletedImageUrls.add(image.getImageUrl());
+            }
+        }
+
+        deleteImageUrlsWithImage(deletedImageUrls);
+
+        for (String imageUrl : imageUrls) {
+            if (!savedImageUrls.contains(imageUrl)) {
+                imageRepository.save(new Image(targetId, imageUrl));
+            }
+        }
     }
 
     public List<Image> findAllByTargetId(Long targetId) {

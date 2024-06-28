@@ -4,6 +4,7 @@ package nbdream.comment.service;
 import lombok.RequiredArgsConstructor;
 import nbdream.bulletin.domain.Bulletin;
 import nbdream.bulletin.exception.BulletinNotFoundException;
+import nbdream.bulletin.exception.CommentNotFoundException;
 import nbdream.bulletin.repository.BulletinRepository;
 import nbdream.comment.domain.Comment;
 import nbdream.comment.domain.request.CreatePostRequest;
@@ -59,6 +60,7 @@ public class CommentService {
     }
 
 
+    
     public void editComment(Long commentId, Long memberId, UpdateCommentRequest request) {
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundCommentException());

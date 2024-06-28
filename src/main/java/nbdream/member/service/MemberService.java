@@ -9,14 +9,13 @@ import nbdream.auth.infrastructure.JwtTokenProvider;
 import nbdream.bulletin.domain.Bulletin;
 import nbdream.bulletin.repository.BookmarkRepository;
 import nbdream.bulletin.repository.BulletinRepository;
+import nbdream.calendar.domain.Holiday;
+import nbdream.calendar.repository.HolidayRepository;
 import nbdream.comment.domain.Comment;
 import nbdream.comment.repository.CommentRepository;
-import nbdream.farm.domain.Farm;
-import nbdream.farm.domain.LandElements;
+import nbdream.farm.domain.*;
 import nbdream.farm.exception.FarmNotFoundException;
-import nbdream.farm.repository.FarmCropRepository;
-import nbdream.farm.repository.FarmRepository;
-import nbdream.farm.repository.LandElementsRepository;
+import nbdream.farm.repository.*;
 import nbdream.image.domain.Image;
 import nbdream.image.dto.ImageDto;
 import nbdream.image.repository.ImageRepository;
@@ -51,11 +50,15 @@ public class MemberService {
     private final ImageRepository imageRepository;
     private final ImageService imageService;
     private final FarmRepository farmRepository;
+    private final FarmingDiaryRepository farmingDiaryRepository;
+    private final WorkRepository workRepository;
+    private final HolidayRepository holidayRepository;
     private final LandElementsRepository landElementsRepository;
     private final SimpleWeatherRepository simpleWeatherRepository;
     private final WeatherRepository weatherRepository;
     private final AccountBookRepository accountBookRepository;
     private final WithdrawalRepository withdrawalRepository;
+    private final ScheduleRepository scheduleRepository;
 
 
     public TokenResponse signup(String nickname) {
@@ -88,8 +91,6 @@ public class MemberService {
         deleteMyBulletins(memberId);
         deleteMyComments(memberId);
         deleteMyBookmarks(memberId);
-        deleteLandElements(memberId);
-        deleteWeathers(memberId);
         deleteFarm(memberId);
         deleteAccountBook(memberId);
         member.delete();
@@ -101,6 +102,7 @@ public class MemberService {
             deleteBulletinComments(bulletin.getId());
             deleteBulletinBookmarks(bulletin.getId());
             deleteBulletinImages(bulletin.getId());
+            bulletin.delete(memberId);
         }
     }
 
@@ -137,26 +139,65 @@ public class MemberService {
         imageRepository.deleteAllByTargetId(bulletinId);
     }
 
-    public void deleteLandElements(final Long memberId) {
-        Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
-        LandElements landElements = farm.getLandElements();
-        landElementsRepository.delete(landElements);
-    }
-
-    public void deleteWeathers(final Long memberId) {
-        Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
-        simpleWeatherRepository.deleteAllByFarmId(farm.getId());
-        weatherRepository.deleteAllByFarmId(farm.getId());
-    }
-
     public void deleteFarm(final Long memberId) {
         Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
         deleteFarmCrops(farm.getId());
+        deleteLandElements(farm.getId());
+        deleteFarmingDiary(farm.getId());
+        deleteSchedule(farm.getId());
+        deleteWeathers(farm.getId());
         farmRepository.delete(farm);
     }
 
     public void deleteFarmCrops(final Long farmId) {
         farmCropRepository.deleteAllByFarmId(farmId);
+    }
+
+    public void deleteLandElements(final Long farmId) {
+        Farm farm = farmRepository.findById(farmId).orElseThrow(FarmNotFoundException::new);
+        LandElements landElements = farm.getLandElements();
+        landElementsRepository.delete(landElements);
+    }
+    
+    public void deleteFarmingDiary(final Long farmId) {
+        List<FarmingDiary> farmingDiaries = farmingDiaryRepository.findAllByFarmId(farmId);
+
+        for (FarmingDiary farmingDiary : farmingDiaries) {
+            deleteFarmingDiaryImages(farmingDiary.getId());
+            deleteFarmingDiaryWorks(farmingDiary.getId());
+            deleteFarmingDiaryHolidays(farmingDiary.getId());
+        }
+        farmingDiaryRepository.deleteAll(farmingDiaries);
+    }
+
+    public void deleteFarmingDiaryImages(final Long farmingDiaryId) {
+        List<Image> farmingDiaryImages = imageRepository.findAllByTargetId(farmingDiaryId);
+        for (Image image : farmingDiaryImages) {
+            imageService.deleteImage(new ImageDto(image.getImageUrl()));
+        }
+        imageRepository.deleteAllByTargetId(farmingDiaryId);
+    }
+
+    public void deleteFarmingDiaryWorks(final Long farmingDiaryId) {
+        List<Work> works = workRepository.findAllByFarmingDiaryId(farmingDiaryId);
+        workRepository.deleteAll(works);
+    }
+
+    public void deleteFarmingDiaryHolidays(final Long farmingDiaryId) {
+        List<Holiday> holidays = holidayRepository.findAllByFarmingDiaryId(farmingDiaryId);
+        holidayRepository.deleteAll(holidays);
+    }
+
+    public void deleteSchedule(final Long farmId) {
+        List<Schedule> schedules = scheduleRepository.findByFarmId(farmId);
+        for(Schedule schedule : schedules){
+            scheduleRepository.delete(schedule);
+        }
+    }
+
+    public void deleteWeathers(final Long farmId) {
+        simpleWeatherRepository.deleteAllByFarmId(farmId);
+        weatherRepository.deleteAllByFarmId(farmId);
     }
 
     public void deleteAccountBook(final Long memberId) {

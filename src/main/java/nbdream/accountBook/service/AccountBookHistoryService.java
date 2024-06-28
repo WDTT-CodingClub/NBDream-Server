@@ -14,6 +14,7 @@ import nbdream.accountBook.service.dto.PutAccountBookReqDto;
 import nbdream.common.advice.response.ApiResponse;
 import nbdream.image.domain.Image;
 import nbdream.image.repository.ImageRepository;
+import nbdream.image.service.ImageService;
 import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +28,8 @@ public class AccountBookHistoryService {
 
     private final AccountBookRepository accountBookRepository;
     private final AccountBookHistoryRepository accountBookHistoryRepository;
-    private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
+    private final ImageService imageService;
 
     //장부 내역 작성
     @Transactional
@@ -71,9 +72,7 @@ public class AccountBookHistoryService {
         );
         accountBookHistoryRepository.save(accountBookHistory);
 
-        request.getImageUrls()
-                .stream()
-                .forEach(url -> imageRepository.save(new Image(accountBookHistory.getId(), url)));
+        imageService.updateTargetImages(accountBookHistoryId, request.getImageUrls());
         return ApiResponse.ok();
     }
 

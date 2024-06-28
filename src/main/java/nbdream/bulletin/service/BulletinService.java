@@ -6,18 +6,23 @@ import nbdream.bulletin.domain.BookmarkStatus;
 import nbdream.bulletin.domain.Bulletin;
 import nbdream.bulletin.domain.BulletinCategory;
 import nbdream.bulletin.dto.request.BulletinReqDto;
+import nbdream.bulletin.dto.request.UpdateBulletinReqDto;
 import nbdream.bulletin.exception.BulletinNotFoundException;
 import nbdream.bulletin.repository.BookmarkRepository;
 import nbdream.bulletin.repository.BulletinRepository;
+import nbdream.comment.repository.CommentRepository;
 import nbdream.image.domain.Image;
 import nbdream.image.repository.ImageRepository;
+import nbdream.image.service.ImageService;
 import nbdream.member.domain.Member;
 import nbdream.member.exception.MemberNotFoundException;
 import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -25,8 +30,10 @@ import java.util.Optional;
 public class BulletinService {
     private final MemberRepository memberRepository;
     private final BulletinRepository bulletinRepository;
+    private final CommentRepository commentRepository;
     private final ImageRepository imageRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final ImageService imageService;
 
     public Long createBulletin(final Long memberId, final BulletinReqDto request) {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException());
@@ -45,8 +52,7 @@ public class BulletinService {
 
         bulletin.update(memberId, request.getDreamCrop(), BulletinCategory.of(request.getBulletinCategory()), request.getContent());
 
-        request.getImageUrls().stream()
-                .map(url -> imageRepository.save(new Image(bulletinId, url)));
+        imageService.updateTargetImages(bulletinId, request.getImageUrls());
 
         return bulletinId;
     }
@@ -54,8 +60,13 @@ public class BulletinService {
     public void deleteBulletin(final Long memberId, final Long bulletinId) {
         final Bulletin bulletin = bulletinRepository.findById(bulletinId).orElseThrow(() -> new BulletinNotFoundException());
 
-        imageRepository.findAllByTargetId(bulletinId).stream()
-                .forEach(image -> image.delete());
+        List<String> imageUrls = imageRepository.findAllByTargetId(bulletinId).stream()
+                .map(Image::getImageUrl)
+                .collect(Collectors.toList());
+        imageService.deleteImageUrlsWithImage(imageUrls);
+
+        commentRepository.findByBulletinId(bulletinId).stream()
+                        .forEach(comment -> comment.delete());
 
         bulletin.delete(memberId);
     }
@@ -73,6 +84,7 @@ public class BulletinService {
         }
 
         bookmarkRepository.delete(bookmark.get());
+        bulletin.minusBookmarkedCount();
         return BookmarkStatus.OFF.getCode();
     }
 

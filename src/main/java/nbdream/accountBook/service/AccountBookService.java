@@ -38,7 +38,6 @@ public class AccountBookService {
         List<AccountBookHistory> accountBookHistoryList = accountBookHistoryRepository.findByFilterAndCursor(memberId, cursor, PAGE_SIZE + 1, request);
 
         boolean hasNext = hasNext(accountBookHistoryList);
-        //
         List<AccountBookHistory> allList = accountBookHistoryRepository.findAllByFilter(memberId, request);
 
         List<String> categories = getCategoryList(allList);
@@ -46,14 +45,7 @@ public class AccountBookService {
         Long totalExpense = accountBook.getTotalExpense(allList);
         Long totalCost = totalRevenue + totalExpense;
         List<GetAccountBookGraphResDto> revenuePercent = getPercentsByCategory(allList, totalRevenue, TransactionType.REVENUE);
-        List<GetAccountBookGraphResDto> expensePercent = getPercentsByCategory(allList, totalExpense, TransactionType.EXPENSE);
-
-        for (GetAccountBookGraphResDto item : revenuePercent){
-            System.out.println("수입 카테고리 퍼센트 : " + item);
-        }
-        for (GetAccountBookGraphResDto item : expensePercent){
-            System.out.println("지출 카테고리 퍼센트 : " + item);
-        }
+        List<GetAccountBookGraphResDto> expensePercent = getPercentsByCategory(allList, -totalExpense, TransactionType.EXPENSE);
 
         List<GetAccountBookResDto> items = convertToDtoList(accountBookHistoryList);
         return createAccountBookListResDto(categories, items, totalRevenue, totalExpense, totalCost, hasNext, revenuePercent, expensePercent);

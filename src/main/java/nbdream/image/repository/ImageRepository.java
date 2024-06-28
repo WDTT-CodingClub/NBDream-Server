@@ -18,6 +18,10 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     Optional<Image> findByImageUrl(String imageUrl);
 
     @Modifying
+    @Query("DELETE FROM Image i WHERE i.imageUrl IN :imageUrl")
+    void deleteAllByImageUrl(@Param("imageUrl") List<String> imageUrl);
+
+    @Modifying
     @Query("DELETE FROM Image i WHERE i.targetId = :targetId")
     void deleteAllByTargetId(@Param("targetId") Long targetId);
 }
