@@ -54,7 +54,7 @@ public class CommentService {
         final List<Comment> comments = commentRepository.findByAuthor(author);
 
         return comments.stream()
-                .map(comment -> new CommentResDto(comment))
+                .map(comment -> new CommentResDto(comment, memberId))
                 .collect(Collectors.toList());
     }
 

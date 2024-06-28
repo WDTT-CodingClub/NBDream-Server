@@ -21,10 +21,12 @@ public class CommentResDto {
     private String nickname;
     private String profileImageUrl;
     private String content;
+    private Boolean isAuthor;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
 
-    public CommentResDto(final Comment comment) {
+
+    public CommentResDto(final Comment comment, long authorId) {
         this.memberId = comment.getAuthor().getId();
         this.commentId = comment.getId();
         this.bulletinId = comment.getBulletin().getId();
@@ -32,7 +34,10 @@ public class CommentResDto {
         this.nickname = comment.getAuthor().getNickname();
         this.profileImageUrl = comment.getAuthor().getProfileImageUrl();
         this.content = comment.getContent();
+        this.isAuthor = comment.getAuthor().getId() == authorId;
         this.createdDate = comment.getCreatedDate();
         this.lastModifiedDate = comment.getLastModifiedDate();
     }
+
+
 }
