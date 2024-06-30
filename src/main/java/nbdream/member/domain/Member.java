@@ -5,16 +5,15 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nbdream.accountBook.domain.AccountBook;
+import nbdream.bulletin.exception.UnEditableBulletinException;
 import nbdream.common.entity.BaseEntity;
 import nbdream.common.entity.Status;
-import nbdream.farm.domain.Farm;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLRestriction("status = 'NORMAL'")
+@SQLRestriction("status != 'DELETED'")
 public class Member extends BaseEntity {
 
     @Id
@@ -51,6 +50,11 @@ public class Member extends BaseEntity {
     }
 
     public void delete() {
+        this.changeStatus(Status.DELETED);
+    }
+
+    public void expire() {
         this.changeStatus(Status.EXPIRED);
     }
+
 }

@@ -17,6 +17,8 @@ import nbdream.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +42,6 @@ public class CommentService {
                 .bulletin(bulletinEntity)
                 .content(request.getCommentDetail())
                 .build();
-
         commentEntity = commentRepository.save(commentEntity);
 
         return commentEntity.getId();

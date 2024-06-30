@@ -12,7 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLRestriction("status = 'NORMAL'")
+@SQLRestriction("status != 'DELETED'")
 public class Image extends BaseEntity {
 
     @Id
@@ -29,6 +29,10 @@ public class Image extends BaseEntity {
     }
 
     public void delete() {
+        this.changeStatus(Status.DELETED);
+    }
+
+    public void expire() {
         this.changeStatus(Status.EXPIRED);
     }
 }

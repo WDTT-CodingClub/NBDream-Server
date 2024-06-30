@@ -29,6 +29,6 @@ public class FarmCrop extends BaseEntity {
     }
 
     public void delete() {
-        this.changeStatus(Status.EXPIRED);
+        this.changeStatus(Status.DELETED);
     }
 }

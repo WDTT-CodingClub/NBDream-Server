@@ -1,24 +1,22 @@
 package nbdream.bulletin.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.bulletin.domain.Bulletin;
-import nbdream.comment.domain.Comment;
 import nbdream.comment.dto.CommentResDto;
+import nbdream.common.entity.Status;
 import nbdream.member.domain.Member;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class BulletinResDto {
+    private static final String UNKNOWN = "알 수 없음";
+    private static final String EMPTY = "";
+
     private Long authorId;
     private Long bulletinId;
     private String nickname;
@@ -38,8 +36,8 @@ public class BulletinResDto {
                           final List<CommentResDto> comments, final boolean isAuthor, final boolean isBookmarked) {
         this.authorId = author.getId();
         this.bulletinId = bulletin.getId();
-        this.nickname = author.getNickname();
-        this.profileImageUrl = author.getProfileImageUrl();
+        this.nickname = (bulletin.getStatus().equals(Status.EXPIRED)) ? UNKNOWN : author.getNickname();
+        this.profileImageUrl = (bulletin.getStatus().equals(Status.EXPIRED)) ? EMPTY : author.getProfileImageUrl();
         this.content = bulletin.getContent();
         this.crop = bulletin.getCrop();
         this.imageUrls = imageUrls;
@@ -50,5 +48,6 @@ public class BulletinResDto {
         this.isAuthor = isAuthor;
         this.isBookmarked = isBookmarked;
     }
+
 }
 

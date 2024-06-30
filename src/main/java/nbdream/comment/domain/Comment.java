@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.bulletin.domain.Bulletin;
+import nbdream.bulletin.exception.UnEditableBulletinException;
 import nbdream.comment.exception.UneditableCommentException;
 import nbdream.common.entity.BaseEntity;
 import nbdream.common.entity.Status;
@@ -18,7 +19,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Builder
 @AllArgsConstructor
-@SQLRestriction("status = 'NORMAL'")
+@SQLRestriction("status != 'DELETED'")
 public class Comment extends BaseEntity {
 
     @Id
@@ -44,19 +45,27 @@ public class Comment extends BaseEntity {
     }
 
     public void delete(Long memberId) {
-        if (!isAuthor(memberId)) {
+        if (!isAuthor(memberId) && !isBulletinAuthor(memberId)) {
             throw new UneditableCommentException();
+        }
+
+        this.changeStatus(Status.DELETED);
+    }
+
+    public void expire(final Long memberId) {
+        if (!isAuthor(memberId)) {
+            throw new UnEditableBulletinException();
         }
 
         this.changeStatus(Status.EXPIRED);
     }
 
-    public void delete() {
-        this.changeStatus(Status.EXPIRED);
-    }
-
     public boolean isAuthor(final Long memberId) {
         return memberId.equals(author.getId());
+    }
+
+    public boolean isBulletinAuthor(final Long memberId) {
+        return memberId.equals(bulletin.getAuthor().getId());
     }
 
 }

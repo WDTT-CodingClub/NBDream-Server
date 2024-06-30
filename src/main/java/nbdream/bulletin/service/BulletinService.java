@@ -66,7 +66,7 @@ public class BulletinService {
         imageService.deleteImageUrlsWithImage(imageUrls);
 
         commentRepository.findByBulletinId(bulletinId).stream()
-                        .forEach(comment -> comment.delete());
+                        .forEach(comment -> comment.delete(memberId));
 
         bulletin.delete(memberId);
     }

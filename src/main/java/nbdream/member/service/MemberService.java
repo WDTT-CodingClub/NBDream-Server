@@ -93,24 +93,24 @@ public class MemberService {
         deleteMyBookmarks(memberId);
         deleteFarm(memberId);
         deleteAccountBook(memberId);
-        member.delete();
+        member.expire();
     }
 
     public void deleteMyBulletins(final Long memberId) {
         List<Bulletin> bulletins = bulletinRepository.findByAuthorId(memberId);
         for (Bulletin bulletin : bulletins) {
-            deleteBulletinComments(bulletin.getId());
+            deleteBulletinComments(memberId, bulletin.getId());
             deleteBulletinBookmarks(bulletin.getId());
             deleteBulletinImages(bulletin.getId());
-            bulletin.delete(memberId);
+            bulletin.expire(memberId);
         }
     }
 
-    public void deleteBulletinComments(final Long bulletinId) {
+    public void deleteBulletinComments(final Long memberId, final Long bulletinId) {
         List<Comment> bulletinComments = commentRepository.findByBulletinId(bulletinId);
 
         for (Comment comment : bulletinComments) {
-            comment.delete();
+            comment.expire(memberId);
         }
     }
 
@@ -118,7 +118,7 @@ public class MemberService {
         List<Comment> myComments = commentRepository.findByAuthorId(memberId);
 
         for (Comment comment : myComments) {
-            comment.delete();
+            comment.expire(memberId);
         }
     }
 
@@ -132,11 +132,10 @@ public class MemberService {
 
     public void deleteBulletinImages(final Long bulletinId) {
         List<Image> bulletinImages = imageRepository.findAllByTargetId(bulletinId);
-        for (Image image : bulletinImages) {
-            imageService.deleteImage(new ImageDto(image.getImageUrl()));
-        }
 
-        imageRepository.deleteAllByTargetId(bulletinId);
+        for (Image image : bulletinImages) {
+            image.expire();
+        }
     }
 
     public void deleteFarm(final Long memberId) {

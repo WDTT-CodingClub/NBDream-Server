@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLRestriction("status = 'NORMAL'")
+@SQLRestriction("status != 'DELETED'")
 public class Bulletin extends BaseEntity {
 
     @Id
@@ -61,6 +61,14 @@ public class Bulletin extends BaseEntity {
     }
 
     public void delete(final Long memberId) {
+        if (!isAuthor(memberId)) {
+            throw new UnEditableBulletinException();
+        }
+
+        this.changeStatus(Status.DELETED);
+    }
+
+    public void expire(final Long memberId) {
         if (!isAuthor(memberId)) {
             throw new UnEditableBulletinException();
         }

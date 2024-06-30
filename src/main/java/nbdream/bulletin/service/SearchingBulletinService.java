@@ -45,6 +45,7 @@ public class SearchingBulletinService {
                 .collect(Collectors.toList());
 
         final List<CommentResDto> comments = bulletin.getComments().stream().map(comment -> new CommentResDto(comment, memberId)).toList();
+
         return BulletinResDto.builder()
                 .bulletin(bulletin)
                 .author(bulletin.getAuthor())

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbdream.comment.domain.Comment;
+import nbdream.common.entity.Status;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class CommentResDto {
+    private static final String UNKNOWN = "알 수 없음";
+    private static final String EMPTY = "";
+
     private Long memberId;
     private Long commentId;
     private Long bulletinId;
@@ -31,8 +35,8 @@ public class CommentResDto {
         this.commentId = comment.getId();
         this.bulletinId = comment.getBulletin().getId();
         this.bulletinAuthor = comment.getBulletin().getAuthor().getNickname();
-        this.nickname = comment.getAuthor().getNickname();
-        this.profileImageUrl = comment.getAuthor().getProfileImageUrl();
+        this.nickname = (comment.getStatus().equals(Status.EXPIRED)) ? UNKNOWN : comment.getAuthor().getNickname();
+        this.profileImageUrl = (comment.getStatus().equals(Status.EXPIRED)) ? EMPTY : comment.getAuthor().getProfileImageUrl();
         this.content = comment.getContent();
         this.isAuthor = comment.getAuthor().getId() == authorId;
         this.createdDate = comment.getCreatedDate();

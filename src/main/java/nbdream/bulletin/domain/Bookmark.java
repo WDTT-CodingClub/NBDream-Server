@@ -31,7 +31,7 @@ public class Bookmark extends BaseEntity {
     }
 
     public void delete() {
-        this.changeStatus(Status.EXPIRED);
+        this.changeStatus(Status.DELETED);
     }
 
     public void recover() {
