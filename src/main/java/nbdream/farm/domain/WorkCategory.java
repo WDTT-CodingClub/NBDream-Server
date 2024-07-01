@@ -8,8 +8,8 @@ import java.util.Arrays;
 @Getter
 public enum WorkCategory {
 
-    SEED_PREPARATION_AND_DISINFECTION("정자예조 및 소독"),
-    SEEDBED_PREPARATION_AND_INSTALLATION("묘상준비 및 설치"),
+    SEED_PREPARATION_AND_DISINFECTION("종자 예조 및 소독"),
+    SEEDBED_PREPARATION_AND_INSTALLATION("묘상 준비 및 설치"),
     SOWING("파종"),
     GRAFTING("접목"),
     TRANSPLANTING_SEEDLINGS("가식"),
