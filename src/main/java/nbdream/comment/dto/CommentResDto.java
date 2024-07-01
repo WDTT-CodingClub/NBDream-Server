@@ -34,7 +34,7 @@ public class CommentResDto {
         this.memberId = comment.getAuthor().getId();
         this.commentId = comment.getId();
         this.bulletinId = comment.getBulletin().getId();
-        this.bulletinAuthor = comment.getBulletin().getAuthor().getNickname();
+        this.bulletinAuthor = (comment.getStatus().equals(Status.EXPIRED)) ? UNKNOWN :comment.getBulletin().getAuthor().getNickname();
         this.nickname = (comment.getStatus().equals(Status.EXPIRED)) ? UNKNOWN : comment.getAuthor().getNickname();
         this.profileImageUrl = (comment.getStatus().equals(Status.EXPIRED)) ? EMPTY : comment.getAuthor().getProfileImageUrl();
         this.content = comment.getContent();
@@ -42,6 +42,5 @@ public class CommentResDto {
         this.createdDate = comment.getCreatedDate();
         this.lastModifiedDate = comment.getLastModifiedDate();
     }
-
 
 }

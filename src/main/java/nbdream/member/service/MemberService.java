@@ -93,7 +93,7 @@ public class MemberService {
         deleteMyBookmarks(memberId);
         deleteFarm(memberId);
         deleteAccountBook(memberId);
-        member.expire();
+        member.delete();
     }
 
     public void deleteMyBulletins(final Long memberId) {
