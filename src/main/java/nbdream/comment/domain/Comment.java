@@ -53,7 +53,7 @@ public class Comment extends BaseEntity {
     }
 
     public void expire(final Long memberId) {
-        if (!isAuthor(memberId)) {
+        if (!isAuthor(memberId) && !isBulletinAuthor(memberId)) {
             throw new UnEditableBulletinException();
         }
 
