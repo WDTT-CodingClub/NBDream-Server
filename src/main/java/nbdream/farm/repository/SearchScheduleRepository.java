@@ -22,7 +22,7 @@ public class SearchScheduleRepository {
         return queryFactory.selectFrom(schedule)
                 .where(
                         schedule.farm.id.eq(farmId),
-                        schedule.category.eq(category),
+                        categoryCond(category),
                         dateCond(startDate, endDate)
                 )
                 .fetch();
@@ -30,5 +30,9 @@ public class SearchScheduleRepository {
 
     private BooleanExpression dateCond(LocalDate startDate, LocalDate endDate) {
         return (schedule.startDate.loe(endDate).and(schedule.endDate.goe(startDate)));
+    }
+
+    private BooleanExpression categoryCond(String category) {
+        return (category == null) ? null : schedule.category.eq(category);
     }
 }
