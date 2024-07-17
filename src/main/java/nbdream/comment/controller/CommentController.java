@@ -26,8 +26,7 @@ public class CommentController {
     @PostMapping("/bulletin/{bulletin-id}/comments")
     public ApiResponse<Long> createComment(@PathVariable(name = "bulletin-id") Long bulletinId,
                                            @RequestBody CreatePostRequest request,
-                                           @Parameter(hidden = true) @AuthenticatedMemberId Long memberId
-    ) {
+                                           @Parameter(hidden = true) @AuthenticatedMemberId Long memberId) {
         Long commentId = commentService.postComment(bulletinId, request, memberId);
         return ApiResponse.ok(commentId);
     }

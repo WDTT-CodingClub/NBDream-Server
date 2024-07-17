@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import nbdream.accountBook.domain.AccountBook;
 import nbdream.accountBook.exception.AccountBookNotFoundException;
 import nbdream.accountBook.repository.AccountBookRepository;
+import nbdream.alarm.domain.Alarm;
+import nbdream.alarm.repository.AlarmRepository;
 import nbdream.auth.dto.response.TokenResponse;
 import nbdream.auth.infrastructure.JwtTokenProvider;
 import nbdream.bulletin.domain.Bulletin;
@@ -59,6 +61,7 @@ public class MemberService {
     private final AccountBookRepository accountBookRepository;
     private final WithdrawalRepository withdrawalRepository;
     private final ScheduleRepository scheduleRepository;
+    private final AlarmRepository alarmRepository;
 
 
     public TokenResponse signup(String nickname) {
@@ -71,6 +74,7 @@ public class MemberService {
         Member savedMember = memberRepository.save(member);
         farmRepository.save(new Farm(savedMember));
         accountBookRepository.save(new AccountBook(savedMember));
+        alarmRepository.save(new Alarm(savedMember));
         return new TokenResponse(jwtTokenProvider.createAccessToken(savedMember.getId()),
                 jwtTokenProvider.createRefreshToken(savedMember.getId()));
     }
