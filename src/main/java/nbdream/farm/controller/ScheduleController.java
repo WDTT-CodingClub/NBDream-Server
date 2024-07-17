@@ -30,7 +30,7 @@ public class ScheduleController {
         return ApiResponse.ok(scheduleService.getFarmWorkSchedule(request, memberId));
     }
 
-    @Operation(summary = "일정 등록", description = "날짜 : yyyy-MM-dd, 카테고리 : 작물명 또는 '전체'")
+    @Operation(summary = "일정 등록", description = "날짜 : yyyy-MM-dd, 알람 시각 : yyyy-MM-dd HH:mm, 카테고리 : 작물명 또는 '전체'")
     @PostMapping("/schedule/register")
     public ApiResponse<Void> registerSchedule(@RequestBody PostScheduleReqDto request,
                                          @Parameter(hidden = true) @AuthenticatedMemberId final Long memberId){
@@ -38,7 +38,7 @@ public class ScheduleController {
         return scheduleService.registerSchedule(request, memberId);
     }
 
-    @Operation(summary = "일정 수정", description = "날짜 : yyyy-MM-dd, 카테고리 : 작물명 또는 '전체'")
+    @Operation(summary = "일정 수정", description = "날짜 : yyyy-MM-dd, 알람 시각 : yyyy-MM-dd HH:mm, 카테고리 : 작물명 또는 '전체'")
     @PutMapping("/schedule/update/{schedule-id}")
     public ApiResponse<Void> updateSchedule(@RequestBody PutScheduleReqDto request,
                                             @PathVariable("schedule-id") final Long scheduleId,
