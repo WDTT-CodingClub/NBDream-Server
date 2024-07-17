@@ -15,6 +15,9 @@ import nbdream.farm.service.dto.schedule.response.ScheduleListResDto;
 import nbdream.farm.service.dto.schedule.response.ScheduleResDto;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -86,12 +89,12 @@ public class ScheduleService {
 
 
     //주간 일정 조회
-    public ScheduleListResDto getWeeklySchedule(WeekScheduleListReqDto request, Long memberId) {
+    public ScheduleListResDto getWeeklySchedule(Long memberId) {
         final Farm farm = farmRepository.findByMemberId(memberId).orElseThrow(FarmNotFoundException::new);
-        List<Crop> crops = cropRepository.findAll();
-        ValidCheckCategory(request.getCategory(), crops);
+        ZoneId zoneId = ZoneId.of("Asia/Seoul");
+        LocalDate today = LocalDate.now(zoneId);
         List<Schedule> schedules = searchScheduleRepository.
-                searchSchedule(farm.getId(), request.getCategory(), request.parseStartDate(), request.parseStartDate().plusDays(7));
+                searchSchedule(farm.getId(), null, today, today.plusDays(6));
         return new ScheduleListResDto().createResponse(schedules);
     }
 
