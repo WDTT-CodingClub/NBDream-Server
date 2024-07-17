@@ -30,6 +30,9 @@ public class FcmServiceImpl implements FcmService{
     @Value("${fcm.scope}")
     private String SCOPE;
 
+    @Value("${fcm.app-logo-url}")
+    private String APP_LOGO_URL;
+
     /**
      * 푸시 메시지 처리를 수행하는 비즈니스 로직
      *
@@ -80,7 +83,7 @@ public class FcmServiceImpl implements FcmService{
                         .notification(FcmMessageDto.Notification.builder()
                                 .title(fcmSendDto.getTitle())
                                 .body(fcmSendDto.getBody())
-                                .image(null)
+                                .image(APP_LOGO_URL)
                                 .build()
                         ).build()).validateOnly(false).build();
 
