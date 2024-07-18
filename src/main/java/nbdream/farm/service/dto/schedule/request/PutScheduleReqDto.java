@@ -1,5 +1,7 @@
 package nbdream.farm.service.dto.schedule.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +9,7 @@ import lombok.ToString;
 import nbdream.accountBook.exception.InvalidDateFormatException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -20,6 +23,10 @@ public class PutScheduleReqDto {
     private String startDate;
     private String endDate;
     private String memo;
+    private boolean alarmOn;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime alarmDateTime;
 
     public LocalDate parseStartDate() {
         return parseDate(startDate);

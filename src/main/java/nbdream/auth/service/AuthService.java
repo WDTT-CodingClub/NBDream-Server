@@ -3,6 +3,8 @@ package nbdream.auth.service;
 import lombok.RequiredArgsConstructor;
 import nbdream.accountBook.domain.AccountBook;
 import nbdream.accountBook.repository.AccountBookRepository;
+import nbdream.alarm.domain.Alarm;
+import nbdream.alarm.repository.AlarmRepository;
 import nbdream.auth.dto.request.TokenRequest;
 import nbdream.auth.dto.response.LoginResponse;
 import nbdream.auth.dto.response.OAuthUserProfile;
@@ -32,6 +34,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final FarmRepository farmRepository;
     private final AccountBookRepository accountBookRepository;
+    private final AlarmRepository alarmRepository;
 
     @Transactional
     public LoginResponse oAuthLogin(String providerName, String oAuthAccessToken) {
@@ -53,6 +56,7 @@ public class AuthService {
             final Member savedMember = memberRepository.save(oAuthUserProfile.toMember());
             farmRepository.save(new Farm(savedMember));
             accountBookRepository.save(new AccountBook(savedMember));
+            alarmRepository.save(new Alarm(savedMember));
             return LoginResponse.builder()
                     .alreadyExistMember(false)
                     .memberId(savedMember.getId())

@@ -46,7 +46,7 @@ jwt:
     expire-length: 129600000 # 15일
   token:
     secret-key: ${TOKEN_SECRET_KEY}
-    
+
 logging:
   level:
     org.hibernate.SQL: debug
@@ -78,3 +78,9 @@ kakao-local:
   api:
     url: https://dapi.kakao.com/v2/local/search/address
     key: ${KAKAO_LOCAL_API_KEY}
+
+fcm:
+  api-url: https://fcm.googleapis.com/v1/projects/nbdream-45767/messages:send
+  admin-key-path: firebase/nbdream-45767-firebase-adminsdk-cavjh-27f370545d.json
+  scope: https://www.googleapis.com/auth/cloud-platform
+  app-logo-url: https://storage.googleapis.com/nbdream_bucket_1/default/app-logo.png

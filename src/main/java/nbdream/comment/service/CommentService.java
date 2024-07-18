@@ -2,6 +2,7 @@ package nbdream.comment.service;
 
 
 import lombok.RequiredArgsConstructor;
+import nbdream.alarm.service.AlarmService;
 import nbdream.bulletin.domain.Bulletin;
 import nbdream.bulletin.exception.BulletinNotFoundException;
 import nbdream.bulletin.repository.BulletinRepository;
@@ -30,6 +31,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final BulletinRepository bulletinRepository;
+    private final AlarmService alarmService;
 
     public Long postComment(Long bulletinId, CreatePostRequest request, Long memberId) {
         Member memberEntity = memberRepository.findById(memberId)
@@ -45,6 +47,8 @@ public class CommentService {
                 .build();
         commentEntity = commentRepository.save(commentEntity);
 
+        //게시글 작성자에게 push 알람 전송 (게시글 작성자 id, 댓글작성자 닉네임, 게시글 id)
+        alarmService.sendCommentAlarm(bulletinEntity, memberEntity.getNickname());
         return commentEntity.getId();
     }
 

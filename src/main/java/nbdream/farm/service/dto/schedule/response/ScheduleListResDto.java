@@ -25,7 +25,9 @@ public class ScheduleListResDto {
                     schedule.getTitle(),
                     schedule.getStartDate(),
                     schedule.getEndDate(),
-                    schedule.getMemo()
+                    schedule.getMemo(),
+                    schedule.isAlarmOn(),
+                    schedule.getAlarmDateTime()
             ));
         }
         return new ScheduleListResDto(dtoList);

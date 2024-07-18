@@ -1,5 +1,7 @@
 package nbdream.farm.service.dto.schedule.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +23,10 @@ public class PostScheduleReqDto {
     private String startDate;
     private String endDate;
     private String memo;
+    private boolean alarmOn;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime alarmDateTime;
 
     public LocalDate parseStartDate() {
         return parseDate(startDate);

@@ -49,7 +49,7 @@ public class ScheduleService {
         List<Crop> crops = cropRepository.findAll();
         ValidCheckCategory(request.getCategory(), crops);
 
-        Schedule schedule = new Schedule(farm, request.getTitle(), request.parseStartDate(), request.parseEndDate(), request.getMemo(), request.getCategory());
+        Schedule schedule = new Schedule(farm, request.getTitle(), request.parseStartDate(), request.parseEndDate(), request.getMemo(), request.getCategory(), request.isAlarmOn(), request.getAlarmDateTime());
         scheduleRepository.save(schedule);
         return ApiResponse.ok();
     }
@@ -63,7 +63,7 @@ public class ScheduleService {
         List<Crop> crops = cropRepository.findAll();
         ValidCheckCategory(request.getCategory(), crops);
 
-        schedule.update(request.getTitle(), request.parseStartDate(), request.parseEndDate(), request.getMemo(), request.getCategory());
+        schedule.update(request.getTitle(), request.parseStartDate(), request.parseEndDate(), request.getMemo(), request.getCategory(), request.isAlarmOn(), request.getAlarmDateTime());
         scheduleRepository.save(schedule);
         return ApiResponse.ok();
     }
