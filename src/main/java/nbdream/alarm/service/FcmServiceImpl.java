@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import nbdream.alarm.domain.AlarmType;
 import nbdream.alarm.dto.FcmMessageDto;
 import nbdream.alarm.dto.FcmSendDto;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FcmServiceImpl implements FcmService{
@@ -51,8 +54,11 @@ public class FcmServiceImpl implements FcmService{
 
         HttpEntity entity = new HttpEntity<>(message, headers);
         ResponseEntity response = restTemplate.exchange(API_URL, HttpMethod.POST, entity, String.class);
-
-        return response.getStatusCode() == HttpStatus.OK ? 1 : 0;
+        int result = response.getStatusCode() == HttpStatus.OK ? 1 : 0;
+        if(result == 1){
+            log.info("전송 완료 : {}", fcmSendDto);
+        }
+        return result;
     }
 
     /**
@@ -84,8 +90,12 @@ public class FcmServiceImpl implements FcmService{
                                 .title(fcmSendDto.getTitle())
                                 .body(fcmSendDto.getBody())
                                 .image(APP_LOGO_URL)
-                                .build()
-                        ).build()).validateOnly(false).build();
+                                .build())
+                        .data(FcmMessageDto.Data.builder()
+                                .targetId(fcmSendDto.getTargetId().toString())
+                                .alarmType(fcmSendDto.getAlarmType().getValue())
+                                .build())
+                        .build()).validateOnly(false).build();
 
         return om.writeValueAsString(fcmMessageDto);
     }

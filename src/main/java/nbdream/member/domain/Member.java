@@ -1,10 +1,7 @@
 package nbdream.member.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nbdream.bulletin.exception.UnEditableBulletinException;
 import nbdream.common.entity.BaseEntity;
 import nbdream.common.entity.Status;
@@ -14,6 +11,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SQLRestriction("status != 'DELETED'")
+@ToString
 public class Member extends BaseEntity {
 
     @Id

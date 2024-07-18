@@ -1,10 +1,12 @@
 package nbdream.farm.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.type.DateTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import nbdream.common.entity.BaseEntity;
 
 import java.time.LocalDate;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class Schedule extends BaseEntity {
 
     @Id

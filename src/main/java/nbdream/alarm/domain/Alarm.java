@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import nbdream.accountBook.domain.AccountBookHistory;
 import nbdream.accountBook.domain.TransactionType;
 import nbdream.common.entity.BaseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class Alarm extends BaseEntity {
 
     @Id
