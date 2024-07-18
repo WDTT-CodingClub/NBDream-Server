@@ -81,6 +81,6 @@ kakao-local:
 
 fcm:
   api-url: https://fcm.googleapis.com/v1/projects/nbdream-45767/messages:send
-  admin-key-path: firebase/nbdream-45767-firebase-adminsdk-cavjh-27f370545d.json
+  admin-key-path: nbdream-45767-firebase-adminsdk-cavjh-27f370545d.json
   scope: https://www.googleapis.com/auth/cloud-platform
   app-logo-url: https://storage.googleapis.com/nbdream_bucket_1/default/app-logo.png
