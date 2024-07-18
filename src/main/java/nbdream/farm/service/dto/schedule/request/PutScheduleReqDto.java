@@ -10,8 +10,6 @@ import nbdream.accountBook.exception.InvalidDateFormatException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -45,14 +43,5 @@ public class PutScheduleReqDto {
         } catch (DateTimeParseException e) {
             throw new InvalidDateFormatException();
         }
-    }
-
-    public LocalDateTime convertToServerTimeZone() {
-        if (alarmDateTime == null) {
-            return null;
-        }
-        ZonedDateTime zonedDateTime = ZonedDateTime.of(alarmDateTime, ZoneId.of("Asia/Seoul"))
-                .withZoneSameInstant(ZoneId.systemDefault());
-        return zonedDateTime.toLocalDateTime();
     }
 }
