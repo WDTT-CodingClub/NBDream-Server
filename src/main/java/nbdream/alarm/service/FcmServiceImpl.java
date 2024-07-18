@@ -13,9 +13,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -68,7 +70,7 @@ public class FcmServiceImpl implements FcmService{
      */
     private String getAccessToken() throws IOException {
         GoogleCredentials googleCredentials = GoogleCredentials
-                .fromStream(new ClassPathResource(ADMIN_KEY_PATH).getInputStream())
+                .fromStream(ResourceUtils.getURL(ADMIN_KEY_PATH).openStream())
                 .createScoped(List.of(SCOPE));
         googleCredentials.refreshIfExpired();
         return googleCredentials.getAccessToken().getTokenValue();
