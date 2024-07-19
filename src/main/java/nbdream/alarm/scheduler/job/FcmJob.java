@@ -5,6 +5,7 @@ import nbdream.alarm.domain.AlarmType;
 import nbdream.alarm.dto.AlarmScheduleDto;
 import nbdream.alarm.dto.FcmSendDto;
 import nbdream.alarm.exception.FcmIntenalServerErrorException;
+import nbdream.alarm.repository.AlarmHistoryRepository;
 import nbdream.alarm.service.AlarmService;
 import nbdream.alarm.service.FcmService;
 import org.quartz.Job;
@@ -30,6 +31,7 @@ public class FcmJob implements Job {
         if (alarmService == null) {
             alarmService = appCtx.getBean(AlarmService.class);
         }
+
         List<AlarmScheduleDto> alarmSchedules = alarmService.GetAlarmSchedules();
         log.info("보내야 할 일정 알람 수 :" + String.valueOf(alarmSchedules.size()));
         for (AlarmScheduleDto alarmSchedule : alarmSchedules) {
@@ -44,6 +46,7 @@ public class FcmJob implements Job {
                     .build();
             try {
                 fcmService.sendMessageTo(fcmSendDto);
+                alarmService.saveAlarmHistory(fcmSendDto, alarmSchedule.getAlarm());
             } catch (Exception e) {
                 throw new FcmIntenalServerErrorException();
             }
