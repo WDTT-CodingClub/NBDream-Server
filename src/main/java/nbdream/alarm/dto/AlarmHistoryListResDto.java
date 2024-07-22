@@ -1,13 +1,13 @@
 package nbdream.alarm.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import nbdream.alarm.domain.AlarmHistory;
-import nbdream.alarm.domain.AlarmType;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +25,8 @@ public class AlarmHistoryListResDto {
                         alarmHistory.getAlarmType().getValue(),
                         alarmHistory.getTitle(),
                         alarmHistory.getContent(),
-                        alarmHistory.isChecked()
+                        alarmHistory.isChecked(),
+                        alarmHistory.getCreatedDate()
                 ))
                 .collect(Collectors.toList());
 
@@ -42,5 +43,7 @@ class AlarmHistoryResDto {
     private String title;
     private String content;
     private boolean checked;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime createdDate;
 
 }
