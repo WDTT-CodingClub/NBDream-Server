@@ -67,10 +67,10 @@ public class AlarmService {
     public void sendCommentAlarm(Bulletin bulletin, String nickname) {
         Alarm alarm = alarmRepository.findByMemberId(bulletin.getAuthor().getId());
         isAlarmValid(alarm);
-        hasToken(alarm);
         if(!alarm.isCommentAlarm()){
             return;
         }
+        hasToken(alarm);
         try {
             String body = "\"" + nickname + "\"" + "님이 게시글에 새 댓글을 달았습니다.";
             FcmSendDto fcmSendDto = new FcmSendDto(alarm.getFcmToken(), "농부의 꿈", body, bulletin.getId(), AlarmType.COMMENT);

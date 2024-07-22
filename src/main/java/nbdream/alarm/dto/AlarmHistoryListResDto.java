@@ -8,6 +8,9 @@ import lombok.ToString;
 import nbdream.alarm.domain.AlarmHistory;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +29,7 @@ public class AlarmHistoryListResDto {
                         alarmHistory.getTitle(),
                         alarmHistory.getContent(),
                         alarmHistory.isChecked(),
-                        alarmHistory.getCreatedDate()
+                        alarmHistory.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
                 ))
                 .collect(Collectors.toList());
 
@@ -43,7 +46,7 @@ class AlarmHistoryResDto {
     private String title;
     private String content;
     private boolean checked;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime createdDate;
+    private String createdDate;
+
 
 }
