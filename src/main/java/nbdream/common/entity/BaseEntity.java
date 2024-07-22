@@ -16,12 +16,12 @@ public class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false, nullable = false)
-    @JsonFormat(timezone = "Asia/seoul")
+    @JsonFormat(timezone = "Asia/Seoul")
     private LocalDateTime createdDate;
 
     @LastModifiedDate
     @Column(nullable = false)
-    @JsonFormat(timezone = "Asia/seoul")
+    @JsonFormat(timezone = "Asia/Seoul")
     private LocalDateTime lastModifiedDate;
 
     @Enumerated(value = EnumType.STRING)

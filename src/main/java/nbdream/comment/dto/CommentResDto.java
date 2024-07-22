@@ -28,9 +28,7 @@ public class CommentResDto {
     private String profileImageUrl;
     private String content;
     private Boolean isAuthor;
-    @JsonFormat(timezone = "Asia/seoul")
     private LocalDateTime createdDate;
-    @JsonFormat(timezone = "Asia/seoul")
     private LocalDateTime lastModifiedDate;
 
 
