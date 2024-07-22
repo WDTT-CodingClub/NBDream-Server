@@ -10,6 +10,8 @@ import nbdream.common.entity.Status;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -28,9 +30,7 @@ public class CommentResDto {
     private String profileImageUrl;
     private String content;
     private Boolean isAuthor;
-    @JsonFormat(timezone = "Asia/Seoul")
     private LocalDateTime createdDate;
-    @JsonFormat(timezone = "Asia/Seoul")
     private LocalDateTime lastModifiedDate;
 
 
@@ -43,8 +43,12 @@ public class CommentResDto {
         this.profileImageUrl = (comment.getStatus().equals(Status.EXPIRED)) ? EMPTY : comment.getAuthor().getProfileImageUrl();
         this.content = comment.getContent();
         this.isAuthor = comment.getAuthor().getId() == authorId;
-        this.createdDate = comment.getCreatedDate();
-        this.lastModifiedDate = comment.getLastModifiedDate();
+        this.createdDate = ZonedDateTime.of(comment.getCreatedDate(), ZoneId.of("UTC"))
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                .toLocalDateTime();
+        this.lastModifiedDate = ZonedDateTime.of(comment.getLastModifiedDate(), ZoneId.of("UTC"))
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                .toLocalDateTime();
     }
 
 }

@@ -45,7 +45,7 @@ class AlarmHistoryResDto {
     private String title;
     private String content;
     private boolean checked;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdDate;
 
     public AlarmHistoryResDto(Long id, String alarmType, String title, String content, boolean checked, LocalDateTime createdDate) {
