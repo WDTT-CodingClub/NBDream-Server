@@ -91,14 +91,18 @@ public class FcmServiceImpl implements FcmService{
                         .notification(FcmMessageDto.Notification.builder()
                                 .title(fcmSendDto.getTitle())
                                 .body(fcmSendDto.getBody())
-                                .image(APP_LOGO_URL)
+                                .image(null)
                                 .build())
                         .data(FcmMessageDto.Data.builder()
                                 .targetId(fcmSendDto.getTargetId().toString())
                                 .alarmType(fcmSendDto.getAlarmType().getValue())
                                 .build())
+                        .android(FcmMessageDto.Android.builder()
+                                .notification(FcmMessageDto.Android.Notification.builder()
+                                        .icon(APP_LOGO_URL)
+                                        .build())
+                                .build())
                         .build()).validateOnly(false).build();
-
         return om.writeValueAsString(fcmMessageDto);
     }
 

@@ -17,6 +17,7 @@ public class FcmMessageDto {
         private FcmMessageDto.Notification notification;
         private FcmMessageDto.Data data;
         private String token;
+        private FcmMessageDto.Android android;
     }
 
     @Builder
@@ -35,4 +36,19 @@ public class FcmMessageDto {
         private String targetId;
         private String alarmType;
     }
+
+    @Builder
+    @AllArgsConstructor
+    @Getter
+    public static class Android {
+        private Android.Notification notification;
+
+        @Builder
+        @AllArgsConstructor
+        @Getter
+        public static class Notification {
+            private String icon;
+        }
+    }
 }
+
