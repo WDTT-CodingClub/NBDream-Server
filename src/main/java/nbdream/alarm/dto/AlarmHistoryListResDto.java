@@ -29,7 +29,7 @@ public class AlarmHistoryListResDto {
                         alarmHistory.getTitle(),
                         alarmHistory.getContent(),
                         alarmHistory.isChecked(),
-                        alarmHistory.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+                        alarmHistory.getCreatedDate()
                 ))
                 .collect(Collectors.toList());
 
@@ -39,14 +39,24 @@ public class AlarmHistoryListResDto {
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 class AlarmHistoryResDto {
     private Long id;
     private String alarmType;
     private String title;
     private String content;
     private boolean checked;
-    private String createdDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private LocalDateTime createdDate;
 
+    public AlarmHistoryResDto(Long id, String alarmType, String title, String content, boolean checked, LocalDateTime createdDate) {
+        this.id = id;
+        this.alarmType = alarmType;
+        this.title = title;
+        this.content = content;
+        this.checked = checked;
+        this.createdDate = ZonedDateTime.of(createdDate, ZoneId.of("UTC"))
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                .toLocalDateTime();
+    }
 
 }
