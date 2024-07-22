@@ -27,8 +27,8 @@ public class CommentResDto {
     private String profileImageUrl;
     private String content;
     private Boolean isAuthor;
-    private String createdDate;
-    private String lastModifiedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime lastModifiedDate;
 
 
     public CommentResDto(final Comment comment, long authorId) {
@@ -40,8 +40,8 @@ public class CommentResDto {
         this.profileImageUrl = (comment.getStatus().equals(Status.EXPIRED)) ? EMPTY : comment.getAuthor().getProfileImageUrl();
         this.content = comment.getContent();
         this.isAuthor = comment.getAuthor().getId() == authorId;
-        this.createdDate = comment.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
-        this.lastModifiedDate = comment.getLastModifiedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+        this.createdDate = comment.getCreatedDate();
+        this.lastModifiedDate = comment.getLastModifiedDate();
     }
 
 }

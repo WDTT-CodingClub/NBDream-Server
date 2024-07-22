@@ -1,5 +1,6 @@
 package nbdream.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,10 +16,12 @@ public class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false, nullable = false)
+    @JsonFormat(timezone = "Asia/seoul")
     private LocalDateTime createdDate;
 
     @LastModifiedDate
     @Column(nullable = false)
+    @JsonFormat(timezone = "Asia/seoul")
     private LocalDateTime lastModifiedDate;
 
     @Enumerated(value = EnumType.STRING)
