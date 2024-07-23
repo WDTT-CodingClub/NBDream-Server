@@ -1,4 +1,6 @@
 package nbdream.alarm.dto;
 
-public record AlarmHistoryCheckReqDto(Long id) {
+import java.util.List;
+
+public record AlarmHistoryCheckReqDto(List<Long> idList) {
 }
