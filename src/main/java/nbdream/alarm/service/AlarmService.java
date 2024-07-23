@@ -121,7 +121,9 @@ public class AlarmService {
     }
 
     public void deleteAlarmHistory(AlarmHistoryDeleteReqDto request) {
-        AlarmHistory alarmHistory = alarmHistoryRepository.findById(request.id()).orElseThrow(AlarmHistoryNotFoundException::new);
-        alarmHistoryRepository.delete(alarmHistory);
+        for(Long id : request.idList()) {
+            AlarmHistory alarmHistory = alarmHistoryRepository.findById(id).orElseThrow(AlarmHistoryNotFoundException::new);
+            alarmHistoryRepository.delete(alarmHistory);
+        }
     }
 }
