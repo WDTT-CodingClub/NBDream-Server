@@ -63,7 +63,7 @@ public class AlarmController {
     }
 
     @Operation(summary = "알림 내역 삭제", description = "")
-    @PutMapping("/history/delete")
+    @DeleteMapping("/history/delete")
     public ApiResponse<Void> deleteAlarmHistory(@Parameter(hidden = true) @AuthenticatedMemberId Long memberId,
                                                @RequestBody AlarmHistoryDeleteReqDto request){
         alarmService.deleteAlarmHistory(request);
