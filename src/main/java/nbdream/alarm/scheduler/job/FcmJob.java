@@ -46,7 +46,7 @@ public class FcmJob implements Job {
                     .build();
             try {
                 fcmService.sendMessageTo(fcmSendDto);
-                alarmService.saveAlarmHistory(fcmSendDto, alarmSchedule.getAlarm());
+                alarmService.saveAlarmHistory(fcmSendDto, alarmSchedule.getAlarm(), alarmSchedule.getSchedule().getId());
             } catch (Exception e) {
                 throw new FcmIntenalServerErrorException();
             }

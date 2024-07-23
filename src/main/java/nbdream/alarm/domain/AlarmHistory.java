@@ -30,12 +30,15 @@ public class AlarmHistory extends BaseEntity {
 
     private boolean checked;
 
-    public AlarmHistory(final Alarm alarm, final AlarmType alarmType, final String title, final String content, final boolean checked) {
+    private Long targetId;
+
+    public AlarmHistory(final Alarm alarm, final AlarmType alarmType, final String title, final String content, final boolean checked, final Long targetId) {
         this.alarm = alarm;
         this.alarmType = alarmType;
         this.title = title;
         this.content = content;
         this.checked = checked;
+        this.targetId = targetId;
     }
 
     public void alarmCheck() {

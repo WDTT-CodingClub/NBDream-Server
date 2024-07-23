@@ -76,14 +76,14 @@ public class AlarmService {
             FcmSendDto fcmSendDto = new FcmSendDto(alarm.getFcmToken(), "농부의 꿈", body, bulletin.getId(), AlarmType.COMMENT);
             fcmService.sendMessageTo(fcmSendDto);
             //알람 저장
-            saveAlarmHistory(fcmSendDto, alarm);
+            saveAlarmHistory(fcmSendDto, alarm, bulletin.getId());
         }catch (Exception e){
             throw new FcmIntenalServerErrorException();
         }
     }
 
-    public void saveAlarmHistory(FcmSendDto fcmSendDto, Alarm alarm){
-        AlarmHistory alarmHistory = new AlarmHistory(alarm, fcmSendDto.getAlarmType(), fcmSendDto.getTitle(), fcmSendDto.getBody(), false);
+    public void saveAlarmHistory(FcmSendDto fcmSendDto, Alarm alarm, Long targetId){
+        AlarmHistory alarmHistory = new AlarmHistory(alarm, fcmSendDto.getAlarmType(), fcmSendDto.getTitle(), fcmSendDto.getBody(), false, targetId);
         alarmHistoryRepository.save(alarmHistory);
     }
 
