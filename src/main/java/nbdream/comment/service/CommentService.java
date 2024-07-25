@@ -47,8 +47,8 @@ public class CommentService {
                 .build();
         commentEntity = commentRepository.save(commentEntity);
 
-        //게시글 작성자에게 push 알람 전송 (게시글 작성자 id, 댓글작성자 닉네임, 게시글 id)
-        alarmService.sendCommentAlarm(bulletinEntity, memberEntity.getNickname());
+        //게시글 작성자에게 push 알람 전송 (게시글 작성자 id, 댓글작성자 닉네임, 댓글 작성자 id)
+        alarmService.sendCommentAlarm(bulletinEntity, memberEntity.getNickname(), memberId);
         return commentEntity.getId();
     }
 

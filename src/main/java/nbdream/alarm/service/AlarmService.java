@@ -64,10 +64,10 @@ public class AlarmService {
         alarmRepository.save(alarm);
     }
 
-    public void sendCommentAlarm(Bulletin bulletin, String nickname) {
+    public void sendCommentAlarm(Bulletin bulletin, String nickname, Long commentAuthorId) {
         Alarm alarm = alarmRepository.findByMemberId(bulletin.getAuthor().getId());
         isAlarmValid(alarm);
-        if(!alarm.isCommentAlarm()){
+        if(!alarm.isCommentAlarm() || bulletin.getAuthor().getId() == commentAuthorId){
             return;
         }
         hasToken(alarm);
