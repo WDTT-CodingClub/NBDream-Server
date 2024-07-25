@@ -2,10 +2,13 @@ package nbdream.farm.service.dto.LandElements.soilDataList;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import nbdream.farm.domain.LandElements;
 
 @Getter
 @ToString
+@NoArgsConstructor
 public class ItemBjd {
     @JacksonXmlProperty(localName = "No")
     private int no;
@@ -48,4 +51,19 @@ public class ItemBjd {
 
     @JacksonXmlProperty(localName = "SELC")
     private float selc;
+
+    public ItemBjd(float acid, float vldpha, float vldsia, float om, float posifertMg, float posifertK, float posifertCa, float selc) {
+        this.acid = acid;
+        this.vldpha = vldpha;
+        this.vldsia = vldsia;
+        this.om = om;
+        this.posifertMg = posifertMg;
+        this.posifertK = posifertK;
+        this.posifertCa = posifertCa;
+        this.selc = selc;
+    }
+
+    public static ItemBjd defaultSoilData(){
+        return new ItemBjd(6, 75, 200, 25, 2, 0.25F, 7.5F, 0.5F);
+    }
 }
