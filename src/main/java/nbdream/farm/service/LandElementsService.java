@@ -77,6 +77,10 @@ public class LandElementsService {
     // 유저의 법정동 코드로 토양 리스트를 받아와서, 가장 가까운 위치의 토양 성분을 반환
     private LandElements getNewLandElementsFromOpenApi(String bjdCode, Coordinates coordinates) {
         List<ItemBjd> soilDataList = fetchSoilDataFromApiByBjd(bjdCode, "List");
+        //토양 검정 api 데이터가 아예 없다면 default값 저장
+        if(soilDataList == null){
+            return new LandElements(ItemBjd.defaultSoilData());
+        }
         //유저와 토양 리스트의 위치 비교
         Map<Integer, Coordinates> coordinatesMap = getCoordinatesByAddressFromKakao(soilDataList);
         int num = findNearestLocation(coordinates, coordinatesMap);
@@ -84,16 +88,7 @@ public class LandElementsService {
         ItemBjd itemBjd = soilDataList.stream()
                 .filter(soilData -> num == soilData.getNo())
                 .findFirst().orElseThrow(ClosestSoilDataInternalServerErrorException::new);
-        return new LandElements(
-                itemBjd.getAcid(),
-                itemBjd.getVldpha(),
-                itemBjd.getVldsia(),
-                itemBjd.getOm(),
-                itemBjd.getPosifertMg(),
-                itemBjd.getPosifertK(),
-                itemBjd.getPosifertCa(),
-                itemBjd.getSelc()
-        );
+        return new LandElements(itemBjd);
     }
 
     //토양검정(BJD) Open API 요청
@@ -108,7 +103,9 @@ public class LandElementsService {
             URL url = new URL(urlBuilder.toString());
 
             String xmlResponse = restTemplate.getForObject(url.toURI(), String.class);
-            return removeDuplicates(parseSoilDataList(xmlResponse));
+            List<ItemBjd> itemBjds = parseSoilDataList(xmlResponse);
+            
+            return itemBjds == null ? null : removeDuplicates(itemBjds);
         } catch (Exception e) {
             throw new FetchApiInternalServerErrorException();
         }

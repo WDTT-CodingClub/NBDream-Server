@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import nbdream.common.entity.BaseEntity;
+import nbdream.farm.service.dto.LandElements.soilDataList.ItemBjd;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,6 +41,17 @@ public class LandElements extends BaseEntity {
         this.selc = selc;
     }
 
+    public LandElements(ItemBjd itemBjd) {
+        this.acid = itemBjd.getAcid();
+        this.vldpha = itemBjd.getVldpha();
+        this.vldsia = itemBjd.getVldsia();
+        this.om = itemBjd.getOm();
+        this.posifert_mg = itemBjd.getPosifertMg();
+        this.posifert_k = itemBjd.getPosifertK();
+        this.posifert_ca = itemBjd.getPosifertCa();
+        this.selc = itemBjd.getSelc();
+    }
+
     public void update(LandElements landElements) {
         this.acid = landElements.getAcid();
         this.vldpha = landElements.getVldpha();
@@ -50,6 +62,7 @@ public class LandElements extends BaseEntity {
         this.posifert_ca = landElements.getPosifert_ca();
         this.selc = landElements.getSelc();
     }
+
 
     public String toStringForAIChat() {
         return "LandElements{" +
