@@ -64,6 +64,6 @@ public class ItemBjd {
     }
 
     public static ItemBjd defaultSoilData(){
-        return new ItemBjd(6, 75, 200, 25, 2, 0.25F, 7.5F, 0.5F);
+        return new ItemBjd(6, 75, 200, 25, 2, 0.35F, 7.5F, 0.5F);
     }
 }
