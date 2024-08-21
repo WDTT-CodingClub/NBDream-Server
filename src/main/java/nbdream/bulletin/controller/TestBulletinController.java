@@ -5,6 +5,7 @@ import nbdream.bulletin.dto.request.BulletinTestDto;
 import nbdream.bulletin.service.TestBulletinService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +19,7 @@ public class TestBulletinController {
     private final TestBulletinService service;
 
     @PostMapping("/test")
-    public void test(@RequestPart(name = "dto", required = false)List<MultipartFile> files) {
+    public void test(@RequestPart(name = "contents",required = false)String content, @RequestPart(name = "dto", required = false)List<MultipartFile> files) {
         service.uploadTestBulletin(files);
     }
 }
