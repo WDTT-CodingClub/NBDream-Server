@@ -17,7 +17,7 @@ public class TestBulletinController {
     private final TestBulletinService service;
 
     @PostMapping("/test")
-    public void test(@RequestPart BulletinTestDto dto) {
+    public void test(@RequestPart(required = false) BulletinTestDto dto) {
         service.uploadTestBulletin(dto);
     }
 }
