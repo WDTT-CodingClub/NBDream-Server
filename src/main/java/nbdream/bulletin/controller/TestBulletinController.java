@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import java.awt.*;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class TestBulletinController {
     private final TestBulletinService service;
 
     @PostMapping("/test")
-    public void test(@RequestPart(required = false) BulletinTestDto dto) {
-        service.uploadTestBulletin(dto);
+    public void test(@RequestPart(name = "dto", required = false)List<MultipartFile> files) {
+        service.uploadTestBulletin(files);
     }
 }
