@@ -40,7 +40,7 @@ public class CommonControllerAdvice {
     @ExceptionHandler({UnauthorizedException.class, JwtException.class})
     public ResponseEntity<ApiResponse> handleUnauthorized(final Exception e) {
         log.debug("UnauthorizedException : {}", e.getMessage());
-        log.debug("Exception Stack Trace : \n{}", e.getStackTrace());
+        //log.debug("Exception Stack Trace : \n{}", e.getStackTrace());
         return ResponseEntity.status(UNAUTHORIZED).body(ApiResponse.of(UNAUTHORIZED, e.getMessage()));
     }
 

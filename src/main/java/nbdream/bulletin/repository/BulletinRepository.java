@@ -25,4 +25,7 @@ public interface BulletinRepository extends JpaRepository<Bulletin, Long> {
 
     @Query("SELECT b FROM Bulletin b WHERE b.author.id = :authorId")
     List<Bulletin> findByAuthorId(@Param("authorId") Long authorId);
+
+    @Query("INSERT INTO Bulletin(content) VALUES('TEST')")
+    String saveContent(String content);
 }
