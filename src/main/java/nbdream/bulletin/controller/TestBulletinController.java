@@ -16,7 +16,7 @@ public class TestBulletinController {
 
     private final TestBulletinService service;
 
-    @PostMapping(value = "/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void test(@RequestPart BulletinTestDto dto) {
         service.uploadTestBulletin(dto);
     }
